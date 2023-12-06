@@ -13,7 +13,7 @@
 
 # Set your working directory as to the main directory.
   Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR")
+  setwd("~/GitHub/DietDiveR")
 
 # Name your main directory for future use. 
   main_wd <- file.path(getwd())
@@ -36,7 +36,7 @@
   totals_males60to79 <- read.table("QCtotal_d_ga_body_meta_glu_comp_2_males60to79.txt", 
                                    sep="\t", header=T)
 
-# It should have 237 individuals (rows) and 266 variables (columns).
+# It should have 236 individuals (rows) and 266 variables (columns).
   dim(totals_males60to79)
 
 # There may be some variables that you would like to omit before performing PCA.
@@ -69,7 +69,7 @@
   # 2: Save the original totals of the complete cases individuals as a .txt, 
   # 3: Keep non-zero columns, 
   # 4: Remove the userID,
-  # 5: Identify correlated variables and remove them,
+  # 5: Identify correlated variables and optionally remove them,
   # 6: Save with uncorrelated variables as a .txt,
   # 7: Save correlation matrix as a .txt.  
 
@@ -78,9 +78,9 @@
                   original_totals_df= totals_males60to79, 
                   complete_cases_fn=   "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut.txt",
                   clustering_input_fn= "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_rv.txt",
-                  corr_matrix_fn=      "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_corr_mat.txt")
-
- 
+                  corr_matrix_fn=      "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_corr_mat.txt",
+                  rm_corr_var = TRUE)
+  
 # ===============================================================================================================
 # CAT: Food category and body weight
 # ===============================================================================================================
@@ -101,7 +101,8 @@
                     original_totals_df= totals_males60to79, 
                     complete_cases_fn=   "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat.txt",
                     clustering_input_fn= "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat_rv.txt",
-                    corr_matrix_fn=      "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat_corr_mat.txt")
+                    corr_matrix_fn=      "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat_corr_mat.txt",
+                    rm_corr_var = TRUE)
   
 # ---------------------------------------------------------------------------------------------------------------
 # Come back to the main directory

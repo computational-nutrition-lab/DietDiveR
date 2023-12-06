@@ -12,7 +12,7 @@
 
 # Set your working directory to the main directory.
   Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR")
+  setwd("~/GitHub/DietDiveR")
 
 # Name your main directory for future use. 
   main_wd <- file.path(getwd())
@@ -34,7 +34,6 @@
   library(phyloseq)
   library(ggplot2)
   library(ggtree) # Shows how to cite the ggtree package. Make sure to cite it accordingly.
-  library(SASxport)
   library(cluster) # necessary to the "pairwiseAdonis" package.
   library(pairwiseAdonis)
   source("lib/specify_data_dir.R")

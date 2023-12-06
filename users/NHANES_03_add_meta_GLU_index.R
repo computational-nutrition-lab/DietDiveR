@@ -8,13 +8,13 @@
 
 # Set your working directory to the main directory.
   Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR/")
+  setwd("~/GitHub/DietDiveR/")
   
 # Name your main directory for future use. 
   main_wd <- file.path(getwd())  
 
 # Load necessary packages.
-  library(SASxport)
+  library(foreign)
   
 # Load necessary functions.
   source("lib/specify_data_dir.R")
@@ -34,7 +34,7 @@
 # Load the QC-ed total (with food categories), filtered for KCAL, PROT, TFAT, VC. 4,164 people.
   QCtotal_d <- read.table("Total_D12_FC_QC_mean_QC_demo.txt", sep="\t", header=T)
                            
-# Check the number of participants in the QCtotals - should be 4,614 people.
+# Check the number of participants in the QCtotals - should be 4,164 people.
   length(unique(QCtotal_d$SEQN))
 
     
@@ -172,7 +172,7 @@
   # Select individuals that have no missing data in the LBXGLU column.
   QCtotal_d_ga_body_meta_glu_comp <- QCtotal_d_ga_body_meta_glu[!is.na(QCtotal_d_ga_body_meta_glu$LBXGLU), ]
   
-  # Check the number of rows - should have 1943 rows.   
+  # Check the number of rows - should have 1923 rows.   
   nrow(QCtotal_d_ga_body_meta_glu_comp)
   
   # Double-check there is no missing data in GLU_index.

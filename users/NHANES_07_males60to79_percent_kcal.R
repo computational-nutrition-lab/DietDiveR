@@ -14,7 +14,7 @@
 
 # Set working directory to "dietary_patterns".
   Session --> Set working directory --> Choose directory.  
-  setwd("~/GitHub/DietR/")
+  setwd("~/GitHub/DietDiveR/")
 
 # Name your main directory for future use. 
   main_wd <- file.path(getwd())

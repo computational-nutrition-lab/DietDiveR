@@ -7,12 +7,6 @@
 # ========================================================================================
 # Import NHANES 2015-16 data. 
 # ========================================================================================
-# 
-# Import NHANES data using the SASexport package.
-# install.packages("SASxport")
-  library(SASxport)
-  library(foreign)
-
 
 # ========================================================================================
 # Load and prepare food code table. 

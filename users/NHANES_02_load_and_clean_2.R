@@ -13,22 +13,19 @@
 #               |                                       downloaded from NHANES 15-16.
 #               |
 #  Main --------|----- lib -- functions
-#  (DietR)      |
+#  (DietDiveR)  |
 #               |----- users -- where this script is located
 #
 
 # Set your working directory to the main directory.
   Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR/")
+  setwd("~/GitHub/DietDiveR/")
 
 # Name your main directory for future use.
   main_wd <- file.path(getwd())
   
-# Install the SASxport package if it is not installed yet.
-  if (!require("SASxport", quietly = TRUE)) install.packages("SASxport")
-
-# Load SASeport, necessary to import NHANES data.
-  library(SASxport)
+# Install the foreign package if it is not installed yet.
+  if (!require("foreign", quietly = TRUE)) install.packages("foreign")
 
 # Load necessary functions.
   source("lib/specify_data_dir.R")
@@ -91,10 +88,10 @@
   colnames(freqtable1_m)[1] <- "SEQN"
   
   # Keep the names of those who reported complete data and more than 1 food item per day.
-  keepnames1_mult <- keepnames1[keepnames1 %in% freqtable1_m$SEQN] # 8324 
+  keepnames1_mult <- keepnames1[keepnames1 %in% freqtable1_m$SEQN] # 8,324 
 
   # Select only adults from keepnames1_mult.  
-  keepnames1_mult_adults <- keepnames1_mult[keepnames1_mult %in% adults$SEQN] # 5266
+  keepnames1_mult_adults <- keepnames1_mult[keepnames1_mult %in% adults$SEQN] # 5,266
   
   # Select only the participants whose names are in keepnames1_mult_adults.
   food1b <- food1[food1$SEQN %in% keepnames1_mult_adults, ] # 78,442 rows
@@ -104,7 +101,7 @@
   food2 <- subset(Food_D2_FC_cc_f, DR2DRSTZ == 1)
   
   # Generate a vector of SEQN in food2, which is a list of participants.
-  keepnames2 <- unique(food2$SEQN)  # 6875
+  keepnames2 <- unique(food2$SEQN)  # 6,875
   
   # Make a table with the number of food items they reported on day 2.
   freqtable2 <- as.data.frame(table(food2$SEQN))
@@ -114,7 +111,7 @@
   colnames(freqtable2_m)[1] <- "SEQN"
   
   # Keep the names of those who reported complete data and more than 1 food item per day.
-  keepnames2_mult <- keepnames2[keepnames2 %in% freqtable2_m$SEQN] # 6869
+  keepnames2_mult <- keepnames2[keepnames2 %in% freqtable2_m$SEQN] # 6,869
   
   # Select only adults from keepnames2_mult.  
   keepnames2_mult_adults <- keepnames2_mult[keepnames2_mult %in% adults$SEQN] # 4,401
@@ -289,7 +286,7 @@
 # Load the mean total.
   meantotal12d <- read.table("Total_D12_FC_QC_mean.txt", sep="\t", header=T)
   
-###
+
 # Add demographic data to mean total. 
 # Merge QC-totals and demographics by SEQN.
   meantotal12d_demo <- merge(x= meantotal12d, y=demog, by="SEQN", all.x=TRUE)
@@ -322,7 +319,7 @@
 # Run all these QC steps in this order. When asked, choose to remove the outliers
 # that fall outside the specified range for each nutrient.
 
-#####
+
 # Split your dataset to males and females because different thresholds apply for males and females.
   meantotal12d_demo_M <- subset(meantotal12d_demo, RIAGENDR==1)  
   meantotal12d_demo_F <- subset(meantotal12d_demo, RIAGENDR==2)  

@@ -11,7 +11,7 @@
 
 # Set your working directory as to the main directory.
   Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR")
+  setwd("~/GitHub/DietDiveR")
   
 # Name your main directory for future use.
   main_wd <- file.path(getwd())
@@ -69,7 +69,7 @@
   # 2: Save the original totals of the complete cases individuals as a .txt, 
   # 3: Keep non-zero columns, 
   # 4: Remove the userID,
-  # 5: Identify correlated variables and remove them,
+  # 5: Identify correlated variables and optionally remove them,
   # 6: Save with uncorrelated variables as a .txt,
   # 7: Save correlation matrix as a .txt.  
   
@@ -78,7 +78,8 @@
                     original_totals_df= totals, 
                     complete_cases_fn=   "VVKAJ_Tot_m_QCed_Nut_asis_c.txt",
                     clustering_input_fn= "VVKAJ_Tot_m_QCed_Nut_asis_c_rv.txt",
-                    corr_matrix_fn=      "VVKAJ_Tot_m_QCed_Nut_asis_c_corr_matrix.txt")
+                    corr_matrix_fn=      "VVKAJ_Tot_m_QCed_Nut_asis_c_corr_matrix.txt",
+                    rm_corr_var = TRUE)
 
 # ===============================================================================================================
 # NUTRIENTS: Take average of each user across all days 
@@ -99,7 +100,8 @@
                     original_totals_df= totals_mean, 
                     complete_cases_fn=   "VVKAJ_Tot_mean_m_QCed_Nut_ave_c.txt",
                     clustering_input_fn= "VVKAJ_Tot_mean_m_QCed_Nut_ave_c_rv.txt",
-                    corr_matrix_fn=      "VVKAJ_Tot_mean_m_QCed_Nut_ave_c_corr_matrix.txt")
+                    corr_matrix_fn=      "VVKAJ_Tot_mean_m_QCed_Nut_ave_c_corr_matrix.txt",
+                    rm_corr_var = TRUE)
 
 # ===============================================================================================================
 # FOOD CATEGORIES: Use data as is.
@@ -120,7 +122,8 @@
                     original_totals_df= totals, 
                     complete_cases_fn=   "VVKAJ_Tot_m_QCed_Cat_asis_c.txt",
                     clustering_input_fn= "VVKAJ_Tot_m_QCed_Cat_asis_c_rv.txt",
-                    corr_matrix_fn=      "VVKAJ_Tot_m_QCed_Cat_asis_c_corr_matrix.txt")
+                    corr_matrix_fn=      "VVKAJ_Tot_m_QCed_Cat_asis_c_corr_matrix.txt",
+                    rm_corr_var = TRUE)
   
   
 # ===============================================================================================================
@@ -142,7 +145,8 @@
                     original_totals_df= totals_mean, 
                     complete_cases_fn=   "VVKAJ_Tot_mean_m_QCed_Cat_ave_c.txt",
                     clustering_input_fn= "VVKAJ_Tot_mean_m_QCed_Cat_ave_c_rv.txt",
-                    corr_matrix_fn=      "VVKAJ_Tot_mean_m_QCed_Cat_ave_c_corr_matrix.txt")
+                    corr_matrix_fn=      "VVKAJ_Tot_mean_m_QCed_Cat_ave_c_corr_matrix.txt",
+                    rm_corr_var = TRUE)
   
 # ===============================================================================================================
 # Come back to the main directory

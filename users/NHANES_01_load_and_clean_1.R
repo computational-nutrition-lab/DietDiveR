@@ -4,7 +4,7 @@
 # Created on 05/18/2022 by Rie Sadohara and Suzie Hoops
 # ===============================================================================================================
 
-# In this tutorial, we aim to demonstrate the utility of the DietR package by applying it to the dietary data 
+# In this tutorial, we aim to demonstrate the utility of the DietDiveR package by applying it to the dietary data 
 # available from the National Health and Nutrition Examination Survey (NHANES). 
 
 # NHANES is a national survey conducted with some thousands of participants across the US over two days. NHANES 
@@ -29,11 +29,11 @@
 # (https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/default.aspx?BeginYear=2015) 
 # and save them in the "Raw_data" folder in the "NHANES" folder.
 
-# Open "02_load_clean_NHANES_food_1.R" script (this script) in the "users" folder and load the packages 
+# Open "NHANES_01_load_and_clean_1.R" script (this script) in the "users" folder and load the packages 
 # needed as per the directions.
 
 # In this tutorial, you will learn how to download datasets and associated other databases from NHANES, 
-# how to process that data with DietR, and the food tree to generate dietary patterns, and how to integrate these 
+# how to process that data with DietDiveR, and the food tree to generate dietary patterns, and how to integrate these 
 # dietary patterns with other biomarker data from NHANES to explore specific hypotheses.
 
 # Folder structure 
@@ -42,22 +42,19 @@
 #               |                                       downloaded from NHANES 15-16.
 #               |
 #  Main --------|----- lib -- functions
-#  (DietR)      |
+#  (DietDiveR)  |
 #               |----- users -- where this script is located
 #
 
 # Set your working directory to the main directory.
   Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR/")
+  setwd("~/GitHub/DietDiveR/")
 
 # Name your main directory for future use.
   main_wd <- file.path(getwd())
   
-# Install the SASxport package if it is not installed yet.
-  if (!require("SASxport", quietly = TRUE)) install.packages("SASxport")
-
-# Load SASeport, necessary to import NHANES data.
-  library(SASxport)
+# Install the foreign package if it is not installed yet.
+  if (!require("foreign", quietly = TRUE)) install.packages("foreign")
 
 # Load necessary functions.
   source("lib/specify_data_dir.R")

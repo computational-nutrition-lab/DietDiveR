@@ -11,7 +11,7 @@
 
 # Set your working directory as to the main directory.
   Session --> Set working direHctory --> Choose directory.
-  setwd("~/GitHub/DietR")
+  setwd("~/GitHub/DietDiveR")
 
 # Name your main directory for future use.  
   main_wd <- file.path(getwd())

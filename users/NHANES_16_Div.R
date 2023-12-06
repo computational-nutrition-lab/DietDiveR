@@ -12,7 +12,7 @@
 
 # Set your working directory to the main directory.
   # Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR")
+  setwd("~/GitHub/DietDiveR")
 
 # Name your main directory for future use. 
   main_wd <- file.path(getwd())
@@ -125,10 +125,10 @@
   ifc2 <- ifc[, 2: (ncol(ifc)-1) ]
 
 # Transpose so that the SEQN will come to rows.   
- ifc2t <- as.data.frame(t(ifc2)) 
+  ifc2t <- as.data.frame(t(ifc2)) 
  
 # Add taxonomy as the column names of ifc2t. 
- colnames(ifc2t) <- ifc$X.FOODID
+  colnames(ifc2t) <- ifc$X.FOODID
 
 # Each row of ifc2t is SEQN. So, diversity needs to be calculated per each row.
 

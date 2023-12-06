@@ -87,9 +87,9 @@
                                         select.rep.fcn=c('var','mean','lowest.mean',
                                                          'longest.name', 'shortest.name')[2],
                                         verbose=FALSE){
-    if(verbose) cat('Clustering', ncol(x), 'features...')
+    if(verbose) cat('Clustering', ncol(x), 'variables.\n')
     gr <- ClusterByCorrelation(x, min.cor=min.cor)
-    if(verbose) cat('getting means...')
+    # if(verbose) cat('getting means...')
     if(select.rep.fcn == 'mean'){
       v <- apply(x,2,function(xx) mean(xx, na.rm=TRUE))
     } else if(select.rep.fcn == 'lowest.mean'){
@@ -101,10 +101,10 @@
     } else {
       v <- apply(x,2,function(xx) var(xx,use='complete.obs'))
     }
-    if(verbose) cat('choosing reps...')
+    # if(verbose) cat('choosing reps...')
     reps <- sapply(split(1:ncol(x),gr),function(xx) xx[which.max(v[xx])])
-    if(verbose)
-      cat(sprintf('collapsed from %d to %d.\n',ncol(x), length(reps)))
+    # if(verbose)
+      # cat(sprintf('collapsed from %d to %d.\n',ncol(x), length(reps)))
     return(list(reps=reps, groups=gr))
   }
 # ---------------------------------------------------------------------------------------------------------------  
@@ -129,7 +129,7 @@
   # 2: save the original totals of the complete cases individuals as a .txt, 
   # 3: keep non-zero columns, 
   # 4: remove the userID,
-  # 5: identify correlated variables and remove them,
+  # 5: identify correlated variables and optioanlly remove them,
   # 6: save with uncorrelated variables as a .txt,
   # 7: save correlation matrix as a .txt.  
   
@@ -139,7 +139,8 @@
     userID,
     complete_cases_fn,
     clustering_input_fn,
-    corr_matrix_fn){
+    corr_matrix_fn,
+    rm_corr_var=c(TRUE, FALSE)){
     
     cat(deparse(substitute(input_df)), "has", nrow(input_df), "rows and", ncol(input_df), "variables.\n")
     
@@ -186,10 +187,24 @@
     # cc is the correlation matrix produced when variables are collapsed by correlation.
     SaveCorrMatrix(x=cc, out.fn= corr_matrix_fn)
     
-    # Filter out highly correlated variables from the original dataset.
-    selected_variables <- subsetted_non0var[, cbc_res$reps]
+    # If rm_corr_var=TRUE, then remove correlated variables. Among the correlated vairables, 
+    # the one with the most values will be retained.
     
-    cat("After removing correlated variables,", nrow(selected_variables), "rows and", ncol(selected_variables), "variables remained.\n")
+    if(rm_corr_var=="TRUE"){
+      
+      # Filter out highly correlated variables from the original dataset.
+      selected_variables <<- subsetted_non0var[, cbc_res$reps]
+      
+      cat("After removing correlated variables,", nrow(selected_variables), "rows and", ncol(selected_variables), "variables remained.\n")
+      
+    }else if(rm_corr_var=="FALSE"){
+
+      # Retain all the variables.      
+      selected_variables <<- subsetted_non0var
+      
+      cat("All the variables were retained.")
+      
+    }
     
     # ***"selected_variables" is the dataframe to be used for PCA, cluster analyses etc.***
     

@@ -24,7 +24,7 @@
 
 # Set your working directory to the main directory.
   Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR")
+  setwd("~/GitHub/DietDiveR")
 
 # Name your main directory where input files are pulled.
   main_wd <- file.path(getwd())

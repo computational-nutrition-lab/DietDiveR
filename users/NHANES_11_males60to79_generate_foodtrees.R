@@ -15,7 +15,7 @@
 
 # Set your working directory as the main directory (dietary_patterns)
   Session --> Set working directory --> Choose directory.
-  setwd("~/GitHub/DietR")
+  setwd("~/GitHub/DietDiveR/")
 
 # Name your main directory for future use. 
   main_wd <- file.path(getwd())
@@ -71,7 +71,7 @@
 # ===============================================================================================================
 
 # Create foodtree with the foods classified at a desired level of classification (Lv. 1-5).
-# "NodeLabelsMCT.txt" has a list of food levels and names, which comes with the DietR package.
+# "NodeLabelsMCT.txt" has a list of food levels and names, which comes with the DietDiveR package.
   MakeFoodTree(nodes_fn= "../../Food_tree_eg/NodeLabelsMCT.txt", 
                addl_foods_fn = NULL,
                num_levels = 3,

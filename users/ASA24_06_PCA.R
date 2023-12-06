@@ -6,7 +6,7 @@
 
 # Set your working directory as to the main directory.
   Session --> Set working direHctory --> Choose directory.
-  setwd("~/GitHub/DietR")
+  setwd("~/GitHub/DietDiveR/")
 
 # Name your main directory for future use. 
   main_wd <- file.path(getwd())
@@ -88,7 +88,7 @@
     scale_fill_manual(values= distinct100colors) 
   Nut_asis_PC12_diet
   
-  ggsave("PCA_NUt_asis/VVKAJ_Nut_asis_PC12_diet5.pdf", 
+  ggsave("PCA_NUt_asis/VVKAJ_Nut_asis_PC12_diet.pdf", 
          Nut_asis_PC12_diet, device="pdf", width=7, height=6.5)  
   
 # You can do this operation for the other three datasets: Nut_ave, Cat_asis, Cat_ave, by
