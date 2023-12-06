@@ -19,7 +19,7 @@ https://computational-nutrition-lab.github.io/DietDiveR/
 ## Find out more about DietR in our publication and cite DietDiveR
 DietDiveR has been initially published as "DietR" on MedRxiv, but
 has been renamed as "DietDiveR" and will be published under the name of 
-"DietDiveR" in a peer-reviewed journal. Stay tuned!
+"DietDiveR" in a peer-reviewed journal. Stay tuned!!!!
 
 Dietary pattern and diversity analysis using 'DietR' package in R
 Rie Sadohara, David Jacobs, Mark A Pereira, Abigail J Johnson
