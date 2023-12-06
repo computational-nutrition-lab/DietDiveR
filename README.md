@@ -1,4 +1,4 @@
-# DietDiveR
+# DietDiveR--ghpages
 # Welcome to DietDiveR, a toolkit for ASA24 and NHANES data analysis with R.
 
 ## Project website has tutorials for analyzing ASA24 and NHANES data with DietDiveR:
