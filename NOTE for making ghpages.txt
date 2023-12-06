@@ -30,6 +30,11 @@ Add rm_corr_var = TRUE argument.
 NHANES 13 
 Delete SASxport
 
+ASA 05
+PrepForClustering
+5: optionally remove them
+
+Add rm_corr_var = TRUE argument.
 
 ASA PCA 
 remove 5 at the end of 5.pdf 
