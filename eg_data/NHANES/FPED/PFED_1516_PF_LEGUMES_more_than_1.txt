@@ -1,0 +1,111 @@
+FOODCODE	DESCRIPTION
+41100990	Beans, NFS
+41101010	Beans, from dried, NS as to type, fat added
+41101020	Beans, from dried, NS as to type, no added fat
+41101060	Beans, from canned, NS as to type, fat added
+41101070	Beans, from canned, NS as to type, no added fat
+41101080	Beans, from fast food / restaurant, NS as to type
+41101090	White beans, NFS
+41101110	White beans, from dried, fat added
+41101120	White beans, from dried, no added fat
+41101140	White beans, from canned, fat added
+41101180	White beans, from canned, no added fat
+41101210	White beans, from canned, reduced sodium
+41101990	Black beans, NFS
+41102010	Black beans, from dried, fat added
+41102020	Black beans, from dried, no added fat
+41102040	Black beans, from canned, fat added
+41102080	Black beans, from canned, no added fat
+41102110	Black beans, from canned, reduced sodium
+41102150	Black beans, from fast food / restaurant
+41102170	Black beans with meat
+41102210	Fava beans, cooked
+41102990	Lima beans, NFS
+41103010	Lima beans, from dried
+41103070	Pink beans, cooked
+41103990	Pinto beans, NFS
+41104010	Pinto beans, from dried, fat added
+41104020	Pinto beans, from dried, no added fat
+41104040	Pinto beans, from canned, fat added
+41104080	Pinto beans, from canned, no added fat
+41104110	Pinto beans, from canned, reduced sodium
+41104200	Pinto beans, from fast food / restaurant
+41104250	Pinto beans with meat
+41105990	Kidney beans, NFS
+41106010	Kidney beans, from dried, fat added
+41106020	Kidney beans, from dried, no added fat
+41106040	Kidney beans, from canned, fat added
+41106080	Kidney beans, from canned, no added fat
+41106110	Kidney beans, from canned, reduced sodium
+41106150	Kidney beans, from fast food / restaurant
+41106170	Kidney beans with meat
+41106510	Peruvian beans, from dried
+41107010	Soybeans, cooked
+41108010	Mung beans, cooked
+41201010	Baked beans
+41201020	Baked beans, vegetarian
+41201050	Baked beans from fast food / restaurant
+41202505	Beans and tomatoes, no added fat
+41202510	Beans and tomatoes, fat added
+41205010	Refried beans
+41205017	Refried beans, from fast food / restaurant
+41205030	Refried beans with meat
+41205040	Refried beans, from canned, reduced sodium
+41205050	Bean dip, made with refried beans
+41205070	Hummus, plain
+41205075	Hummus, flavored
+41208030	Pork and beans
+41208100	Beans with meat, NS as to type
+41209000	Falafel
+41221000	Baked beans, reduced sodium
+41300990	Blackeyed peas, NFS
+41301010	Blackeyed peas, from dried
+41301990	Chickpeas, NFS
+41302010	Chickpeas, from dried, fat added
+41302020	Chickpeas, from dried, no added fat
+41302040	Chickpeas, from canned, fat added
+41302080	Chickpeas, from canned, no added fat
+41302110	Chickpeas, from canned, reduced sodium
+41303000	Split peas, from dried, no added fat
+41303010	Split peas, from dried, fat added
+41304970	Lentils, NFS
+41304990	Lentils, from dried, fat added
+41305000	Lentils, from dried, no added fat
+41305020	Lentils, from canned
+41310900	Bean chips
+41311000	Papad, grilled or broiled
+41420020	Edamame, cooked
+41420110	Miso
+41601080	Pinto bean soup, home recipe, canned or ready-to-serve
+44201000	Carob chips
+55702000	Cake or pancake made with rice flour and/or dried beans
+56116990	Long rice noodles, made from mung beans, cooked
+58100320	Burrito with beans, meatless
+58101610	Soft taco with beans
+58101615	Soft taco with beans and sour cream
+58101720	Taco or tostada with beans
+58101725	Taco or tostada with beans and sour cream
+58104520	Chimichanga, meatless
+58160100	Beans and rice, from fast food / restaurant
+58160102	Kidney beans and rice, from fast food / restaurant
+58160104	Black beans and rice, from fast food / restaurant
+58160106	Pinto beans and rice, from fast food / restaurant
+58160110	Beans and white rice
+58160132	Beans and rice, with meat
+58160150	Kidney beans and white rice
+58160154	Black beans and white rice
+58160156	Pinto beans and white rice
+58160800	Rice, white, with lentils, NS as to fat
+58160805	Rice, white, with lentils, fat added
+58160810	Rice, white, with lentils, no added fat
+58161320	Beans and brown rice
+58161321	Kidney beans and brown rice
+58161322	Black beans and brown rice
+58161323	Pinto beans and brown rice
+58174100	Dosa (Indian), with filling
+58175000	Vada, fried dumpling
+75440400	Pakora
+91407150	Bean paste, sweetened
+91520100	Yokan
+91703500	Nuts, carob-coated
+91718300	Ladoo, round ball, Asian-Indian dessert
