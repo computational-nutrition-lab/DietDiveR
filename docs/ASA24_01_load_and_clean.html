@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Load and clean ASA24 data</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR Package</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown-header">NHANES</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Load and clean ASA24 data</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+<!-- .navbar { -->
+<!--   background-color: #882345; -->
+<!--   padding-top: 0rem; -->
+<!--   padding-bottom: 0rem; -->
+<!-- } -->
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In this tutorial, we will use mock data from the VVKAJ dataset that was created with <a href="https://epi.grants.cancer.gov/asa24/">ASA24</a>. VVKAJ stands for Vegetarian, Vegan, Keto, American, Japanese and was designed because these different eating patterns reflect differences that are often seen in real data. This mock dataset contains dietary for 15 mock participants who report dietary data while following the 5 different dietary patterns (VVKAJ) for three days. There are a total of XX dietary records in this dataset.</p>
+<p>ASA24 data includes the following files: _Items.csv, _INS.csv, _Responses.csv, _TNS.csv, Totals.csv, and TS.csv. Refer to the ASA24 Reserchers’ website for specific explanations for each file, but for the purpose of this tutorial, we focus on using the Items.csv, which has all the food items reported by the participants.</p>
+<p>In this script, you will:<br />
+</p>
+<ol style="list-style-type: decimal">
+<li>Use Metadata 1 to filter out individuals;</li>
+<li>Remove users that has only a small number of totals (days of record) - if you know which one to remove; and</li>
+<li>Look for outliers in your totals by nutrient consumed on each day.</li>
+</ol>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/load_clean_ASA24.R&quot;)
+source(&quot;lib/Food_tree_scripts/format.foods_2.r&quot;)
+source(&quot;lib/QCOutliers.R&quot;)
+source(&quot;lib/average.by.R&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p><br></p>
+</div>
+<div id="load-asa24-items-data" class="section level1">
+<h1>Load ASA24 Items data</h1>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name= &quot;eg_data/VVKAJ/&quot;)</code></pre>
+<!-- [NOTE] SpecifyDataDirectory function is not executed by R markdown, but just showing  -->
+<!--  the code so that this tutorial will have the same code as the R script.  -->
+<!-- This is the R-markdown code to change directories. -->
+<p>Load your unprocessed (raw) food items-level data (as downloaded from the ASA24 study website). The csv file will be loaded as a dataframe in R and be named as items_raw.</p>
+<pre class="r"><code>items_raw &lt;- read.csv(&quot;Raw_data/VVKAJ_Items.csv&quot;, sep = &quot;,&quot;, header=T)</code></pre>
+<p><code>items_raw</code> has a column called “Food_Description”, but this needs to be changed to “Main.food.description”. Change the column name.</p>
+<pre class="r"><code>names(items_raw)[names(items_raw) == &quot;Food_Description&quot;] &lt;- &quot;Main.food.description&quot;</code></pre>
+<p>Check if any column names match with “Main.food.description”. If there is a match, it will be printed.</p>
+<pre class="r"><code>names(items_raw)[names(items_raw) == &quot;Main.food.description&quot;]</code></pre>
+<pre><code>## [1] &quot;Main.food.description&quot;</code></pre>
+<blockquote>
+<p><strong>[NOTE]</strong> The numbers in the square brackets of the output indicate the sequential number of each element to help count the number of elements.</p>
+</blockquote>
+<p>Save the items file as a .txt file. This command saves the object “items_raw” as a .txt file with the specified filename using the write.table function.</p>
+<pre class="r"><code>write.table(items_raw, &quot;VVKAJ_Items.txt&quot;, sep=&quot;\t&quot;, row.names=F) </code></pre>
+<p>Special characters common in food names in dietary data such as <code>"</code>, <code>'</code>, <code>,</code>, <code>%</code> may interfere correct data loading in R; thus, we replace them with an underscore <code>_</code>.</p>
+<p><br> Format foods so that special characters will be replaced with “_“.”_f” stands for “formatted”.</p>
+<pre class="r"><code>FormatFoods(input_fn =  &quot;VVKAJ_Items.txt&quot;, 
+            output_fn = &quot;VVKAJ_Items_f.txt&quot;)</code></pre>
+<blockquote>
+<p><strong>[NOTE]</strong> It is best practice to avoid overwriting your raw data. Always save formatted/manipulated versions as a new file as described above.</p>
+</blockquote>
+<p>Load the Items_f.txt file to take a look at it.<br />
+You need the <code>quote=""</code> and <code>colClasses="character"</code> arguments to ignore quotation marks (do not regard them as a cell separator) and to load all the columns as characters so that FoodID will keep the trailing “.0”.</p>
+<pre class="r"><code>items_f &lt;- read.delim(&quot;VVKAJ_Items_f.txt&quot;, quote=&quot;&quot;, colClasses=&quot;character&quot;)</code></pre>
+<p>All special characters in the items data should have been replaced with an underscore in the Main.food.description column, the 3rd from the last column of the items_f. We can confirm that by using the head function, which shows the first six rows of the specified dataset by default. In this website version of tutorial, output is folded for visual clarity. You can click and expand the results.</p>
+<pre class="r"><code>head(items_f)</code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##                            RecallRecId UserName
+## 1 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 2 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 3 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 4 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 5 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 6 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+##                                 UserID RecallNo RecallAttempt RecallStatus
+## 1 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 2 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 3 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 4 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 5 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 6 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+##   IntakeStartDateTime IntakeEndDateTime ReportingDate Lang Occ_No
+## 1      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 2      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 3      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 4      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 5      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      2
+## 6      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      3
+##          Occ_Time Occ_Name EatWith WatchTVuseComputer Location FoodNum FoodType
+## 1  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       1        1
+## 2  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       2        1
+## 3  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       3        2
+## 4  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       4        1
+## 5 11/5/2021 10:00        7    &lt;NA&gt;               &lt;NA&gt;        1       5        1
+## 6 11/5/2021 12:00        3    &lt;NA&gt;               &lt;NA&gt;        1       6        1
+##   FoodSrce CodeNum FoodCode ModCode HowMany SubCode PortionCode FoodAmt    KCAL
+## 1     &lt;NA&gt;       1 92400000       0     9.6       0       30001   297.6 124.992
+## 2     &lt;NA&gt;       2 57231250       0       1       0       10205     104  419.12
+## 3     &lt;NA&gt;       3 91302010       0     0.5       0       21000    10.5   31.92
+## 4     &lt;NA&gt;       4 63200200       0     0.5       0       10205    98.5  50.235
+## 5     &lt;NA&gt;       5 94000100       0     8.4       0       30000     252       0
+## 6     &lt;NA&gt;       6 32103000       0     0.5       0       10205     111  285.27
+##      PROT    TFAT     CARB      MOIS ALC   CAFF THEO     SUGR   FIBE  CALC
+## 1       0   0.744 30.83136 265.93536   0 26.784    0 29.58144      0 2.976
+## 2    9.36   10.92    75.92     5.408   0      0    0   16.016 10.088 40.56
+## 3  0.0315       0    8.652    1.7955   0      0    0   8.6226  0.021  0.63
+## 4  0.4137  0.6304 11.98745  85.29115   0      0    0  8.32325 2.6595  7.88
+## 5       0       0        0   251.748   0      0    0        0      0  7.56
+## 6 11.3886 25.6854   1.1211   70.9956   0      0    0   1.1211      0 46.62
+##      IRON   MAGN   PHOS   POTA   SODI    ZINC     COPP   SELE     VC     VB1
+## 1 0.05952      0 26.784  14.88  8.928 0.26784 0.020832 0.2976      0       0
+## 2  17.992 101.92 307.84 350.48 298.48   2.392    0.416 43.472  0.208   0.728
+## 3  0.0441   0.21   0.42   5.46   0.42  0.0231  0.00378  0.084 0.0525       0
+## 4  0.1773  4.925 10.835  53.19  0.985 0.06895 0.032505 0.0985 2.4625 0.03152
+## 5       0   2.52      0      0  10.08  0.0252   0.0252      0      0       0
+## 6    1.11   8.88 157.62 116.55 420.69  0.9657  0.01554 27.861      0 0.06105
+##        VB2     NIAC      VB6   FOLA     FA    FF   FDFE   VB12   VARA    RET
+## 1        0        0        0      0      0     0      0      0      0      0
+## 2    0.832    9.984     1.04 199.68 179.92 19.76 326.56  3.016  447.2  447.2
+## 3  0.00399 0.012705  0.00252   0.21      0  0.21   0.21      0      0      0
+## 4 0.036445   0.5122 0.058115  6.895      0 6.895  6.895      0   1.97      0
+## 5        0        0        0      0      0     0      0      0      0      0
+## 6  0.45954  0.05661  0.10878  39.96      0 39.96  39.96 1.0101 135.42 134.31
+##    BCAR ACAR CRYP LYCO     LZ   ATOC     VK  CHOLE     SFAT S040 S060    S080
+## 1     0    0    0    0      0      0      0      0        0    0    0       0
+## 2   5.2    0 1.04    0 142.48 0.7696  2.288      0     1.04    0    0       0
+## 3     0    0    0    0      0      0      0      0        0    0    0       0
+## 4 27.58    0    0    0  66.98 0.4728 16.154      0 0.052205    0    0       0
+## 5     0    0    0    0      0      0      0      0        0    0    0       0
+## 6  11.1    0 9.99    0 316.35 1.6317 35.631 340.77  5.44344    0    0 0.00222
+##      S100    S120    S140     S160     S180     MFAT    M161     M181    M201
+## 1       0       0       0        0        0        0       0        0       0
+## 2       0 0.00208 0.00208  0.80392  0.20592    6.032 0.00312  5.98936 0.03744
+## 3       0       0       0        0        0        0       0        0       0
+## 4       0       0       0 0.030535 0.010835 0.089635 0.00197 0.085695       0
+## 5       0       0       0        0        0        0       0        0       0
+## 6 0.00222 0.00222 0.04329  3.80397  1.40859  7.27938 0.29415    6.882 0.07881
+##      M221     PFAT     P182    P183 P184    P204    P205 P225    P226  VITD
+## 1       0        0        0       0    0       0       0    0       0     0
+## 2 0.00104    3.224  3.05136 0.17264    0       0       0    0       0 1.976
+## 3       0        0        0       0    0       0       0    0       0     0
+## 4       0 0.274815 0.164495 0.11032    0       0       0    0       0     0
+## 5       0        0        0       0    0       0       0    0       0     0
+## 6 0.00777 10.96014  9.55599 1.21545    0 0.14319 0.00444    0 0.03441 1.998
+##     CHOLN VITE_ADD B12_ADD F_TOTAL F_CITMLB F_OTHER F_JUICE V_TOTAL V_DRKGR
+## 1  0.8928        0       0       0        0       0       0       0       0
+## 2  29.952        0   3.016       0        0       0       0       0       0
+## 3   0.231        0       0       0        0       0       0       0       0
+## 4  5.0235        0       0 0.65995  0.65995       0       0       0       0
+## 5       0        0       0       0        0       0       0       0       0
+## 6 268.398        0       0       0        0       0       0       0       0
+##   V_REDOR_TOTAL V_REDOR_TOMATO V_REDOR_OTHER V_STARCHY_TOTAL V_STARCHY_POTATO
+## 1             0              0             0               0                0
+## 2             0              0             0               0                0
+## 3             0              0             0               0                0
+## 4             0              0             0               0                0
+## 5             0              0             0               0                0
+## 6             0              0             0               0                0
+##   V_STARCHY_OTHER V_OTHER V_LEGUMES G_TOTAL G_WHOLE G_REFINED PF_TOTAL
+## 1               0       0         0       0       0         0        0
+## 2               0       0         0  2.7456   2.652    0.0936   0.7384
+## 3               0       0         0       0       0         0        0
+## 4               0       0         0       0       0         0        0
+## 5               0       0         0       0       0         0        0
+## 6               0       0         0       0       0         0   1.8093
+##   PF_MPS_TOTAL PF_MEAT PF_CUREDMEAT PF_ORGAN PF_POULT PF_SEAFD_HI PF_SEAFD_LOW
+## 1            0       0            0        0        0           0            0
+## 2            0       0            0        0        0           0            0
+## 3            0       0            0        0        0           0            0
+## 4            0       0            0        0        0           0            0
+## 5            0       0            0        0        0           0            0
+## 6            0       0            0        0        0           0            0
+##   PF_EGGS PF_SOY PF_NUTSDS PF_LEGUMES D_TOTAL D_MILK D_YOGURT D_CHEESE    OILS
+## 1       0      0         0          0       0      0        0        0       0
+## 2       0      0    0.7384          0       0      0        0        0  6.0736
+## 3       0      0         0          0       0      0        0        0       0
+## 4       0      0         0          0       0      0        0        0       0
+## 5       0      0         0          0       0      0        0        0       0
+## 6  1.8093      0         0          0       0      0        0        0 15.8508
+##   SOLID_FATS ADD_SUGARS A_DRINKS FoodComp
+## 1          0    7.05312        0        1
+## 2          0      3.432        0        1
+## 3          0    2.05275        0        1
+## 4          0          0        0        1
+## 5          0          0        0        1
+## 6     4.8507          0        0        1
+##                                       Main.food.description
+## 1                                            Soft_drink_NFS
+## 2 Cereal_Post_Great_Grains_Double_Pecan_Whole_Grain_Cereal_
+## 3                                                     Honey
+## 4                                        Berries_frozen_NFS
+## 5                                                 Water_tap
+## 6                            Egg_salad_made_with_mayonnaise
+##                                    Old.Main.food.description     FoodID
+## 1                                            Soft drink, NFS 92400000.0
+## 2 Cereal (Post Great Grains Double Pecan Whole Grain Cereal) 57231250.0
+## 3                                                      Honey 91302010.0
+## 4                                       Berries, frozen, NFS 63200200.0
+## 5                                                 Water, tap 94000100.0
+## 6                            Egg salad, made with mayonnaise 32103000.0</code></pre>
+</details>
+<p><br></p>
+<p>Add a human-readable sample identifier (SampleID) with a desired prefix, and save it as a .txt file. SampleIDs are IDs unique to each combination of users and day and represent days of dietary intake in this dataset.</p>
+<pre class="r"><code>AddSampleIDtoItems(input.fn=&quot;VVKAJ_Items_f.txt&quot;, user.name=&quot;UserName&quot;, recall.no=&quot;RecallNo&quot;, 
+                   prefix=&quot;vvkaj.&quot;, out.fn=&quot;VVKAJ_Items_f_id.txt&quot;)</code></pre>
+<p>Load the formatted Items file with SampleID added.</p>
+<pre class="r"><code>items_f_id &lt;- read.delim(&quot;VVKAJ_Items_f_id.txt&quot;, quote=&quot;&quot;, colClasses=&quot;character&quot;)</code></pre>
+<p>A combination of the specified prefix and sequential number (vvkaj.00001) should be added in the SampleID column, the first column of the items_f_id dataframe. You will probably need to scroll up the output a little bit in the console to view the first column.</p>
+<pre class="r"><code>head(items_f_id)</code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##      SampleID                          RecallRecId UserName
+## 1 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 2 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 3 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 4 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 5 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+## 6 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9 VVKAJ101
+##                                 UserID RecallNo RecallAttempt RecallStatus
+## 1 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 2 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 3 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 4 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 5 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 6 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+##   IntakeStartDateTime IntakeEndDateTime ReportingDate Lang Occ_No
+## 1      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 2      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 3      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 4      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 5      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      2
+## 6      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      3
+##          Occ_Time Occ_Name EatWith WatchTVuseComputer Location FoodNum FoodType
+## 1  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       1        1
+## 2  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       2        1
+## 3  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       3        2
+## 4  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       4        1
+## 5 11/5/2021 10:00        7    &lt;NA&gt;               &lt;NA&gt;        1       5        1
+## 6 11/5/2021 12:00        3    &lt;NA&gt;               &lt;NA&gt;        1       6        1
+##   FoodSrce CodeNum FoodCode ModCode HowMany SubCode PortionCode FoodAmt    KCAL
+## 1     &lt;NA&gt;       1 92400000       0     9.6       0       30001   297.6 124.992
+## 2     &lt;NA&gt;       2 57231250       0       1       0       10205     104  419.12
+## 3     &lt;NA&gt;       3 91302010       0     0.5       0       21000    10.5   31.92
+## 4     &lt;NA&gt;       4 63200200       0     0.5       0       10205    98.5  50.235
+## 5     &lt;NA&gt;       5 94000100       0     8.4       0       30000     252       0
+## 6     &lt;NA&gt;       6 32103000       0     0.5       0       10205     111  285.27
+##      PROT    TFAT     CARB      MOIS ALC   CAFF THEO     SUGR   FIBE  CALC
+## 1       0   0.744 30.83136 265.93536   0 26.784    0 29.58144      0 2.976
+## 2    9.36   10.92    75.92     5.408   0      0    0   16.016 10.088 40.56
+## 3  0.0315       0    8.652    1.7955   0      0    0   8.6226  0.021  0.63
+## 4  0.4137  0.6304 11.98745  85.29115   0      0    0  8.32325 2.6595  7.88
+## 5       0       0        0   251.748   0      0    0        0      0  7.56
+## 6 11.3886 25.6854   1.1211   70.9956   0      0    0   1.1211      0 46.62
+##      IRON   MAGN   PHOS   POTA   SODI    ZINC     COPP   SELE     VC     VB1
+## 1 0.05952      0 26.784  14.88  8.928 0.26784 0.020832 0.2976      0       0
+## 2  17.992 101.92 307.84 350.48 298.48   2.392    0.416 43.472  0.208   0.728
+## 3  0.0441   0.21   0.42   5.46   0.42  0.0231  0.00378  0.084 0.0525       0
+## 4  0.1773  4.925 10.835  53.19  0.985 0.06895 0.032505 0.0985 2.4625 0.03152
+## 5       0   2.52      0      0  10.08  0.0252   0.0252      0      0       0
+## 6    1.11   8.88 157.62 116.55 420.69  0.9657  0.01554 27.861      0 0.06105
+##        VB2     NIAC      VB6   FOLA     FA    FF   FDFE   VB12   VARA    RET
+## 1        0        0        0      0      0     0      0      0      0      0
+## 2    0.832    9.984     1.04 199.68 179.92 19.76 326.56  3.016  447.2  447.2
+## 3  0.00399 0.012705  0.00252   0.21      0  0.21   0.21      0      0      0
+## 4 0.036445   0.5122 0.058115  6.895      0 6.895  6.895      0   1.97      0
+## 5        0        0        0      0      0     0      0      0      0      0
+## 6  0.45954  0.05661  0.10878  39.96      0 39.96  39.96 1.0101 135.42 134.31
+##    BCAR ACAR CRYP LYCO     LZ   ATOC     VK  CHOLE     SFAT S040 S060    S080
+## 1     0    0    0    0      0      0      0      0        0    0    0       0
+## 2   5.2    0 1.04    0 142.48 0.7696  2.288      0     1.04    0    0       0
+## 3     0    0    0    0      0      0      0      0        0    0    0       0
+## 4 27.58    0    0    0  66.98 0.4728 16.154      0 0.052205    0    0       0
+## 5     0    0    0    0      0      0      0      0        0    0    0       0
+## 6  11.1    0 9.99    0 316.35 1.6317 35.631 340.77  5.44344    0    0 0.00222
+##      S100    S120    S140     S160     S180     MFAT    M161     M181    M201
+## 1       0       0       0        0        0        0       0        0       0
+## 2       0 0.00208 0.00208  0.80392  0.20592    6.032 0.00312  5.98936 0.03744
+## 3       0       0       0        0        0        0       0        0       0
+## 4       0       0       0 0.030535 0.010835 0.089635 0.00197 0.085695       0
+## 5       0       0       0        0        0        0       0        0       0
+## 6 0.00222 0.00222 0.04329  3.80397  1.40859  7.27938 0.29415    6.882 0.07881
+##      M221     PFAT     P182    P183 P184    P204    P205 P225    P226  VITD
+## 1       0        0        0       0    0       0       0    0       0     0
+## 2 0.00104    3.224  3.05136 0.17264    0       0       0    0       0 1.976
+## 3       0        0        0       0    0       0       0    0       0     0
+## 4       0 0.274815 0.164495 0.11032    0       0       0    0       0     0
+## 5       0        0        0       0    0       0       0    0       0     0
+## 6 0.00777 10.96014  9.55599 1.21545    0 0.14319 0.00444    0 0.03441 1.998
+##     CHOLN VITE_ADD B12_ADD F_TOTAL F_CITMLB F_OTHER F_JUICE V_TOTAL V_DRKGR
+## 1  0.8928        0       0       0        0       0       0       0       0
+## 2  29.952        0   3.016       0        0       0       0       0       0
+## 3   0.231        0       0       0        0       0       0       0       0
+## 4  5.0235        0       0 0.65995  0.65995       0       0       0       0
+## 5       0        0       0       0        0       0       0       0       0
+## 6 268.398        0       0       0        0       0       0       0       0
+##   V_REDOR_TOTAL V_REDOR_TOMATO V_REDOR_OTHER V_STARCHY_TOTAL V_STARCHY_POTATO
+## 1             0              0             0               0                0
+## 2             0              0             0               0                0
+## 3             0              0             0               0                0
+## 4             0              0             0               0                0
+## 5             0              0             0               0                0
+## 6             0              0             0               0                0
+##   V_STARCHY_OTHER V_OTHER V_LEGUMES G_TOTAL G_WHOLE G_REFINED PF_TOTAL
+## 1               0       0         0       0       0         0        0
+## 2               0       0         0  2.7456   2.652    0.0936   0.7384
+## 3               0       0         0       0       0         0        0
+## 4               0       0         0       0       0         0        0
+## 5               0       0         0       0       0         0        0
+## 6               0       0         0       0       0         0   1.8093
+##   PF_MPS_TOTAL PF_MEAT PF_CUREDMEAT PF_ORGAN PF_POULT PF_SEAFD_HI PF_SEAFD_LOW
+## 1            0       0            0        0        0           0            0
+## 2            0       0            0        0        0           0            0
+## 3            0       0            0        0        0           0            0
+## 4            0       0            0        0        0           0            0
+## 5            0       0            0        0        0           0            0
+## 6            0       0            0        0        0           0            0
+##   PF_EGGS PF_SOY PF_NUTSDS PF_LEGUMES D_TOTAL D_MILK D_YOGURT D_CHEESE    OILS
+## 1       0      0         0          0       0      0        0        0       0
+## 2       0      0    0.7384          0       0      0        0        0  6.0736
+## 3       0      0         0          0       0      0        0        0       0
+## 4       0      0         0          0       0      0        0        0       0
+## 5       0      0         0          0       0      0        0        0       0
+## 6  1.8093      0         0          0       0      0        0        0 15.8508
+##   SOLID_FATS ADD_SUGARS A_DRINKS FoodComp
+## 1          0    7.05312        0        1
+## 2          0      3.432        0        1
+## 3          0    2.05275        0        1
+## 4          0          0        0        1
+## 5          0          0        0        1
+## 6     4.8507          0        0        1
+##                                       Main.food.description
+## 1                                            Soft_drink_NFS
+## 2 Cereal_Post_Great_Grains_Double_Pecan_Whole_Grain_Cereal_
+## 3                                                     Honey
+## 4                                        Berries_frozen_NFS
+## 5                                                 Water_tap
+## 6                            Egg_salad_made_with_mayonnaise
+##                                    Old.Main.food.description     FoodID
+## 1                                            Soft drink, NFS 92400000.0
+## 2 Cereal (Post Great Grains Double Pecan Whole Grain Cereal) 57231250.0
+## 3                                                      Honey 91302010.0
+## 4                                       Berries, frozen, NFS 63200200.0
+## 5                                                 Water, tap 94000100.0
+## 6                            Egg salad, made with mayonnaise 32103000.0</code></pre>
+</details>
+<p><br> Ensure your items file has the expected dimensions (number of rows x number of columns, shown as number of obs. and number of variables) in the environment window of R Studio. Or by using dim(items_f_id) and dim(items_raw). Note that items_f_id has 3 more columns than items_raw because new columns of FoodID, Old.Main.food.description, and SampleID have been added.</p>
+<pre class="r"><code>  dim(items_f_id)</code></pre>
+<pre><code>## [1] 779 133</code></pre>
+<pre class="r"><code>  dim(items_raw)</code></pre>
+<pre><code>## [1] 779 130</code></pre>
+<p><br></p>
+</div>
+<div id="use-individuals_to_remove.txt-to-filter-out-users-marked-as-remove-yes" class="section level1">
+<h1>Use <code>individuals_to_remove.txt</code> to filter out users marked as Remove = yes</h1>
+<p>Load your metadata that has information about which UserName(s) to remove.</p>
+<pre class="r"><code>ind_to_rm &lt;- read.delim(&quot;individuals_to_remove.txt&quot;)</code></pre>
+<p>Metadata for this purpose (ind_to_rm) has UserName and which one to be removed.</p>
+<pre class="r"><code>ind_to_rm</code></pre>
+<pre><code>##    UserName Remove
+## 1  VVKAJ101       
+## 2  VVKAJ102       
+## 3  VVKAJ103       
+## 4  VVKAJ104       
+## 5  VVKAJ105       
+## 6  VVKAJ106       
+## 7  VVKAJ107       
+## 8  VVKAJ108       
+## 9  VVKAJ109       
+## 10 VVKAJ110       
+## 11 VVKAJ111       
+## 12 VVKAJ112       
+## 13 VVKAJ113       
+## 14 VVKAJ114       
+## 15 VVKAJ115       
+## 16 VVKAJ116    yes
+## 17 VVKAJ117</code></pre>
+<p>Show which has “yes” in the “Remove” column.</p>
+<pre class="r"><code>subset(ind_to_rm, Remove == &quot;yes&quot;)</code></pre>
+<pre><code>##    UserName Remove
+## 16 VVKAJ116    yes</code></pre>
+<p><br></p>
+<p>As shown in the console, the user named “VVKAJ116” is marked to be removed. VVKAJ116 has only 1 day of data, which may not be complete, thus it is marked as an individual to remove. However, be careful when deleting a datapoint from your study and never remove individuals from the raw dataset, to ensure you can always go back and include them if desired.</p>
+<p>Remove the specified individuals.<br />
+The output will be saved as a text file with the specified name. This assumes the usernames are in UserName column, and will print which user(s) will be removed.</p>
+<pre class="r"><code>RemoveRows(data=items_f_id, metadata.file= ind_to_rm, 
+           output.name= &quot;VVKAJ_Items_f_id_s.txt&quot;)</code></pre>
+<pre><code>## 1 row(s) below are to be removed: 
+##    UserName Remove
+## 16 VVKAJ116    yes</code></pre>
+<p>Load the output for further processing.</p>
+<pre class="r"><code>items_f_id_s &lt;- read.delim(&quot;VVKAJ_Items_f_id_s.txt&quot;, quote=&quot;&quot;, colClasses=&quot;character&quot;)</code></pre>
+<p>Show unique usernames in items_f_id_s and confirm “VVKAJ116” has been removed.</p>
+<pre class="r"><code>unique(items_f_id_s$UserName)  </code></pre>
+<pre><code>##  [1] &quot;VVKAJ101&quot; &quot;VVKAJ102&quot; &quot;VVKAJ103&quot; &quot;VVKAJ104&quot; &quot;VVKAJ105&quot; &quot;VVKAJ106&quot;
+##  [7] &quot;VVKAJ107&quot; &quot;VVKAJ108&quot; &quot;VVKAJ109&quot; &quot;VVKAJ110&quot; &quot;VVKAJ111&quot; &quot;VVKAJ112&quot;
+## [13] &quot;VVKAJ113&quot; &quot;VVKAJ114&quot; &quot;VVKAJ115&quot; &quot;VVKAJ117&quot;</code></pre>
+<p><br></p>
+</div>
+<div id="merge-individuals-metadata-to-items" class="section level1">
+<h1>Merge individuals’ metadata to items</h1>
+<p><code>ind_metadata</code> has the participants’ gender, age, height, weight, BMI, and Waist.Circumference, etc. If desired, this individual-specific information can be added to items data.</p>
+<p><br> Load ind_metadata.txt.</p>
+<pre class="r"><code>ind_metadata &lt;- read.table(&quot;ind_metadata.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Look at what the metadata has.</p>
+<pre class="r"><code>head(ind_metadata)</code></pre>
+<pre><code>##   UserName       Diet Gender Age Weight Height      BMI Waist.Circumference
+## 1 VVKAJ101 Vegetarian      M  31     79    186 22.83501                  80
+## 2 VVKAJ102      Vegan      F  60     73    163 27.47563                  90
+## 3 VVKAJ103       Keto      M  43     81    175 26.44898                  72
+## 4 VVKAJ104   American      F  25     85    169 29.76086                  89
+## 5 VVKAJ105   Japanese      M  71     60    169 21.00767                  75
+## 6 VVKAJ106 Vegetarian      F  53     68    159 26.89767                  85</code></pre>
+<p>This includes information on the removed individual, VVKAJ116, but it will not be used if VVKAJ116 is not in the items data.</p>
+<p>Add this metadata of each participant to totals or items. ‘NA’ will be inserted to UserNames which are not in ind_metadata.</p>
+<pre class="r"><code>items_f_id_s_m &lt;- merge(x=items_f_id_s, y=ind_metadata, by=&quot;UserName&quot;, all.x=T)</code></pre>
+<p>Check that the items data and metadata are merged.</p>
+<pre class="r"><code>head(items_f_id_s_m)</code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##   UserName    SampleID                          RecallRecId
+## 1 VVKAJ101 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9
+## 2 VVKAJ101 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9
+## 3 VVKAJ101 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9
+## 4 VVKAJ101 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9
+## 5 VVKAJ101 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9
+## 6 VVKAJ101 vvkaj.00001 41fee4cf-783f-469b-aadf-62c7e2cd33a9
+##                                 UserID RecallNo RecallAttempt RecallStatus
+## 1 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 2 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 3 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 4 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 5 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+## 6 7bd05142-312e-4648-b1ac-fc258540af52        1             0            2
+##   IntakeStartDateTime IntakeEndDateTime ReportingDate Lang Occ_No
+## 1      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 2      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 3      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 4      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      1
+## 5      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      2
+## 6      11/5/2021 0:00   11/5/2021 23:59     11/6/2021    1      3
+##          Occ_Time Occ_Name EatWith WatchTVuseComputer Location FoodNum FoodType
+## 1  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       1        1
+## 2  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       2        1
+## 3  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       3        2
+## 4  11/5/2021 7:00        1    &lt;NA&gt;               &lt;NA&gt;        1       4        1
+## 5 11/5/2021 10:00        7    &lt;NA&gt;               &lt;NA&gt;        1       5        1
+## 6 11/5/2021 12:00        3    &lt;NA&gt;               &lt;NA&gt;        1       6        1
+##   FoodSrce CodeNum FoodCode ModCode HowMany SubCode PortionCode FoodAmt    KCAL
+## 1     &lt;NA&gt;       1 92400000       0     9.6       0       30001   297.6 124.992
+## 2     &lt;NA&gt;       2 57231250       0       1       0       10205     104  419.12
+## 3     &lt;NA&gt;       3 91302010       0     0.5       0       21000    10.5   31.92
+## 4     &lt;NA&gt;       4 63200200       0     0.5       0       10205    98.5  50.235
+## 5     &lt;NA&gt;       5 94000100       0     8.4       0       30000     252       0
+## 6     &lt;NA&gt;       6 32103000       0     0.5       0       10205     111  285.27
+##      PROT    TFAT     CARB      MOIS ALC   CAFF THEO     SUGR   FIBE  CALC
+## 1       0   0.744 30.83136 265.93536   0 26.784    0 29.58144      0 2.976
+## 2    9.36   10.92    75.92     5.408   0      0    0   16.016 10.088 40.56
+## 3  0.0315       0    8.652    1.7955   0      0    0   8.6226  0.021  0.63
+## 4  0.4137  0.6304 11.98745  85.29115   0      0    0  8.32325 2.6595  7.88
+## 5       0       0        0   251.748   0      0    0        0      0  7.56
+## 6 11.3886 25.6854   1.1211   70.9956   0      0    0   1.1211      0 46.62
+##      IRON   MAGN   PHOS   POTA   SODI    ZINC     COPP   SELE     VC     VB1
+## 1 0.05952      0 26.784  14.88  8.928 0.26784 0.020832 0.2976      0       0
+## 2  17.992 101.92 307.84 350.48 298.48   2.392    0.416 43.472  0.208   0.728
+## 3  0.0441   0.21   0.42   5.46   0.42  0.0231  0.00378  0.084 0.0525       0
+## 4  0.1773  4.925 10.835  53.19  0.985 0.06895 0.032505 0.0985 2.4625 0.03152
+## 5       0   2.52      0      0  10.08  0.0252   0.0252      0      0       0
+## 6    1.11   8.88 157.62 116.55 420.69  0.9657  0.01554 27.861      0 0.06105
+##        VB2     NIAC      VB6   FOLA     FA    FF   FDFE   VB12   VARA    RET
+## 1        0        0        0      0      0     0      0      0      0      0
+## 2    0.832    9.984     1.04 199.68 179.92 19.76 326.56  3.016  447.2  447.2
+## 3  0.00399 0.012705  0.00252   0.21      0  0.21   0.21      0      0      0
+## 4 0.036445   0.5122 0.058115  6.895      0 6.895  6.895      0   1.97      0
+## 5        0        0        0      0      0     0      0      0      0      0
+## 6  0.45954  0.05661  0.10878  39.96      0 39.96  39.96 1.0101 135.42 134.31
+##    BCAR ACAR CRYP LYCO     LZ   ATOC     VK  CHOLE     SFAT S040 S060    S080
+## 1     0    0    0    0      0      0      0      0        0    0    0       0
+## 2   5.2    0 1.04    0 142.48 0.7696  2.288      0     1.04    0    0       0
+## 3     0    0    0    0      0      0      0      0        0    0    0       0
+## 4 27.58    0    0    0  66.98 0.4728 16.154      0 0.052205    0    0       0
+## 5     0    0    0    0      0      0      0      0        0    0    0       0
+## 6  11.1    0 9.99    0 316.35 1.6317 35.631 340.77  5.44344    0    0 0.00222
+##      S100    S120    S140     S160     S180     MFAT    M161     M181    M201
+## 1       0       0       0        0        0        0       0        0       0
+## 2       0 0.00208 0.00208  0.80392  0.20592    6.032 0.00312  5.98936 0.03744
+## 3       0       0       0        0        0        0       0        0       0
+## 4       0       0       0 0.030535 0.010835 0.089635 0.00197 0.085695       0
+## 5       0       0       0        0        0        0       0        0       0
+## 6 0.00222 0.00222 0.04329  3.80397  1.40859  7.27938 0.29415    6.882 0.07881
+##      M221     PFAT     P182    P183 P184    P204    P205 P225    P226  VITD
+## 1       0        0        0       0    0       0       0    0       0     0
+## 2 0.00104    3.224  3.05136 0.17264    0       0       0    0       0 1.976
+## 3       0        0        0       0    0       0       0    0       0     0
+## 4       0 0.274815 0.164495 0.11032    0       0       0    0       0     0
+## 5       0        0        0       0    0       0       0    0       0     0
+## 6 0.00777 10.96014  9.55599 1.21545    0 0.14319 0.00444    0 0.03441 1.998
+##     CHOLN VITE_ADD B12_ADD F_TOTAL F_CITMLB F_OTHER F_JUICE V_TOTAL V_DRKGR
+## 1  0.8928        0       0       0        0       0       0       0       0
+## 2  29.952        0   3.016       0        0       0       0       0       0
+## 3   0.231        0       0       0        0       0       0       0       0
+## 4  5.0235        0       0 0.65995  0.65995       0       0       0       0
+## 5       0        0       0       0        0       0       0       0       0
+## 6 268.398        0       0       0        0       0       0       0       0
+##   V_REDOR_TOTAL V_REDOR_TOMATO V_REDOR_OTHER V_STARCHY_TOTAL V_STARCHY_POTATO
+## 1             0              0             0               0                0
+## 2             0              0             0               0                0
+## 3             0              0             0               0                0
+## 4             0              0             0               0                0
+## 5             0              0             0               0                0
+## 6             0              0             0               0                0
+##   V_STARCHY_OTHER V_OTHER V_LEGUMES G_TOTAL G_WHOLE G_REFINED PF_TOTAL
+## 1               0       0         0       0       0         0        0
+## 2               0       0         0  2.7456   2.652    0.0936   0.7384
+## 3               0       0         0       0       0         0        0
+## 4               0       0         0       0       0         0        0
+## 5               0       0         0       0       0         0        0
+## 6               0       0         0       0       0         0   1.8093
+##   PF_MPS_TOTAL PF_MEAT PF_CUREDMEAT PF_ORGAN PF_POULT PF_SEAFD_HI PF_SEAFD_LOW
+## 1            0       0            0        0        0           0            0
+## 2            0       0            0        0        0           0            0
+## 3            0       0            0        0        0           0            0
+## 4            0       0            0        0        0           0            0
+## 5            0       0            0        0        0           0            0
+## 6            0       0            0        0        0           0            0
+##   PF_EGGS PF_SOY PF_NUTSDS PF_LEGUMES D_TOTAL D_MILK D_YOGURT D_CHEESE    OILS
+## 1       0      0         0          0       0      0        0        0       0
+## 2       0      0    0.7384          0       0      0        0        0  6.0736
+## 3       0      0         0          0       0      0        0        0       0
+## 4       0      0         0          0       0      0        0        0       0
+## 5       0      0         0          0       0      0        0        0       0
+## 6  1.8093      0         0          0       0      0        0        0 15.8508
+##   SOLID_FATS ADD_SUGARS A_DRINKS FoodComp
+## 1          0    7.05312        0        1
+## 2          0      3.432        0        1
+## 3          0    2.05275        0        1
+## 4          0          0        0        1
+## 5          0          0        0        1
+## 6     4.8507          0        0        1
+##                                       Main.food.description
+## 1                                            Soft_drink_NFS
+## 2 Cereal_Post_Great_Grains_Double_Pecan_Whole_Grain_Cereal_
+## 3                                                     Honey
+## 4                                        Berries_frozen_NFS
+## 5                                                 Water_tap
+## 6                            Egg_salad_made_with_mayonnaise
+##                                    Old.Main.food.description     FoodID
+## 1                                            Soft drink, NFS 92400000.0
+## 2 Cereal (Post Great Grains Double Pecan Whole Grain Cereal) 57231250.0
+## 3                                                      Honey 91302010.0
+## 4                                       Berries, frozen, NFS 63200200.0
+## 5                                                 Water, tap 94000100.0
+## 6                            Egg salad, made with mayonnaise 32103000.0
+##         Diet Gender Age Weight Height      BMI Waist.Circumference
+## 1 Vegetarian      M  31     79    186 22.83501                  80
+## 2 Vegetarian      M  31     79    186 22.83501                  80
+## 3 Vegetarian      M  31     79    186 22.83501                  80
+## 4 Vegetarian      M  31     79    186 22.83501                  80
+## 5 Vegetarian      M  31     79    186 22.83501                  80
+## 6 Vegetarian      M  31     79    186 22.83501                  80</code></pre>
+</details>
+<p><br></p>
+<p>Furthermore, as a quick way to look at the metadata of only the selected individuals, you can subset the metadata to just the usernames present in the analysis dataset (items_f_id_s) using the <code>%in%</code> operator.</p>
+<pre class="r"><code>ind_metadata_s &lt;- ind_metadata[ind_metadata$UserName %in% items_f_id_s$UserName, ] </code></pre>
+<p>Use the tail function to show the last six rows of ind_metadata_s. You can see that the last individual in this metadata is now VVKAJ117, and that VVKAJ116, which was not in items_f_id_s, has been omitted.</p>
+<pre class="r"><code>tail(ind_metadata_s)</code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##    UserName       Diet Gender Age  Weight Height      BMI Waist.Circumference
+## 11 VVKAJ111 Vegetarian      M  60 74.9000  164.1 27.81408                78.0
+## 12 VVKAJ112      Vegan      F  48 69.8992  158.0 28.00000                95.5
+## 13 VVKAJ113       Keto      M  43 80.0000  183.0 23.88844                98.0
+## 14 VVKAJ114   American      F  62 90.7235  161.0 35.00000               110.0
+## 15 VVKAJ115   Japanese      M  22 69.6348  174.0 23.00000                70.0
+## 17 VVKAJ117      error      M  23 76.0000  175.0 24.81633                80.0</code></pre>
+</details>
+<p><br></p>
+<p>Save the merged dataframe as a .txt file.</p>
+<pre class="r"><code>write.table(items_f_id_s_m, &quot;VVKAJ_Items_f_id_s_m.txt&quot;, sep=&quot;\t&quot;, row.names=F, quote=F)</code></pre>
+<p><br></p>
+</div>
+<div id="generate-new-totals-file-from-the-items-file" class="section level1">
+<h1>Generate new totals file from the items file</h1>
+<p>Use one of the input files saved above as an input for calculating totals for. Specify which columns have usernames and Recall.No., which has the recorded days.</p>
+<pre class="r"><code>GenerateTotals(inputfn =   &quot;VVKAJ_Items_f_id_s_m.txt&quot;, 
+               User.Name = &quot;UserName&quot;, 
+               Recall.No = &quot;RecallNo&quot;,
+               outfn =     &quot;VVKAJ_Tot.txt&quot;)</code></pre>
+<p>Load the total file generated above.</p>
+<pre class="r"><code>new_totals &lt;- read.table(&quot;VVKAJ_Tot.txt&quot;, header=T, sep=&quot;\t&quot;)</code></pre>
+<p>The number of rows should be {No. of users x No. days}. For the example data, 16 users x 3 days = 48 rows (observations).</p>
+<pre class="r"><code>nrow(new_totals) </code></pre>
+<pre><code>## [1] 48</code></pre>
+<p>View the new_totals.</p>
+<pre class="r"><code>head(new_totals)</code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##     User_Day UserName RecallNo  FoodAmt      KCAL     PROT     TFAT     CARB
+## 1 VVKAJ101_1 VVKAJ101        1 2402.500 2314.9040 80.15720 82.97721 337.7973
+## 2 VVKAJ101_2 VVKAJ101        2 1671.650  913.5955 35.13461 37.42791 118.5702
+## 3 VVKAJ101_3 VVKAJ101        3 1920.588 1604.8050 48.29881 70.08057 215.7318
+## 4 VVKAJ102_1 VVKAJ102        1 1957.475 1440.1995 38.54926 80.38863 152.8296
+## 5 VVKAJ102_2 VVKAJ102        2 1858.067 1508.9957 46.25199 56.89753 212.5225
+## 6 VVKAJ102_3 VVKAJ102        3 2049.400 1834.2306 58.89500 87.53381 211.8413
+##       MOIS ALC   CAFF THEO      SUGR     FIBE      CALC      IRON     MAGN
+## 1 1879.619   0 26.784 0.00 144.20847 52.62550  889.8455 31.282000 589.3865
+## 2 1467.035   0 76.800 0.00  47.67748 21.04413  619.2521  7.366001 273.2332
+## 3 1572.133   0 30.240 3.36 111.81870 23.27856 1427.6826 14.628896 320.9569
+## 4 1669.286   0 50.400 5.04  25.75794 33.90378  912.4538 11.797247 284.4450
+## 5 1521.262   0 22.680 2.52  55.29288 31.25067 1144.7673 14.180575 366.8420
+## 6 1666.272   0  0.000 0.00  31.41001 29.35169  700.0389 14.009471 373.1694
+##        PHOS     POTA     SODI      ZINC     COPP      SELE       VC      VB1
+## 1 1787.4540 4615.400 2298.662 11.776515 1.935984 113.91525 209.0321 1.882480
+## 2  794.2740 2093.175 1058.073  5.470231 1.325496  58.42284 147.7427 0.983826
+## 3 1249.7137 2571.690 2069.723  8.953749 1.565804  83.81562 137.9377 1.316055
+## 4  808.2387 2974.354 2550.088  5.641533 1.278044  42.76070 179.4785 1.137953
+## 5 1043.4290 4686.336 2840.423  6.408068 1.427889  38.26618 157.1404 2.909776
+## 6 1164.2706 4653.953 4285.981  6.745011 2.066325  72.05487 117.7118 4.570952
+##         VB2     NIAC      VB6     FOLA      FA       FF      FDFE     VB12
+## 1 2.9713065 18.72793 3.829823 719.3660 179.920 539.4460  846.2460  5.17202
+## 2 1.2894892 12.24912 1.386882 372.7493  85.070 287.6793  432.4393  2.23350
+## 3 2.0125987 14.49594 4.120610 918.5919 601.800 316.7919 1340.1919 13.23145
+## 4 0.9494982 10.92889 1.637870 459.3215  52.025 410.3265  495.5415  1.80990
+## 5 1.3127483 13.76033 2.560617 534.1780  20.200 515.9980  548.3180  3.97461
+## 6 1.2672856 18.25922 2.540221 506.4956  26.700 481.8156  525.2356  3.70270
+##        VARA      RET      BCAR      ACAR      CRYP     LYCO        LZ      ATOC
+## 1 1261.6665 673.1850  7004.547  106.7165  56.11800   13.350 14273.582  9.851310
+## 2 1412.8761  82.3500 13464.676 4921.4081  81.65188 1174.626  2444.209  4.628156
+## 3 1111.7093 504.9250  6476.761 1614.4750  19.37550    4.704  5437.084 16.765260
+## 4  310.6182 165.1115  1551.208  344.1073  68.67350 7582.125  1340.894 18.987955
+## 5 1265.3238 222.6810 10784.821 3226.1183 198.74500 3380.685  4032.658 16.267538
+## 6  344.2824 144.1200  2307.391  143.9169  12.66863 3374.064  3388.637  9.870323
+##         VK   CHOLE      SFAT     S040       S060      S080      S100       S120
+## 1 674.6513 375.967 18.696057 0.310902 0.11065100 0.1176030 0.2303450 0.18606100
+## 2 176.1320  18.300  8.035444 0.137250 0.13725000 0.1401794 0.1440906 0.16560063
+## 3 356.2514  64.265 21.762310 0.461520 0.35581000 0.6559880 0.7907570 3.08172600
+## 4 193.4643  63.277 12.393455 0.063991 0.04301325 0.0834395 0.1062550 0.06083225
+## 5 271.3043  53.980 10.073571 0.086720 0.06900500 0.2074300 0.2042550 0.43357300
+## 6 270.4181  65.830 17.110502 0.318160 0.16680000 0.2767274 0.3239814 0.26321963
+##        S140      S160     S180     MFAT      M161     M181      M201       M221
+## 1 1.2467585 11.448329 4.130060 28.14091 0.7393160 26.99568 0.2349650 0.00881000
+## 2 0.5821610  4.955292 1.532696 15.32206 0.3639200 14.79923 0.1110759 0.00346125
+## 3 2.6981170  9.237105 3.415553 24.67066 0.4838810 23.65191 0.1867220 0.00864600
+## 4 0.1955330  8.961791 2.439567 34.62131 0.9667318 33.33719 0.2755755 0.00450000
+## 5 0.5196547  6.309740 1.897680 22.20331 0.4462590 21.47338 0.2112680 0.02609700
+## 6 0.8637470 10.355075 3.764050 33.49530 0.3996655 32.60066 0.3411139 0.00658725
+##       PFAT      P182     P183 P184     P204    P205    P225    P226      VITD
+## 1 28.95861 25.201469 3.525870    0 0.157937 0.00444 0.00000 0.03441  4.881200
+## 2 10.24234  9.135821 1.092069    0 0.001315 0.00000 0.00000 0.00000  2.379000
+## 3 18.75467 16.930229 1.803171    0 0.006573 0.00000 0.00000 0.00000 10.193000
+## 4 28.41416 24.796558 3.534361    0 0.038890 0.00000 0.00000 0.00909  3.375425
+## 5 20.44748 17.914195 2.412754    0 0.026967 0.00000 0.00000 0.01881  4.985000
+## 6 31.17042 27.616109 3.344330    0 0.038623 0.00032 0.00208 0.00670  2.102000
+##      CHOLN VITE_ADD  B12_ADD  F_TOTAL F_CITMLB  F_OTHER F_JUICE  V_TOTAL
+## 1 572.5637  0.00000  3.01600 4.037445  0.65995 3.035495  0.3420 3.656365
+## 2 143.2537  0.00000  1.41000 0.640500  0.30625 0.323750  0.0105 2.727494
+## 3 195.7137  8.34700 10.79370 1.530100  1.01160 0.505000  0.0135 1.906206
+## 4 182.4953  6.85640  1.53720 0.000000  0.00000 0.000000  0.0000 4.280535
+## 5 212.2748  7.19922  3.21321 0.000000  0.00000 0.000000  0.0000 7.783067
+## 6 219.7563  0.00000  2.83410 0.000000  0.00000 0.000000  0.0000 7.084731
+##     V_DRKGR V_REDOR_TOTAL V_REDOR_TOMATO V_REDOR_OTHER V_STARCHY_TOTAL
+## 1 1.6658400      0.000000        0.00000      0.000000       0.0000000
+## 2 0.4840000      1.177100        0.04860      1.128500       0.0000000
+## 3 1.0143750      0.300500        0.00000      0.300500       0.0000000
+## 4 0.0099900      1.485350        1.48535      0.000000       0.1288625
+## 5 0.6186667      1.857575        0.84840      1.009175       3.3200000
+## 6 0.7412500      0.848400        0.84840      0.000000       4.6146000
+##   V_STARCHY_POTATO V_STARCHY_OTHER   V_OTHER V_LEGUMES G_TOTAL G_WHOLE
+## 1           0.0000       0.0000000 1.9905250  1.256750  5.4384  2.6520
+## 2           0.0000       0.0000000 1.0663938  0.105000  2.6500  1.7669
+## 3           0.0000       0.0000000 0.5913312  0.135000  4.4072  4.2542
+## 4           0.0000       0.1288625 2.6563325  1.085300  5.0421  1.5522
+## 5           3.3200       0.0000000 1.9868250  0.285000  2.2405  1.0285
+## 6           4.6146       0.0000000 0.8804812  0.192375  1.6050  0.0000
+##   G_REFINED PF_TOTAL PF_MPS_TOTAL PF_MEAT PF_CUREDMEAT PF_ORGAN PF_POULT
+## 1    2.7864 3.111700       0.0000       0       0.0000        0        0
+## 2    0.8831 3.316731       0.0000       0       0.0000        0        0
+## 3    0.1530 2.501000       0.0000       0       0.0000        0        0
+## 4    3.4899 0.644600       0.0000       0       0.0000        0        0
+## 5    1.2120 2.226680       0.0000       0       0.0000        0        0
+## 6    1.6050 4.697931       0.2016       0       0.2016        0        0
+##   PF_SEAFD_HI PF_SEAFD_LOW PF_EGGS PF_SOY PF_NUTSDS PF_LEGUMES D_TOTAL  D_MILK
+## 1           0            0  1.8093 0.0000 1.3024000   4.935150 1.34064 0.21168
+## 2           0            0  0.0000 1.9200 1.3967312   0.420000 0.75030 0.75030
+## 3           0            0  0.0000 0.0000 2.5010000   0.540000 2.39525 0.88850
+## 4           0            0  0.3030 0.0000 0.3416000   4.351050 0.15150 0.15150
+## 5           0            0  0.2020 1.6660 0.3586800   1.155000 0.57980 0.57980
+## 6           0            0  0.2020 3.3558 0.9385313   0.772875 0.70760 0.58900
+##   D_YOGURT D_CHEESE     OILS SOLID_FATS ADD_SUGARS A_DRINKS
+## 1  0.00000   0.5544 46.76440  14.582140   12.53787        0
+## 2  0.00000   0.0000 19.10275   4.932700    3.95306        0
+## 3  1.50675   0.0000 36.48778  18.798000   10.32484        0
+## 4  0.00000   0.0000 69.07104   2.439577    1.72710        0
+## 5  0.00000   0.0000 44.07012   3.130800    5.21406        0
+## 6  0.00000   0.0140 65.58897   9.271000    0.80064        0</code></pre>
+</details>
+<p><br></p>
+</div>
+<div id="add-the-participants-metadata-back-to-totals" class="section level1">
+<h1>Add the participants’ metadata back to totals</h1>
+<p>Load ind_metadata.txt if you have not done so.</p>
+<pre class="r"><code>ind_metadata &lt;- read.table(&quot;ind_metadata.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Add this metadata of each participant to totals.’NA’ will be inserted to UserNames which are not in ind_metadata.</p>
+<pre class="r"><code>new_totals_m &lt;- merge(x=new_totals, y=ind_metadata, by=&quot;UserName&quot;, all.x=T)</code></pre>
+<p>Check that the items data and metadata are merged.</p>
+<pre class="r"><code>head(new_totals_m)</code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##   UserName   User_Day RecallNo  FoodAmt      KCAL     PROT     TFAT     CARB
+## 1 VVKAJ101 VVKAJ101_1        1 2402.500 2314.9040 80.15720 82.97721 337.7973
+## 2 VVKAJ101 VVKAJ101_2        2 1671.650  913.5955 35.13461 37.42791 118.5702
+## 3 VVKAJ101 VVKAJ101_3        3 1920.588 1604.8050 48.29881 70.08057 215.7318
+## 4 VVKAJ102 VVKAJ102_1        1 1957.475 1440.1995 38.54926 80.38863 152.8296
+## 5 VVKAJ102 VVKAJ102_2        2 1858.067 1508.9957 46.25199 56.89753 212.5225
+## 6 VVKAJ102 VVKAJ102_3        3 2049.400 1834.2306 58.89500 87.53381 211.8413
+##       MOIS ALC   CAFF THEO      SUGR     FIBE      CALC      IRON     MAGN
+## 1 1879.619   0 26.784 0.00 144.20847 52.62550  889.8455 31.282000 589.3865
+## 2 1467.035   0 76.800 0.00  47.67748 21.04413  619.2521  7.366001 273.2332
+## 3 1572.133   0 30.240 3.36 111.81870 23.27856 1427.6826 14.628896 320.9569
+## 4 1669.286   0 50.400 5.04  25.75794 33.90378  912.4538 11.797247 284.4450
+## 5 1521.262   0 22.680 2.52  55.29288 31.25067 1144.7673 14.180575 366.8420
+## 6 1666.272   0  0.000 0.00  31.41001 29.35169  700.0389 14.009471 373.1694
+##        PHOS     POTA     SODI      ZINC     COPP      SELE       VC      VB1
+## 1 1787.4540 4615.400 2298.662 11.776515 1.935984 113.91525 209.0321 1.882480
+## 2  794.2740 2093.175 1058.073  5.470231 1.325496  58.42284 147.7427 0.983826
+## 3 1249.7137 2571.690 2069.723  8.953749 1.565804  83.81562 137.9377 1.316055
+## 4  808.2387 2974.354 2550.088  5.641533 1.278044  42.76070 179.4785 1.137953
+## 5 1043.4290 4686.336 2840.423  6.408068 1.427889  38.26618 157.1404 2.909776
+## 6 1164.2706 4653.953 4285.981  6.745011 2.066325  72.05487 117.7118 4.570952
+##         VB2     NIAC      VB6     FOLA      FA       FF      FDFE     VB12
+## 1 2.9713065 18.72793 3.829823 719.3660 179.920 539.4460  846.2460  5.17202
+## 2 1.2894892 12.24912 1.386882 372.7493  85.070 287.6793  432.4393  2.23350
+## 3 2.0125987 14.49594 4.120610 918.5919 601.800 316.7919 1340.1919 13.23145
+## 4 0.9494982 10.92889 1.637870 459.3215  52.025 410.3265  495.5415  1.80990
+## 5 1.3127483 13.76033 2.560617 534.1780  20.200 515.9980  548.3180  3.97461
+## 6 1.2672856 18.25922 2.540221 506.4956  26.700 481.8156  525.2356  3.70270
+##        VARA      RET      BCAR      ACAR      CRYP     LYCO        LZ      ATOC
+## 1 1261.6665 673.1850  7004.547  106.7165  56.11800   13.350 14273.582  9.851310
+## 2 1412.8761  82.3500 13464.676 4921.4081  81.65188 1174.626  2444.209  4.628156
+## 3 1111.7093 504.9250  6476.761 1614.4750  19.37550    4.704  5437.084 16.765260
+## 4  310.6182 165.1115  1551.208  344.1073  68.67350 7582.125  1340.894 18.987955
+## 5 1265.3238 222.6810 10784.821 3226.1183 198.74500 3380.685  4032.658 16.267538
+## 6  344.2824 144.1200  2307.391  143.9169  12.66863 3374.064  3388.637  9.870323
+##         VK   CHOLE      SFAT     S040       S060      S080      S100       S120
+## 1 674.6513 375.967 18.696057 0.310902 0.11065100 0.1176030 0.2303450 0.18606100
+## 2 176.1320  18.300  8.035444 0.137250 0.13725000 0.1401794 0.1440906 0.16560063
+## 3 356.2514  64.265 21.762310 0.461520 0.35581000 0.6559880 0.7907570 3.08172600
+## 4 193.4643  63.277 12.393455 0.063991 0.04301325 0.0834395 0.1062550 0.06083225
+## 5 271.3043  53.980 10.073571 0.086720 0.06900500 0.2074300 0.2042550 0.43357300
+## 6 270.4181  65.830 17.110502 0.318160 0.16680000 0.2767274 0.3239814 0.26321963
+##        S140      S160     S180     MFAT      M161     M181      M201       M221
+## 1 1.2467585 11.448329 4.130060 28.14091 0.7393160 26.99568 0.2349650 0.00881000
+## 2 0.5821610  4.955292 1.532696 15.32206 0.3639200 14.79923 0.1110759 0.00346125
+## 3 2.6981170  9.237105 3.415553 24.67066 0.4838810 23.65191 0.1867220 0.00864600
+## 4 0.1955330  8.961791 2.439567 34.62131 0.9667318 33.33719 0.2755755 0.00450000
+## 5 0.5196547  6.309740 1.897680 22.20331 0.4462590 21.47338 0.2112680 0.02609700
+## 6 0.8637470 10.355075 3.764050 33.49530 0.3996655 32.60066 0.3411139 0.00658725
+##       PFAT      P182     P183 P184     P204    P205    P225    P226      VITD
+## 1 28.95861 25.201469 3.525870    0 0.157937 0.00444 0.00000 0.03441  4.881200
+## 2 10.24234  9.135821 1.092069    0 0.001315 0.00000 0.00000 0.00000  2.379000
+## 3 18.75467 16.930229 1.803171    0 0.006573 0.00000 0.00000 0.00000 10.193000
+## 4 28.41416 24.796558 3.534361    0 0.038890 0.00000 0.00000 0.00909  3.375425
+## 5 20.44748 17.914195 2.412754    0 0.026967 0.00000 0.00000 0.01881  4.985000
+## 6 31.17042 27.616109 3.344330    0 0.038623 0.00032 0.00208 0.00670  2.102000
+##      CHOLN VITE_ADD  B12_ADD  F_TOTAL F_CITMLB  F_OTHER F_JUICE  V_TOTAL
+## 1 572.5637  0.00000  3.01600 4.037445  0.65995 3.035495  0.3420 3.656365
+## 2 143.2537  0.00000  1.41000 0.640500  0.30625 0.323750  0.0105 2.727494
+## 3 195.7137  8.34700 10.79370 1.530100  1.01160 0.505000  0.0135 1.906206
+## 4 182.4953  6.85640  1.53720 0.000000  0.00000 0.000000  0.0000 4.280535
+## 5 212.2748  7.19922  3.21321 0.000000  0.00000 0.000000  0.0000 7.783067
+## 6 219.7563  0.00000  2.83410 0.000000  0.00000 0.000000  0.0000 7.084731
+##     V_DRKGR V_REDOR_TOTAL V_REDOR_TOMATO V_REDOR_OTHER V_STARCHY_TOTAL
+## 1 1.6658400      0.000000        0.00000      0.000000       0.0000000
+## 2 0.4840000      1.177100        0.04860      1.128500       0.0000000
+## 3 1.0143750      0.300500        0.00000      0.300500       0.0000000
+## 4 0.0099900      1.485350        1.48535      0.000000       0.1288625
+## 5 0.6186667      1.857575        0.84840      1.009175       3.3200000
+## 6 0.7412500      0.848400        0.84840      0.000000       4.6146000
+##   V_STARCHY_POTATO V_STARCHY_OTHER   V_OTHER V_LEGUMES G_TOTAL G_WHOLE
+## 1           0.0000       0.0000000 1.9905250  1.256750  5.4384  2.6520
+## 2           0.0000       0.0000000 1.0663938  0.105000  2.6500  1.7669
+## 3           0.0000       0.0000000 0.5913312  0.135000  4.4072  4.2542
+## 4           0.0000       0.1288625 2.6563325  1.085300  5.0421  1.5522
+## 5           3.3200       0.0000000 1.9868250  0.285000  2.2405  1.0285
+## 6           4.6146       0.0000000 0.8804812  0.192375  1.6050  0.0000
+##   G_REFINED PF_TOTAL PF_MPS_TOTAL PF_MEAT PF_CUREDMEAT PF_ORGAN PF_POULT
+## 1    2.7864 3.111700       0.0000       0       0.0000        0        0
+## 2    0.8831 3.316731       0.0000       0       0.0000        0        0
+## 3    0.1530 2.501000       0.0000       0       0.0000        0        0
+## 4    3.4899 0.644600       0.0000       0       0.0000        0        0
+## 5    1.2120 2.226680       0.0000       0       0.0000        0        0
+## 6    1.6050 4.697931       0.2016       0       0.2016        0        0
+##   PF_SEAFD_HI PF_SEAFD_LOW PF_EGGS PF_SOY PF_NUTSDS PF_LEGUMES D_TOTAL  D_MILK
+## 1           0            0  1.8093 0.0000 1.3024000   4.935150 1.34064 0.21168
+## 2           0            0  0.0000 1.9200 1.3967312   0.420000 0.75030 0.75030
+## 3           0            0  0.0000 0.0000 2.5010000   0.540000 2.39525 0.88850
+## 4           0            0  0.3030 0.0000 0.3416000   4.351050 0.15150 0.15150
+## 5           0            0  0.2020 1.6660 0.3586800   1.155000 0.57980 0.57980
+## 6           0            0  0.2020 3.3558 0.9385313   0.772875 0.70760 0.58900
+##   D_YOGURT D_CHEESE     OILS SOLID_FATS ADD_SUGARS A_DRINKS       Diet Gender
+## 1  0.00000   0.5544 46.76440  14.582140   12.53787        0 Vegetarian      M
+## 2  0.00000   0.0000 19.10275   4.932700    3.95306        0 Vegetarian      M
+## 3  1.50675   0.0000 36.48778  18.798000   10.32484        0 Vegetarian      M
+## 4  0.00000   0.0000 69.07104   2.439577    1.72710        0      Vegan      F
+## 5  0.00000   0.0000 44.07012   3.130800    5.21406        0      Vegan      F
+## 6  0.00000   0.0140 65.58897   9.271000    0.80064        0      Vegan      F
+##   Age Weight Height      BMI Waist.Circumference
+## 1  31     79    186 22.83501                  80
+## 2  31     79    186 22.83501                  80
+## 3  31     79    186 22.83501                  80
+## 4  60     73    163 27.47563                  90
+## 5  60     73    163 27.47563                  90
+## 6  60     73    163 27.47563                  90</code></pre>
+</details>
+<p><br></p>
+<p>Save the merged dataframe as a .txt file.</p>
+<pre class="r"><code>write.table(new_totals_m, &quot;VVKAJ_Tot_m.txt&quot;, sep=&quot;\t&quot;, row.names=F, quote=F)</code></pre>
+<p><br></p>
+</div>
+<div id="calculate-the-mean-of-totalsparticipant" class="section level1">
+<h1>Calculate the mean of totals/participant</h1>
+<p>Calculate the mean of the totals data across all the days for each participant.</p>
+<pre class="r"><code>AverageBy(data= new_totals, by= &quot;UserName&quot;, start.col= &quot;FoodAmt&quot;, end.col= &quot;A_DRINKS&quot;,
+          outfn=&quot;VVKAJ_Tot_mean.txt&quot;)</code></pre>
+<p>Load the output for further processing.</p>
+<pre class="r"><code>new_totals_mean &lt;- read.table(&quot;VVKAJ_Tot_mean.txt&quot;, header=T, sep=&quot;\t&quot;)</code></pre>
+<p>The number of rows should be equal to the number of users. This example data has 16 users, so there should be 16 rows of mean totals.</p>
+<pre class="r"><code>nrow(new_totals_mean)</code></pre>
+<pre><code>## [1] 16</code></pre>
+<p><br></p>
+</div>
+<div id="add-the-participants-metadata-to-the-mean-totals" class="section level1">
+<h1>Add the participants’ metadata to the mean totals</h1>
+<p>Load ind_metadata.txt if you have not done so.</p>
+<pre class="r"><code>ind_metadata &lt;- read.table(&quot;ind_metadata.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Add this metadata of each participant in the mean totals. ‘NA’ will be inserted to UserNames which are not in ind_metadata.</p>
+<pre class="r"><code>new_totals_mean_m &lt;- merge(x=new_totals_mean, y=ind_metadata, by=&quot;UserName&quot;, all.x=T)</code></pre>
+<p><br></p>
+</div>
+<div id="check-that-the-mean-totals-and-the-users-metadata-are-merged." class="section level1">
+<h1>Check that the mean totals and the users’ metadata are merged.</h1>
+<pre class="r"><code>head(new_totals_mean_m, 1)</code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##   UserName  FoodAmt     KCAL    PROT     TFAT     CARB     MOIS ALC   CAFF THEO
+## 1 VVKAJ101 1998.246 1611.101 54.5302 63.49523 224.0331 1639.596   0 44.608 1.12
+##       SUGR     FIBE     CALC     IRON     MAGN     PHOS     POTA     SODI
+## 1 101.2349 32.31606 978.9267 17.75897 394.5255 1277.147 3093.422 1808.819
+##       ZINC     COPP     SELE       VC     VB1      VB2     NIAC      VB6
+## 1 8.733498 1.609095 85.38457 164.9042 1.39412 2.091131 15.15766 3.112438
+##       FOLA     FA       FF    FDFE    VB12     VARA      RET     BCAR   ACAR
+## 1 670.2357 288.93 381.3057 872.959 6.87899 1262.084 420.1533 8981.995 2214.2
+##       CRYP     LYCO       LZ     ATOC       VK   CHOLE    SFAT     S040
+## 1 52.38179 397.5601 7384.958 10.41491 402.3449 152.844 16.1646 0.303224
+##       S060      S080      S100     S120     S140     S160     S180     MFAT
+## 1 0.201237 0.3045901 0.3883975 1.144463 1.509012 8.546908 3.026103 22.71121
+##       M161     M181      M201        M221     PFAT     P182    P183 P184
+## 1 0.529039 21.81561 0.1775876 0.006972417 19.31854 17.08917 2.14037    0
+##       P204    P205 P225    P226     VITD    CHOLN VITE_ADD  B12_ADD  F_TOTAL
+## 1 0.055275 0.00148    0 0.01147 5.817733 303.8437 2.782333 5.073233 2.069348
+##    F_CITMLB  F_OTHER F_JUICE  V_TOTAL  V_DRKGR V_REDOR_TOTAL V_REDOR_TOMATO
+## 1 0.6592667 1.288082   0.122 2.763355 1.054738     0.4925333         0.0162
+##   V_REDOR_OTHER V_STARCHY_TOTAL V_STARCHY_POTATO V_STARCHY_OTHER  V_OTHER
+## 1     0.4763333               0                0               0 1.216083
+##   V_LEGUMES G_TOTAL  G_WHOLE G_REFINED PF_TOTAL PF_MPS_TOTAL PF_MEAT
+## 1 0.4989167  4.1652 2.891033  1.274167 2.976477            0       0
+##   PF_CUREDMEAT PF_ORGAN PF_POULT PF_SEAFD_HI PF_SEAFD_LOW PF_EGGS PF_SOY
+## 1            0        0        0           0            0  0.6031   0.64
+##   PF_NUTSDS PF_LEGUMES  D_TOTAL    D_MILK D_YOGURT D_CHEESE     OILS SOLID_FATS
+## 1  1.733377    1.96505 1.495397 0.6168267  0.50225   0.1848 34.11831   12.77095
+##   ADD_SUGARS A_DRINKS       Diet Gender Age Weight Height      BMI
+## 1    8.93859        0 Vegetarian      M  31     79    186 22.83501
+##   Waist.Circumference
+## 1                  80</code></pre>
+</details>
+<p><br></p>
+<p>Save the merged dataframe as a .txt file.</p>
+<pre class="r"><code>write.table(new_totals_mean_m, &quot;VVKAJ_Tot_mean_m.txt&quot;, sep=&quot;\t&quot;, row.names=F, quote=F)</code></pre>
+<p><br></p>
+</div>
+<div id="quality-control-qc-for-the-mean-totals-data" class="section level1">
+<h1>Quality Control (QC) for the mean totals data</h1>
+<p>Totals data may contain outliers due to errors in dietary reporting. These errors may be due to omission or inaccurate over- or under-estimation of portion size, leading to improbable nutrient totals. ASA24 provides <a href="https://epi.grants.cancer.gov/asa24/resources/cleaning.html#guidelines">General Guidelines for Reviewing &amp; Cleaning Data</a> for identifying and removing suspicious records.</p>
+<p>Here, we will identify records that contain values that fall outside typically observed ranges of kilocalories (KCAL), protein (PROT), total fat (TFAT), and vitamin C (VC). The ASA24 guide provides ranges of beta carotene (BCAR), too, however, outlier checking for BCAR is omitted in this tutorial but can be considered if you identify it as a nutrient that has a high variance in your study dataset.</p>
+<blockquote>
+<p><strong>[NOTE]</strong> Your input dataframe (QCtotals) will be overwritten after each outlier removal.</p>
+<p>Run all these QC steps in this order. When asked, choose to remove the outliers that fall outside the specified range for each nutrient.</p>
+</blockquote>
+<p><br></p>
+<p>Load your totals if necessary - to be used as input for QC.</p>
+<pre class="r"><code>new_totals_mean_m &lt;- read.table(&quot;VVKAJ_Tot_mean_m.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Split your dataset to males and females because different thresholds apply for males and females.</p>
+<pre class="r"><code>new_totals_mean_m_M &lt;- subset(new_totals_mean_m, Gender==&quot;M&quot;)  
+new_totals_mean_m_F &lt;- subset(new_totals_mean_m, Gender==&quot;F&quot;)  </code></pre>
+<p><br></p>
+<hr />
+<div id="qc-for-males" class="section level2">
+<h2>QC for males</h2>
+<p>Define your males totals dataset to be used as input.</p>
+<pre class="r"><code>QCtotals &lt;- new_totals_mean_m_M  </code></pre>
+<p>Flag if KCAL is &lt;650 or &gt;5700 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;KCAL&quot;, min = 650, max = 5700)</code></pre>
+<p>This function will print out rows that fall outside the specified min-max range, and a dialogue box will appear outside the R Studio (shown below), asking whether to remove them. You should make sure to review these records carefully to double-check if the removal is warranted. It is possible to have a valid record that could meet the threshold for removal. Only you will know if you can trust the record when working with real data.</p>
+<p><img src="Screenshots_for_Tutorial/ASA24_load_clean/QC%20totals%20Dialogue%20box.png" /></p>
+<p>If you find potential outlier(s) here, click “No”, and view those total(s) with their other nutrient intake information by running the following;</p>
+<pre class="r"><code>KCAL_outliers &lt;- subset(QCtotals, KCAL &lt; 650 | KCAL &gt; 5700)     </code></pre>
+<pre class="r"><code># Sort the rows by KCAL and show only the specified variables.
+KCAL_outliers[order(KCAL_outliers$KCAL, decreasing = T),
+              c(&#39;UserName&#39;, &#39;KCAL&#39;, &#39;FoodAmt&#39;, &#39;PROT&#39;, &#39;TFAT&#39;, &#39;CARB&#39;)]  </code></pre>
+<pre><code>##    UserName     KCAL  FoodAmt     PROT     TFAT     CARB
+## 16 VVKAJ117 5789.476 5639.525 194.1051 263.8755 674.0867</code></pre>
+<p><br></p>
+<p>If you think it is a true outlier, then run the QCOutliers command for KCAL again, and click “Yes” to remove the outlier. Here for this tutorial, we will remove this individual.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;KCAL&quot;, min = 650, max = 5700)</code></pre>
+<pre><code>## There are 1 observations with &lt; 650 or &gt; 5700 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  8 rows remained.</code></pre>
+<p>Continue the QC process with other variables.</p>
+<p>Flag if PROT is &lt;25 or &gt;240 → ask remove or not → if yes, remove those rows</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;PROT&quot;, min = 25, max = 240)</code></pre>
+<pre><code>## There are 0 observations with &lt; 25 or &gt; 240 . 
+## There are no outlier rows, but the input data was renamed as QCtotals.
+##  8 rows remained.</code></pre>
+<p>Flag if TFAT is &lt;25 or &gt;230 → ask remove or not → if yes, remove those rows</p>
+<pre class="r"><code>  QCOutliers(input.data = QCtotals, target.colname = &quot;TFAT&quot;, min = 25, max = 230)</code></pre>
+<pre><code>## There are 0 observations with &lt; 25 or &gt; 230 . 
+## There are no outlier rows, but the input data was renamed as QCtotals.
+##  8 rows remained.</code></pre>
+<p>Flag if VC (Vitamin C) is &lt;5 or &gt;400 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;VC&quot;, min = 5, max = 400)</code></pre>
+<pre><code>## There are 0 observations with &lt; 5 or &gt; 400 . 
+## There are no outlier rows, but the input data was renamed as QCtotals.
+##  8 rows remained.</code></pre>
+<p><br></p>
+<p>Name the males totals after QC.</p>
+<pre class="r"><code>QCed_M &lt;- QCtotals</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="qc-for-females" class="section level2">
+<h2>QC for females</h2>
+<p>Define your female totals dataset to be used as input.</p>
+<pre class="r"><code>QCtotals &lt;- new_totals_mean_m_F  </code></pre>
+<p>Flag if KCAL is &lt;600 or &gt;4400 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;KCAL&quot;, min = 600, max = 4400)</code></pre>
+<p>Flag if PROT is &lt;10 or &gt;180 → ask remove or not → if yes, remove those rows</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;PROT&quot;, min = 10, max = 180)</code></pre>
+<pre><code>## There are 0 observations with &lt; 10 or &gt; 180 . 
+## There are no outlier rows, but the input data was renamed as QCtotals.
+##  7 rows remained.</code></pre>
+<p>Flag if TFAT is &lt;15 or &gt;185 → ask remove or not → if yes, remove those rows</p>
+<pre class="r"><code>  QCOutliers(input.data = QCtotals, target.colname = &quot;TFAT&quot;, min = 15, max = 185)</code></pre>
+<pre><code>## There are 0 observations with &lt; 15 or &gt; 185 . 
+## There are no outlier rows, but the input data was renamed as QCtotals.
+##  7 rows remained.</code></pre>
+<p>Flag if VC (Vitamin C) is &lt;5 or &gt;350 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;VC&quot;, min = 5, max = 350)</code></pre>
+<pre><code>## There are 0 observations with &lt; 5 or &gt; 350 . 
+## There are no outlier rows, but the input data was renamed as QCtotals.
+##  7 rows remained.</code></pre>
+<p><br></p>
+<p>Name the females totals after QC.</p>
+<pre class="r"><code>QCed_F &lt;- QCtotals</code></pre>
+<p><br></p>
+<hr />
+<p>Combine the rows of M and F.</p>
+<pre class="r"><code>QCtotals_MF &lt;- rbind(QCed_M, QCed_F)</code></pre>
+<p>Save as a .txt file.</p>
+<pre class="r"><code>write.table(QCtotals_MF, &quot;VVKAJ_Tot_mean_m_QCed.txt&quot;, sep=&quot;\t&quot;, quote=F, row.names=F)</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="adjust-totals-and-items-after-qc" class="section level1">
+<h1>Adjust totals and items after QC</h1>
+<div id="remove-the-qc-ed-individuals-from-the-totals-to-be-consistent" class="section level2">
+<h2>Remove the QC-ed individual(s) from the totals to be consistent</h2>
+<p>In the previous section, we have removed individual(s) that did not pass the QC from mean total data. We will remove those individual(s) from the totals (before taking means of days), so that we will have the same individuals in the mean_total and total.</p>
+<p>Among the individuals in new_totals_m, retain only those in QCtotals_MF.</p>
+<pre class="r"><code>new_totals_m_QCed &lt;- new_totals_m[ new_totals_m$UserName %in% QCtotals_MF$UserName, ]</code></pre>
+<p>Save as a .txt file. This will be the total for each of the “QC-ed” individuals for each day, to be used for clustering analyses.</p>
+<pre class="r"><code>write.table(new_totals_m_QCed, &quot;VVKAJ_Tot_m_QCed.txt&quot;, sep=&quot;\t&quot;, quote=F, row.names=F)</code></pre>
+</div>
+<div id="similarly-remove-the-qc-ed-individuals-from-the-items-to-be-consistent-with-the-qc-ed-averaged-totals" class="section level2">
+<h2>Similarly, remove the QC-ed individual(s) from the items to be consistent with the QC-ed averaged totals</h2>
+<p>Among the individuals in new_totals_m, pick up only those in QCtotals_MF.</p>
+<pre class="r"><code>items_f_id_s_m_QCed &lt;- items_f_id_s_m[ items_f_id_s_m$UserName %in% QCtotals_MF$UserName, ]</code></pre>
+<p>Save as a .txt file. This will be the items for each of the “QC-ed” individuals for each day, to be used for ordination etc.</p>
+<pre class="r"><code>write.table(items_f_id_s_m_QCed, &quot;VVKAJ_Items_f_id_s_m_QCed.txt&quot;, sep=&quot;\t&quot;, quote=F, row.names=F)</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory before you start running another script.</p>
+<pre class="r"><code>  setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

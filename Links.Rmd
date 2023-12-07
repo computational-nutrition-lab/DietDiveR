@@ -1,0 +1,76 @@
+---
+title: "Resources"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+<!-- .navbar { -->
+<!--   background-color: #882345; -->
+<!--   padding-top: 0rem; -->
+<!--   padding-bottom: 0rem; -->
+<!-- } -->
+</style>
+
+<br>
+
+# R and R-Studio
+
+1. [R](http://www.r-project.org) 
+2. [R-studio](http://www.rstudio.com)
+
+# Other R resources
+
+1. [Stackoverflow](https://stackoverflow.com) 
+1. [The R Graph Gallery](https://r-graph-gallery.com) 
+1. [RStudio Cheatsheets](https://support--rstudio-com.netlify.app/resources/cheatsheets/) 
+
+<br>
+
+# Dietary data analysis
+
+## ASA24
+
+1. [ASA24 Researchers Site](https://asa24.nci.nih.gov/researcherSite/ASA242013.aspx) 
+1. [ASA24 Resources](https://epi.grants.cancer.gov/asa24/resources/) 
+1. [Reviewing and clearning ASA24 data](https://epi.grants.cancer.gov/asa24/resources/cleaning.html)
+
+## NHANES
+
+1. [NHANES Top Page](https://www.cdc.gov/nchs/nhanes/index.htm) 
+1. [NHANES Data & Documentation](https://wwwn.cdc.gov/nchs/nhanes/Default.aspx) 
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
