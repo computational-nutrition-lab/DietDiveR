@@ -46,60 +46,6 @@ blockquote{
 
 <br>
 
-Name the path to DietDiveR directory where input files are pulled.
-```{r}
-main_wd <- "~/GitHub/DietDiveR"
-```
-
-Load the necessary functions.
-```{r}
-source("lib/specify_data_dir.R")
-source("lib/load_clean_ASA24.R")
-source("lib/Food_tree_scripts/format.foods_2.r")
-source("lib/QCOutliers.R")
-source("lib/average.by.R")
-```
-
-You can come back to the main directory by:
-```{r, eval=FALSE}
-setwd(main_wd)
-```
-
-<br>
-
-# Load ASA24 Items data
-
-Specify the directory where the data is.
-```{r, eval = FALSE}
-SpecifyDataDirectory(directory.name= "eg_data/VVKAJ/")
-```
-<!-- [NOTE] SpecifyDataDirectory function is not executed by R markdown, but just showing  -->
-<!--  the code so that this tutorial will have the same code as the R script.  -->
-
-<!-- This is the R-markdown code to change directories. -->
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo=TRUE)
-knitr::opts_knit$set(root.dir = 'eg_data/VVKAJ/')
-```
-
-
-Load the Items_f.txt file to take a look at it.  
-You need the `quote=""` and `colClasses="character"` arguments to ignore quotation marks (do not regard them as a cell separator) and to load all the columns as characters so that FoodID will keep the trailing ".0".
-```{r}
-getwd()
-ls()
-
-```
-
-Load your unprocessed (raw) food items-level data (as downloaded from the ASA24 study website).
-The csv file will be loaded as a dataframe in R and be named as items_raw.
-```{r}
-items_raw <- read.csv("Raw_data/VVKAJ_Items.csv", sep = ",", header=T)
-# items_raw <- read.table("VVKAJ_Items.txt", header = T)
-```
-
-
-
 # R and R-Studio
 
 1. [R](http://www.r-project.org) 

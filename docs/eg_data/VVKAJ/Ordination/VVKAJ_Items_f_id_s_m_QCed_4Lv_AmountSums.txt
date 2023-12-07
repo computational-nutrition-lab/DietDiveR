@@ -1,0 +1,352 @@
+colSums(x)
+Milk NFS	244
+Milk whole	1281
+Milk reduced fat 2 	1098
+Milk low fat 1 	796.05
+Soy milk	256.2
+Almond milk sweetened	329.4
+Almond milk unsweetened	500.2
+Coconut milk	274.5
+Yogurt whole milk plain	398.125
+Yogurt low fat milk plain	122.5
+Yogurt whole milk fruit	235.5
+Yogurt Greek nonfat milk fruit	150
+Yogurt Greek whole milk flavors other than fruit	150
+Cream heavy	45.12
+Cheese Brie	17
+Cheese Feta	56.7
+Cheese Mozzarella whole milk	33
+Cheese Mozzarella part skim	28.35
+Cheese Parmesan dry grated	113.4
+Cheese Swiss	70.875
+Cheese American	175.875
+Mozzarella sticks breaded baked or fried	396
+Beef steak broiled or baked lean and fat eaten	340.2
+Beef steak battered fried NS as to fat eaten	283.5
+Beef steak braised lean and fat eaten	226.8
+Corned beef cooked NS as to fat eaten	84
+Ground beef patty cooked	325
+Beef jerky	19.2
+Pork chop stewed lean only eaten	56.7
+Pork chop smoked or cured cooked lean only eaten	170.1
+Pork bacon NS as to fresh smoked or cured cooked	104
+Pork spareribs barbecued with sauce lean and fat eaten	160
+Chicken NS as to part and cooking method NS as to skin eaten	60
+Chicken breast rotisserie skin not eaten	113.4
+Chicken breast fried coated skin coating eaten from fast food restaurant	175
+Chicken wings boneless with hot sauce from fast food restaurant	78.75
+Frankfurter wiener or hot dog NFS	114
+Pork sausage	20
+Chicken prepackaged or deli luncheon meat	56
+Fish NS as to type raw	340.2
+Fish NS as to type baked or broiled made with oil	56.7
+Fish NS as to type steamed	113.4
+Flounder steamed or poached	113.4
+Mackerel baked or broiled fat added in cooking	113.4
+Mackerel baked or broiled fat not added in cooking	113.4
+Salmon cooked NS as to cooking method	136
+Salmon baked or broiled made with oil	226.8
+Salmon baked or broiled made with butter	793.8
+Trout baked or broiled made with butter	226.8
+Trout smoked	56.7
+Tuna fresh raw	56.7
+Tuna fresh baked or broiled fat added in cooking	170.1
+Octopus steamed	56.7
+Clams steamed or boiled	212.5
+Scallops baked or broiled fat added in cooking	283.5
+Scallops steamed or boiled	28.35
+Shrimp baked or broiled made with oil	10
+Meat loaf made with beef with tomato based sauce	283.5
+Meat loaf made with beef and pork with tomato based sauce	90
+Chicken or turkey rice and vegetables excluding carrots broccoli and dark green leafy soy based sauce	325.5
+Beef shish kabob with vegetables excluding potatoes	202
+Beef and vegetables excluding carrots broccoli and dark green leafy no potatoes soy based sauce	108.5
+Chicken or turkey and vegetables excluding carrots broccoli and dark green leafy no potatoes no sauce	243
+Chicken or turkey and vegetables including carrots broccoli and or dark green leafy no potatoes soy based sauce	325.5
+Chicken or turkey and vegetables excluding carrots broccoli and dark green leafy no potatoes soy based sauce	542.5
+Beef broth bouillon or consomme	240
+Chicken or turkey broth bouillon or consomme	180
+Fish chowder	732
+Seafood soup with potatoes and vegetables including carrots broccoli and or dark green leafy	488
+Egg whole boiled or poached	269
+Egg whole fried with oil	270
+Egg whole baked fat added in cooking	177
+Egg salad made with mayonnaise	111
+Egg omelet or scrambled egg made with oil	331
+Egg omelet or scrambled egg made with butter	305
+Egg omelet or scrambled egg with cheese and meat made with oil	258
+Egg omelet or scrambled egg with cheese and vegetables other than dark green and or tomatoes fat added in cooking	525
+Egg omelet or scrambled egg with cheese meat and dark green vegetables fat added in cooking	237
+White beans dry cooked fat not added in cooking	22.5
+Soybeans dry cooked fat not added in cooking	360
+Refried beans fat added in cooking NS as to type of fat	189.75
+Refried beans from restaurant	126.5
+Hummus plain	95
+Hummus flavored	80
+Falafel	8.5
+Chickpeas dry cooked fat not added in cooking	146.25
+Lentils dry cooked made with oil	22.5
+Lentils dry cooked fat not added in cooking	135
+Soybean curd	602
+Edamame cooked	93
+Soy sauce	195.4932
+Soybean curd deep fried	28.35
+Soybean soup miso broth	3120
+Vegetarian burger or patty meatless no bun	281
+Vegetarian chili made with meat substitute	381
+Tofu and vegetables including carrots broccoli and or dark green leafy no potatoes with soy based sauce	705.25
+Almonds salted	43.65
+Almonds lightly salted	35.25
+Cashews salted	7.5
+Mixed nuts NFS	39.9375
+Mixed nuts without peanuts unsalted	50
+Peanuts roasted unsalted	18.25
+Pecans unsalted	6
+Walnuts	124
+Peanut butter	40
+Peanut sauce	42.5625
+Coconut water sweetened	360
+Trail mix with nuts and fruit	50
+Pumpkin seeds unsalted	50
+Sunflower seeds plain salted	11.5
+Sesame seeds	8
+Bread white	278.0008
+Bread white toasted	150
+Bread pita	57
+Garlic bread with parmesan cheese from fast food restaurant	79
+Bread raisin	28
+Roll white hamburger bun	104
+Croutons	10
+Bread whole wheat toasted	105
+Bread wheat or cracked wheat toasted	25
+Bread pita whole wheat	57
+Roll whole wheat	43
+Bread rye toasted	58
+Bread multigrain toasted	39
+Tortilla corn	28
+Tortilla flour	116
+Cake or cupcake chocolate devil s food or fudge without icing or filling	63.65
+Snack cake not chocolate with icing or filling	94.5
+Cake or cupcake yellow with icing or filling	75
+Cookie brownie with icing or filling	195
+Cookie chocolate chip	45
+Cookie chocolate chip made from home recipe or purchased at a bakery	135
+Cookie graham cracker with chocolate and marshmallow	38
+Cookie butter or sugar	20
+Pie apple two crust	139.5
+Pie apple individual size or tart	300
+Pie lemon meringue	273.48
+Doughnut raised or yeast	75
+Cereal or granola bar nonfat	43
+Nutrition bar Tiger s Milk 	35
+Rice cake	3
+Crackers multigrain	6
+Crackers wheat	9
+Tortilla chips nacho cheese flavor Doritos 	57
+Pancakes plain from frozen	120
+Pancakes gluten free from frozen	100
+Pancakes plain from fast food restaurant	100
+Pancakes gluten free	160
+Waffle whole grain from frozen	80
+Waffle plain from fast food restaurant	75
+Noodles chow mein	98
+Pasta whole grain cooked	280
+Oatmeal regular or quick made with non dairy milk fat not added in cooking	300
+Quinoa fat not added in cooking	85
+Rice cooked NFS	39.5
+Rice white cooked fat added in cooking made with oil	326
+Rice white cooked fat not added in cooking	1817
+Whole wheat cereal cooked fat not added in cooking	120
+Cereal oat NFS	41.25
+Cereal Post Great Grains Double Pecan Whole Grain Cereal 	104
+Cereal muesli	191.25
+Cereal Health Valley Oat Bran Flakes 	47
+Oats raw	81
+Burrito taco or quesadilla with egg potato and breakfast meat	259
+Burrito with meat and beans from fast food	241
+Burrito with beans and rice meatless	305
+Burrito with beans meatless from fast food	198
+Enchilada with beans green chile or enchilada sauce	396
+Taco or tostada salad meatless	311
+Pizza extra cheese thick crust	297
+Pizza with pepperoni from restaurant or fast food thick crust	417
+Pizza with meat and vegetables from restaurant or fast food thick crust	354
+Biscuit with gravy	442
+Macaroni or noodles with cheese	230
+Macaroni or noodles with cheese Easy Mac type	460
+Pasta with tomato based sauce and added vegetables ready to heat	250
+Pasta with tomato based sauce and meat restaurant	250
+Pasta with cream sauce and added vegetables restaurant	250
+Pasta whole grain with tomato based sauce and added vegetables ready to heat	625
+Pasta whole grain with cream sauce and added vegetables home recipe	187.5
+Rice fried with pork	297
+Sushi topped with egg	500
+Rice with beans	239
+Rice white with tomatoes and or tomato based sauce fat not added in cooking	206
+Rice white with other vegetables fat not added in cooking	86
+Stuffed pepper with rice meatless	198
+Orange raw	131
+Orange juice 100 canned bottled or in a carton	260.4
+Apple dried uncooked	32
+Raisins	5.67
+Apple raw	298
+Avocado raw	863.75
+Banana raw	497
+Grapes raw NS as to type	264.25
+Plum pickled	28
+Berries frozen NFS	197
+Blackberries raw	72
+Blueberries raw	18.5
+Strawberries raw	342
+Strawberries frozen with sugar	255
+Fruit salad fresh or raw excluding citrus fruits no dressing	196.875
+Fruit salad fresh or raw including citrus fruits no dressing	87.5
+Apple salad with dressing	102.75
+Guacamole NFS	45
+Apple juice 100 	248
+Vinegar	4.992
+Potato roasted from fresh peel eaten made with oil	510
+Potato chips sour cream and onion flavored	28
+Potato chips reduced fat	28
+Vegetable chips	28
+Potato french fries NS as to fresh or frozen	60
+Potato french fries fast food	145
+Potato mashed from fresh made with milk with cheese	125
+Potato tots fast food restaurant	32
+Potato baked peel eaten	572.5
+Potato baked peel eaten with cheese	315
+Potato baked peel eaten with chili	260
+Potato salad with egg from restaurant	137.5
+Potato soup NS as to made with milk or water	488
+Romaine lettuce raw	74
+Kale raw	43.75
+Kale cooked from fresh made with oil	33.75
+Kale cooked from canned made with butter	42
+Spinach raw	109.47916667
+Spinach cooked from fresh fat not added in cooking	22.5
+Broccoli cooked NS as to form with cheese sauce	171
+Broccoli casserole with rice	513
+Carrots raw	88.1875
+Carrots cooked from fresh fat not added in cooking	16.8
+Sweet potato baked peel eaten fat not added in cooking	150
+Tomatoes raw	188.5
+Tomatoes cooked from fresh NS as to method	60
+Tomatoes red from fresh fried	707
+Tomato catsup	40
+Salsa red commercially prepared	49.8
+Salsa verde or salsa green	30
+Steak sauce tomato base	31.25
+Raw vegetable NFS	180
+Cabbage green raw	22.25
+Cabbage red raw	89
+Cauliflower raw	40.125
+Cilantro raw	4.9
+Cucumber raw	89.25
+Lettuce raw	52.5
+Lettuce Boston raw	35.41666667
+Lettuce arugula raw	60
+Mixed salad greens raw	285.83333333
+Pepper sweet green raw	55.875
+Pepper sweet red raw	37.25
+Pepper banana raw	155
+Seaweed raw	120
+Squash summer yellow raw	21.1875
+Mixed vegetable juice	369.6
+Broccoli salad with cauliflower cheese bacon bits and dressing	308
+Cabbage salad or coleslaw from fast food restaurant	219
+Cabbage salad or coleslaw made with coleslaw dressing	109.5
+Vegetables NS as to type cooked fat not added in cooking	132.75
+Bean sprouts cooked from fresh fat not added in cooking	31
+Brussels sprouts cooked from fresh made with butter	154
+Cabbage Chinese cooked fat not added in cooking	21
+Cabbage Chinese cooked made with butter	60
+Cabbage green cooked NS as to fat added in cooking	19.375
+Cabbage green cooked fat not added in cooking	27.5
+Cabbage green cooked made with oil	177.5
+Celery cooked fat not added in cooking	36
+Corn cooked NS as to form NS as to color NS as to fat added in cooking	63.375
+Garlic cooked	2
+Mushrooms cooked from fresh made with oil	120.75
+Mushrooms cooked from frozen made with oil	80.5
+Onions cooked NS as to form NS as to fat added in cooking	53.75
+Onions cooked from fresh made with oil	305
+Peas green cooked from frozen fat not added in cooking	80
+Peppers green cooked NS as to fat added in cooking	17.625
+Peppers green cooked made with oil	118
+Peppers red cooked NS as to fat added in cooking	17.625
+Peppers hot cooked NS as to form NS as to fat added in cooking	44
+Radish daikon cooked fat not added in cooking	36.75
+Sauerkraut cooked NS as to fat added in cooking	6.6598
+Seaweed dried	3.75
+Seaweed cooked NS as to fat added in cooking	84.8256
+Squash summer yellow or green cooked NS as to form NS as to fat added in cooking	23.125
+Squash spaghetti cooked fat not added in cooking	193.75
+Bean salad yellow and or green string beans	375
+Green peppers and onions cooked fat not added in cooking	34.75
+Vegetables stew type cooked fat not added in cooking	120
+Beans string green cooked from canned with mushroom sauce	114
+Cauliflower from frozen creamed	171
+Vegetable combination including carrots broccoli and or dark green leafy cooked with soy based sauce	2081.25
+Vegetable combination excluding carrots broccoli and dark green leafy cooked with soy based sauce	138.75
+Vegetable tempura	28
+Vegetable curry	708
+Cucumber pickles relish	30.625
+Cucumber pickles sweet	37.5
+Ginger root pickled	30
+Mustard	30
+Pickles NS as to vegetable	77.5
+Mushroom soup NFS	244
+Seaweed soup	345
+Vegetable soup home recipe	234
+Fruit and vegetable smoothie	388.8
+Fruit and vegetable smoothie added protein	734.4
+Butter stick salted	12.5
+Light butter stick salted	4.73286
+Margarine NFS	19.0476
+Honey mustard dressing	93.6
+Italian dressing made with vinegar and oil	146.9
+Mayonnaise regular	41.4
+Creamy dressing	29.4
+Sesame dressing	29.4
+Thousand Island dressing	31.2
+Yogurt dressing	61.6
+French or Catalina dressing light	32.4
+Sesame dressing light	14.7
+Sugar white granulated or lump	9.3
+Sugar brown	9.2
+Sugar cinnamon	8.4
+Honey	94.5
+Jam preserve all flavors	20
+Chocolate sweet or dark	10.25
+M M s Milk Chocolate Candies	52
+Coffee brewed	2160
+Coffee espresso	108
+Coffee Cafe Mocha	496
+Iced Coffee brewed	288
+Coffee Iced Latte nonfat	240
+Coffee Iced Latte flavored	372
+Coffee Cappuccino	735
+Tea hot leaf green	2862
+Tea hot leaf oolong	612
+Tea hot herbal	288
+Tea hot hibiscus	828
+Tea hot chai with milk	996
+Tea iced brewed black pre sweetened with sugar	954.8
+Tea iced brewed black pre sweetened with low calorie sweetener	252
+Tea iced bottled black diet	360
+Soft drink NFS	297.6
+Carbonated water unsweetened	2133
+Soft drink cola	744
+Soft drink cola diet	1080
+Soft drink fruit flavored caffeine free	372
+Fruit juice drink with high vitamin C	372
+Beer	2844
+Whiskey and soda	60
+Vodka and soda	54
+Vodka and tonic	60
+Wine table red	144
+Wine rice	108
+Water tap	7785
+Water bottled unsweetened	1497.6
+Nutritional powder mix whey based NFS	299
+Nutritional powder mix protein light NFS	4
