@@ -79,7 +79,7 @@ SpecifyDataDirectory(directory.name= "eg_data/VVKAJ/")
 <!-- This is the R-markdown code to change directories. -->
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=TRUE)
-knitr::opts_knit$set(root.dir = 'eg_data/VVKAJ')
+knitr::opts_knit$set(root.dir = 'eg_data/VVKAJ/')
 ```
 
 
@@ -91,11 +91,12 @@ ls()
 
 ```
 
-<!-- Load your unprocessed (raw) food items-level data (as downloaded from the ASA24 study website). -->
-<!-- The csv file will be loaded as a dataframe in R and be named as items_raw.  -->
-<!-- ```{r} -->
-<!-- items_raw <- read.csv("Raw_data/VVKAJ_Items.csv", sep = ",", header=T) -->
-<!-- ``` -->
+Load your unprocessed (raw) food items-level data (as downloaded from the ASA24 study website).
+The csv file will be loaded as a dataframe in R and be named as items_raw.
+```{r}
+items_raw <- read.csv("Raw_data/VVKAJ_Items.csv", sep = ",", header=T)
+# items_raw <- read.table("VVKAJ_Items.txt", header = T)
+```
 
 
 
