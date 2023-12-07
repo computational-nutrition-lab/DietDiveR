@@ -14,7 +14,7 @@ output:
 h1.title {
   font-size: 38px;
   font-family: "Tahoma", sans-serif;
-  color: #1F3600; /* darkgreen from DietR logo */
+  color: #1F3600; /* darkgreen from DietDiveR logo */
 }
 h1 { /* Header 1 */
   font-size: 28px;

@@ -76,4 +76,4 @@ navbar:
     href: Links.html
 plugins:
   - search
-output_dir: "docs"
+output_dir: "/"
