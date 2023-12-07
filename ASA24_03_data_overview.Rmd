@@ -1,0 +1,329 @@
+---
+title: "Data overview"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+
+<br>
+
+# Introduction
+
+We can view summary statistics of either the individual food data or the totals data. First, let us take a look at theitems data. This section is not intended to be a complete guide to analysis, but rather to give you some ideas for how to explore this data.
+
+<br>
+
+# Load functions and packages  
+
+Name the path to DietDiveR directory where input files are pulled.
+```{r}
+main_wd <- "~/GitHub/DietDiveR"
+```
+
+Load the necessary functions.
+```{r}
+source("lib/specify_data_dir.R")
+source("lib/data_overview.R")
+source("lib/ggplot2themes.R")
+```
+
+Call color palette. `distinct100colors.rda` is an R data file that contains 100 distinct colors, and most of them are color-blind friendly.
+```{r}
+distinct100colors <- readRDS("lib/distinct100colors.rda")
+```
+
+Make a vector of colors for each factor of Diet so that plots will have consistent colors.
+```{r}
+# Take the first five colors from distinct100colors. 
+diet_colors <- distinct100colors[1:5]
+
+# Name each color.
+names(diet_colors) <- c("Vegetarian", "Vegan", "Keto", "American", "Japanese") 
+
+# Specific colors are assigned to be used for each diet.
+diet_colors
+```
+
+You can come back to the main directory by:
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<br>
+
+# Load and analyze (QC-ed) ASA24 food items data
+
+Specify the directory where the data is.
+```{r, eval=FALSE}
+SpecifyDataDirectory(directory.name = "eg_data/VVKAJ")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_knit$set(root.dir = 'eg_data/VVKAJ')
+```
+
+Load your items data to be analyzed.  
+"_f_id_s_m" stands for: "food names formatted", "SampleID added", "selected individuals", "metadata merged", and "the individuals that passed the QC of averaged totals".
+```{r}
+items_f_id_s_m <- read.delim("VVKAJ_Items_f_id_s_m_QCed.txt")
+```
+
+<br>
+
+---
+
+## Summary statistics
+
+Summary statistics of one variable can be obtained by using R's summary() function.
+
+View min, quantiles, mean, etc. for a variable in your dataset.
+```{r}
+summary(items_f_id_s_m$KCAL)
+```
+
+To calculate these summary statistics for multiple variables, use the `SummaryStats()` function.
+Calculate the minimum, 1st quantile, median, mean, 3rd quantile, max, and standard deviation for each variable in the input dataframe and save as a .txt file.
+```{r}
+SummaryStats(inputdf = items_f_id_s_m,
+             outfn = "VVKAJ_Items_f_id_s_m_summ.txt")
+```
+
+The .txt should contain data shown below. Non-numeric variables are indicated as “not-numeric”.
+
+![](Screenshots_for_Tutorial/ASA24_overview/summarystats.png){width=60%}
+
+
+> **[NOTE]** These are individual items, not by user or day.
+
+<br>
+
+---
+
+## Boxplot
+
+Generate a boxplot to view data distribution.
+
+Boxplot of KCAL by users.
+```{r,out.width="60%"}
+users_kcal <- ggplot(items_f_id_s_m, aes(x=UserName, y=KCAL)) +
+  geom_boxplot() + no_grid + space_axes + rotate_X_labels
+users_kcal
+```
+
+Save it as a .pdf file.
+```{r}
+ggsave("VVKAJ_Items_f_id_s_m_users_kcal.pdf", users_kcal,
+       device="pdf", width=6, height=4.6, units="in")
+```
+
+Similarly, generate a boxplot of KCAL by gender.
+```{r,out.width="60%"}
+gender_kcal <- ggplot(items_f_id_s_m, aes(x=Gender, y=KCAL)) +
+  geom_boxplot() + no_grid + space_axes
+gender_kcal
+```
+
+Save it as a .pdf file.
+```{r}
+ggsave("VVKAJ_Items_f_id_s_m_gender_kcal.pdf", gender_kcal,
+       device="pdf", width=3.5, height=4.6, units="in")
+```
+
+<br>
+
+---
+
+## Scatterplot
+
+Scatterplots can be generated to look at the relationship between two numeric variables. Here we look at total fat and kilocalories. We would expect these values to be related because fat contributes a high number of calories in foods.
+
+Scatterplot of two numeric variables: TFAT and KCAL.
+```{r,out.width="60%"}
+TFAT_KCAL <- ggplot(items_f_id_s_m, aes(x=TFAT, y=KCAL)) +
+  geom_point() + no_grid + space_axes + theme(aspect.ratio = 1)
+TFAT_KCAL
+```
+
+Save it as a .pdf file.
+```{r}
+ggsave("VVKAJ_Items_f_id_s_m_TFAT_KCAL.pdf", TFAT_KCAL, 
+       device="png", width=4.6, height=4.1, units="in")
+```
+
+Test if the two variables are correlated.  
+The output should show p-value and R correlation coefficient.
+```{r}
+cor.test(x=items_f_id_s_m$TFAT, y=items_f_id_s_m$KCAL, method="pearson")
+```
+
+The output says the correlation coefficient of TFAT and KCAL is 0.8785608, and the p-value for it is 2.2 x 10^-16^.
+
+<br>
+  
+# Load and analyze (QC-ed) ASA24 mean totals data
+  
+Load your QC-ed mean totals data to be analyzed.
+```{r}
+tot_mean_m_QCed <- read.delim("VVKAJ_Tot_mean_m_QCed.txt")
+```
+
+Note that each row is the mean of total dietary intake of each user.
+```{r}
+tot_mean_m_QCed[1:4, 1:4]
+```
+
+<br>
+
+---
+
+## Summary statistics
+
+Summary statistics of one variable.
+```{r}
+summary(tot_mean_m_QCed$KCAL)
+```
+
+Calculate the min, quantiles, mean, etc. for a variable in your dataset in the same way we did with the items.
+```{r}
+SummaryStats(inputdf = tot_mean_m_QCed, 
+             outfn = "VVKAJ_tot_mean_m_QCed_summ.txt")
+```
+
+<br>
+
+---
+
+## Boxplot
+
+Create a vector named "Diet_by_median" containing the Diet in a desired order (by median in this case).
+```{r}
+Diet_by_median <- with(tot_mean_m_QCed, 
+                  reorder(Diet, KCAL, median, na.rm=T))
+```
+
+`Diet_by_median` is a factor, which contains the diets of all the 15 participants and the median values of each Diet group. "Levels" show the order of them.
+```{r}
+Diet_by_median
+```
+
+Show the levels of this factor. This will be useful in plotting a factor in a desired order.
+```{r}
+levels(Diet_by_median)
+```
+
+<br>
+
+Generate a boxplot of KCAL by diet of the participants.
+```{r,out.width="60%"}
+diet_KCAL_t <- ggplot(tot_mean_m_QCed, aes(x=Diet_by_median, y=KCAL, fill=Diet_by_median)) +
+  geom_boxplot() + labs(x="Diet") +
+  theme(legend.position = "none") + # hide legend  
+  scale_fill_manual(values=diet_colors) +
+  no_grid + space_axes + rotate_X_labels
+diet_KCAL_t
+```
+
+Save it as a .pdf file.
+```{r}
+ggsave("VVKAJ_tot_mean_m_QCed_diet_KCAL.pdf", diet_KCAL_t, 
+       device="pdf", width=5, height=4.5)
+```
+
+<br>
+
+Boxplot of KCAL by Diet, with each datapoint. 
+
+> **[Note]** `geom_boxplot` must have outlier.shape = NA when plotted with geom_jitter. Otherwise, outlier points will be duplicated and will be misleading.
+
+```{r,out.width="60%"}
+diet_KCAL_t_dots <- ggplot(tot_mean_m_QCed, aes(x=Diet_by_median, y=KCAL, fill=Diet_by_median)) +
+  geom_boxplot(outlier.shape = NA) + labs(x="Diet") +    
+  geom_jitter(width=0.3) +
+  theme(legend.position = "none") + # hide legend  
+  scale_fill_manual(values=diet_colors) +
+  no_grid + space_axes + rotate_X_labels
+diet_KCAL_t_dots
+```
+
+Save it as a .pdf file.
+```{r}
+ggsave("VVKAJ_tot_mean_m_QCed_diet_KCAL_dots.pdf", diet_KCAL_t_dots, 
+       device="pdf", width=5, height=4.5)
+```
+
+<br>
+
+---
+
+## Scatterplot
+  
+Generate a scatterplot of two variables, color-coded by Diet.  
+Show the diets in the order of median, based on the boxplot that was generated above.
+```{r,out.width="60%"}
+TFAT_KCAL_t <- ggplot(tot_mean_m_QCed, aes(x=TFAT, y=KCAL, fill=Diet_by_median)) +
+  geom_point(shape=21, size=3, color="black") + no_grid + space_axes +
+  # order "diet_colors" in the same way as the level order of Diet_by_median.
+  scale_fill_manual(values= diet_colors[levels(Diet_by_median)]) +
+  labs(fill="Diet") + theme(aspect.ratio = 1) 
+TFAT_KCAL_t
+```
+
+Save it as a .pdf file.
+```{r}
+ggsave("VVKAJ_tot_mean_m_QCed_TFAT_KCAL.pdf", TFAT_KCAL_t, device="pdf",
+       width=5.5, height=4)
+```
+
+Test if the two variables are correlated.  
+The output should show the p-value and R correlation coefficient.
+```{r}
+cor.test(x=tot_mean_m_QCed$TFAT, y=tot_mean_m_QCed$KCAL, method="pearson")
+```
+
+
+<br>  
+
+---
+
+Come back to the main directory before you start running another script.
+```{r, eval=FALSE}
+  setwd(main_wd)
+```
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Calculate totals by occation</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li class="dropdown-header">Visualize foodtrees</li>
+  </ul>
+</li>
+<li class="dropdown-header">NHANES</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Calculate totals by occation</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Here we will calculate totals by occasion, user, and day.<br />
+This will be useful if a researcher wants to look at the sum of each eating occasion per participant. In contrast, the totals file we generated summed all the occasions of a certain day into one datapoint.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/calc_ASA24totals_by_occasion.R&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name= &quot;eg_data/VVKAJ/&quot;)</code></pre>
+<!-- This is the R-markdown code to change directories. -->
+<p><br></p>
+</div>
+<div id="generate-sum-of-foods-by-occasion" class="section level1">
+<h1>Generate sum of foods by occasion</h1>
+<p>Load your items data.</p>
+<pre class="r"><code>items_f_id_s_m_QCed &lt;- read.delim(&quot;VVKAJ_Items_f_id_s_m_QCed.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Generate sum of foods consumed by each user, by day, and by occasion.<br />
+Output will be saved as: <code>Items_by_User_Occ</code>.</p>
+<pre class="r"><code>SumByOccasion(items.data=items_f_id_s_m_QCed, User.Name=&#39;UserName&#39;, 
+              Recall.No=&#39;RecallNo&#39;,   Occ.No=&#39;Occ_No&#39;)</code></pre>
+<p>Take a look at the first 10 rows of the first 6 columns.<br />
+Items are summed by occasion number for each participant’s RecallNo.</p>
+<pre class="r"><code>Items_by_User_Occ[1:10, 1:6]</code></pre>
+<pre><code>##    User_Day_OccNo UserName RecallNo Occ_No FoodAmt     KCAL
+## 1    VVKAJ101_1_1 VVKAJ101        1      1  510.60 626.2670
+## 2    VVKAJ101_1_2 VVKAJ101        1      2  252.00   0.0000
+## 3    VVKAJ101_1_3 VVKAJ101        1      3  249.75 366.0425
+## 4    VVKAJ101_1_4 VVKAJ101        1      4  651.65 539.1745
+## 5    VVKAJ101_1_5 VVKAJ101        1      5  738.50 783.4200
+## 6    VVKAJ101_2_1 VVKAJ101        2      1  509.50 337.6500
+## 7    VVKAJ101_2_2 VVKAJ101        2      2  415.00 177.4900
+## 8    VVKAJ101_2_3 VVKAJ101        2      3  155.00 139.5000
+## 9    VVKAJ101_2_4 VVKAJ101        2      4  304.15 258.9555
+## 10   VVKAJ101_2_5 VVKAJ101        2      5  288.00   0.0000</code></pre>
+<p>The Items_by_User_Occ function adds occasion names (breakfast, snacks etc.) to items.data.<br />
+Output will be saved as: <code>Sum_by_User_Day_Occ</code>.</p>
+<pre class="r"><code>AddOccNames(items.data=items_f_id_s_m_QCed, User.Name=&#39;UserName&#39;, 
+            Recall.No=&#39;RecallNo&#39;, Occ.No=&#39;Occ_No&#39;, Occ.Name=&#39;Occ_Name&#39;)</code></pre>
+<p>The output <code>Sum_by_User_Day_Occ</code> has the sum of foods consumed by each user, day, and occasion, with occasion names in words.</p>
+<p>Take a look at the first 6 rows. Spelled-out occasion names corresponding to occasion name have been added at the end.</p>
+<pre class="r"><code>head(Sum_by_User_Day_Occ)</code></pre>
+<pre><code>##   User_Day_OccNo UserName RecallNo Occ_No FoodAmt     KCAL     PROT     TFAT
+## 1   VVKAJ101_1_1 VVKAJ101        1      1  510.60 626.2670  9.80520 12.29440
+## 2   VVKAJ101_1_2 VVKAJ101        1      2  252.00   0.0000  0.00000  0.00000
+## 3   VVKAJ101_1_3 VVKAJ101        1      3  249.75 366.0425 15.50113 29.88700
+## 4   VVKAJ101_1_4 VVKAJ101        1      4  651.65 539.1745 26.30972  3.04656
+## 5   VVKAJ101_1_5 VVKAJ101        1      5  738.50 783.4200 28.54115 37.74925
+## 6   VVKAJ101_2_1 VVKAJ101        2      1  509.50 337.6500 11.35115  7.59715
+##        CARB     MOIS ALC   CAFF THEO      SUGR     FIBE     CALC     IRON
+## 1 127.39081 358.4300   0 26.784    0 62.543290 12.76850  52.0460 18.27292
+## 2   0.00000 251.7480   0  0.000    0  0.000000  0.00000   7.5600  0.00000
+## 3  10.44857 190.2593   0  0.000    0  4.002825  4.18575 149.2175  3.96320
+## 4 112.74497 502.1475   0  0.000    0 68.438860 11.69125 289.2370  2.89618
+## 5  87.21295 577.0344   0  0.000    0  9.223500 23.98000 391.7850  6.14970
+## 6  56.95900 428.4122   0 76.800    0 27.929000  5.42250 262.2300  1.62895
+##       MAGN    PHOS      POTA      SODI     ZINC      COPP     SELE      VC
+## 1 107.0550 345.879  424.0100  308.8130 2.751890 0.4731170 43.95210  2.7230
+## 2   2.5200   0.000    0.0000   10.0800 0.025200 0.0252000  0.00000  0.0000
+## 3  95.6800 270.885  666.8725  491.0725 2.268950 0.2304475 31.64950 55.9875
+## 4 195.6315 497.930 2013.7475  104.4170 2.550075 0.5184195 11.84765 70.7256
+## 5 188.5000 672.760 1510.7700 1384.2800 4.180400 0.6888000 26.46600 79.5960
+## 6 101.7700 334.690  669.5650  262.8800 1.837000 0.2415200 19.57600 81.2500
+##         VB1       VB2      NIAC       VB6    FOLA     FA      FF    FDFE
+## 1 0.7595200 0.8724350 10.508905 1.1006350 206.785 179.92  26.865 333.665
+## 2 0.0000000 0.0000000  0.000000 0.0000000   0.000   0.00   0.000   0.000
+## 3 0.2496500 0.6627575  1.249625 0.3829275 178.535   0.00 178.535 178.535
+## 4 0.4174145 1.0105790  3.330598 1.6560110 182.521   0.00 182.521 182.521
+## 5 0.4558950 0.4255350  3.638800 0.6902500 151.525   0.00 151.525 151.525
+## 6 0.5046850 0.8888150  5.556840 0.6375500 121.865  85.07  36.795 181.555
+##      VB12     VARA     RET     BCAR    ACAR   CRYP   LYCO       LZ     ATOC
+## 1 3.01600 449.1700 447.200   32.780  0.0000  1.040   0.00  209.460 1.242400
+## 2 0.00000   0.0000   0.000    0.000  0.0000  0.000   0.00    0.000 0.000000
+## 3 1.01010 467.9200 134.310 3994.325  1.4400 18.070  13.35 7889.358 3.043125
+## 4 0.84672 255.4215  30.240 2660.808 93.3965 21.168   0.00 5640.164 1.630535
+## 5 0.29920  89.1550  61.435  316.635 11.8800 15.840   0.00  534.600 3.935250
+## 6 2.23350 103.4300  82.350  225.435  7.0000 28.875 353.50  140.035 0.536400
+##         VK   CHOLE      SFAT     S040     S060     S080     S100     S120
+## 1  18.4420   0.000  1.092205 0.000000 0.000000 0.000000 0.000000 0.002080
+## 2   0.0000   0.000  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
+## 3 363.2695 340.770  6.033577 0.000000 0.000000 0.002220 0.002220 0.002887
+## 4 234.5353   9.072  1.338515 0.039312 0.027216 0.021168 0.032600 0.037984
+## 5  58.4045  26.125 10.231760 0.271590 0.083435 0.094215 0.195525 0.143110
+## 6   3.8620  18.300  3.928790 0.137250 0.137250 0.137250 0.137250 0.149775
+##        S140     S160     S180       MFAT     M161       M181     M201    M221
+## 1 0.0020800 0.834455 0.216755  6.1216350 0.005090  6.0750550 0.037440 0.00104
+## 2 0.0000000 0.000000 0.000000  0.0000000 0.000000  0.0000000 0.000000 0.00000
+## 3 0.0595570 4.189893 1.573217  8.7545500 0.308750  8.3356900 0.084170 0.00777
+## 4 0.1298365 0.834111 0.190963  0.4705195 0.050816  0.4136555 0.000000 0.00000
+## 5 1.0552850 5.589870 2.149125 12.7942100 0.374660 12.1712800 0.113355 0.00000
+## 6 0.5504950 1.958100 0.698240  1.8666400 0.004975  1.8318600 0.000000 0.00000
+##        PFAT       P182      P183 P184     P204    P205 P225    P226   VITD
+## 1  3.498815  3.2158550 0.2829600    0 0.000000 0.00000    0 0.00000 1.9760
+## 2  0.000000  0.0000000 0.0000000    0 0.000000 0.00000    0 0.00000 0.0000
+## 3 12.797260 11.2482050 1.3573275    0 0.143857 0.00444    0 0.03441 1.9980
+## 4  0.526016  0.3288785 0.1971375    0 0.000000 0.00000    0 0.00000 0.9072
+## 5 12.136520 10.4085300 1.6884450    0 0.014080 0.00000    0 0.00000 0.0000
+## 6  0.846860  0.6657100 0.1811500    0 0.000000 0.00000    0 0.00000 2.3790
+##      CHOLN VITE_ADD B12_ADD  F_TOTAL F_CITMLB  F_OTHER F_JUICE  V_TOTAL V_DRKGR
+## 1  36.0993        0   3.016 0.659950  0.65995 0.000000  0.0000 0.000000 0.00000
+## 2   0.0000        0   0.000 0.000000  0.00000 0.000000  0.0000 0.000000 0.00000
+## 3 293.9523        0   0.000 0.000000  0.00000 0.000000  0.0000 1.732125 0.99120
+## 4 113.8396        0   0.000 3.337895  0.00000 3.035495  0.3024 0.635040 0.63504
+## 5 128.6725        0   0.000 0.039600  0.00000 0.000000  0.0396 1.289200 0.03960
+## 6  47.7865        0   1.410 0.630000  0.30625 0.323750  0.0000 0.000000 0.00000
+##   V_REDOR_TOTAL V_REDOR_TOMATO V_REDOR_OTHER V_STARCHY_TOTAL V_STARCHY_POTATO
+## 1             0              0             0               0                0
+## 2             0              0             0               0                0
+## 3             0              0             0               0                0
+## 4             0              0             0               0                0
+## 5             0              0             0               0                0
+## 6             0              0             0               0                0
+##   V_STARCHY_OTHER  V_OTHER V_LEGUMES G_TOTAL G_WHOLE G_REFINED PF_TOTAL
+## 1               0 0.000000   0.00000  2.7456  2.6520    0.0936   0.7384
+## 2               0 0.000000   0.00000  0.0000  0.0000    0.0000   0.0000
+## 3               0 0.740925   0.00000  0.0000  0.0000    0.0000   2.3733
+## 4               0 0.000000   0.00000  0.0000  0.0000    0.0000   0.0000
+## 5               0 1.249600   1.25675  2.6928  0.0000    2.6928   0.0000
+## 6               0 0.000000   0.00000  1.1797  0.5969    0.5828   0.0000
+##   PF_MPS_TOTAL PF_MEAT PF_CUREDMEAT PF_ORGAN PF_POULT PF_SEAFD_HI PF_SEAFD_LOW
+## 1            0       0            0        0        0           0            0
+## 2            0       0            0        0        0           0            0
+## 3            0       0            0        0        0           0            0
+## 4            0       0            0        0        0           0            0
+## 5            0       0            0        0        0           0            0
+## 6            0       0            0        0        0           0            0
+##   PF_EGGS PF_SOY PF_NUTSDS PF_LEGUMES D_TOTAL  D_MILK D_YOGURT D_CHEESE    OILS
+## 1  0.0000      0    0.7384    0.00000 0.00000 0.00000        0   0.0000  6.0736
+## 2  0.0000      0    0.0000    0.00000 0.00000 0.00000        0   0.0000  0.0000
+## 3  1.8093      0    0.5640    0.00000 0.00000 0.00000        0   0.0000 18.2068
+## 4  0.0000      0    0.0000    0.00000 0.78624 0.21168        0   0.0000  0.0000
+## 5  0.0000      0    0.0000    4.93515 0.55440 0.00000        0   0.5544 22.4840
+## 6  0.0000      0    0.0000    0.00000 0.75030 0.75030        0   0.0000  0.0000
+##   SOLID_FATS ADD_SUGARS A_DRINKS Occ_Name Occ_In_Words
+## 1    0.00000   12.53787        0        1    Breakfast
+## 2    0.00000    0.00000        0        7 Just a drink
+## 3    4.85070    0.00000        0        3        Lunch
+## 4    0.78624    0.00000        0        6        Snack
+## 5    8.94520    0.00000        0        4       Dinner
+## 6    4.83120    2.27480        0        1    Breakfast</code></pre>
+<p><br></p>
+<hr />
+<p>Save Sum_by_User_Day_Occ as a txt file.</p>
+<pre class="r"><code>write.table(Sum_by_User_Day_Occ, &#39;VVKAJ_Sum_by_User_Day_Occ.txt&#39;, sep=&quot;\t&quot;, row.names=F, quote=F)</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory before you start running another script.</p>
+<pre class="r"><code>  setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

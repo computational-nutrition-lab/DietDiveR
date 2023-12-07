@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Generate a foodtree from all food items</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li class="dropdown-header">Visualize foodtrees</li>
+  </ul>
+</li>
+<li class="dropdown-header">NHANES</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Generate a foodtree from all food items</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+<!-- .navbar { -->
+<!--   background-color: #882345; -->
+<!--   padding-top: 0rem; -->
+<!--   padding-bottom: 0rem; -->
+<!-- } -->
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Food trees show the classification of each food item entered in your dietary data. For details, please read <a href="https://doi.org/10.1016/j.chom.2019.05.005">Johnson et al., 2021</a>.</p>
+<p>This brief script is to serve as an example of formatting and generating food trees with your own dataset. This script demonstrates how to:</p>
+<ol style="list-style-type: decimal">
+<li>Format food list containing “Main.food.description” and “ModCode” by using the FormatFood function.<br />
+</li>
+<li>Build a food tree with the entire list of food items in “all.food.desc.txt”.</li>
+<li>Visualize the food tree you have created in step 2.</li>
+</ol>
+<p>The functions in Food_tree_scripts folder expects that the input files are tab-delimited txt file with no special characters that impede correct loading, such as:<br />
+”<br />
+’<br />
+#<br />
+&amp;</p>
+<p>So, we will use the FormatFoods function to replace special characters in the food description column with underscores.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p><br></p>
+<div id="load-the-packagesscripts-necessary-for-tree-building" class="section level2">
+<h2>Load the packages/scripts necessary for tree building</h2>
+<p>Load the reshape2 package necessary for tree building, and if it is not installed, install it.</p>
+<pre class="r"><code>if (!require(&quot;reshape2&quot;, quietly = TRUE))install.packages(&quot;reshape2&quot;)</code></pre>
+<p>Load the data.tree package necessary for newick.tree.r, and if it is not installed, install it.</p>
+<pre class="r"><code>if (!require(&quot;data.tree&quot;, quietly = TRUE))install.packages(&quot;data.tree&quot;)</code></pre>
+<p>Load functions necessary for foodtree building.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/Food_tree_scripts/newick.tree.r&quot;)
+source(&quot;lib/Food_tree_scripts/check.db.r&quot;)
+source(&quot;lib/Food_tree_scripts/format.foods_2.r&quot;)
+source(&quot;lib/Food_tree_scripts/filter.db.by.diet.records.r&quot;)
+source(&quot;lib/Food_tree_scripts/make.food.tree.r&quot;) # This needs &#39;newick.tree.r&#39; already loaded.
+source(&quot;lib/Food_tree_scripts/make.food.ifc.r&quot;)
+source(&quot;lib/Food_tree_scripts/make.fiber.ifc.r&quot;)
+source(&quot;lib/Food_tree_scripts/make.dhydrt.ifc.r&quot;)</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="load-the-packagesscripts-necessary-for-tree-visualization" class="section level2">
+<h2>Load the packages/scripts necessary for tree visualization</h2>
+<p>If you have not downloaded and installed the ggtree package yet,you can do so by first installing BiocManager (if you have not done so):</p>
+<pre class="r"><code>if (!require(&quot;BiocManager&quot;, quietly = TRUE))install.packages(&quot;BiocManager&quot;)</code></pre>
+<pre><code>## Bioconductor version &#39;3.14&#39; is out-of-date; the current release version &#39;3.18&#39;
+##   is available with R version &#39;4.3&#39;; see https://bioconductor.org/install</code></pre>
+<p>Then, use BiocManager to install the “ggtree” package.</p>
+<pre class="r"><code>BiocManager::install(&quot;ggtree&quot;)</code></pre>
+<p>Load the functions necessary to visualize foodtrees.</p>
+<pre class="r"><code>library(ggtree)</code></pre>
+<pre><code>## ggtree v3.2.1  For help: https://yulab-smu.top/treedata-book/
+## 
+## If you use ggtree in published research, please cite the most appropriate paper(s):
+## 
+## 1. Guangchuang Yu. Using ggtree to visualize data on tree-like structures. Current Protocols in Bioinformatics. 2020, 69:e96. doi:10.1002/cpbi.96
+## 2. Guangchuang Yu, Tommy Tsan-Yuk Lam, Huachen Zhu, Yi Guan. Two methods for mapping and visualizing associated data on phylogeny using ggtree. Molecular Biology and Evolution. 2018, 35(12):3041-3043. doi:10.1093/molbev/msy194
+## 3. Guangchuang Yu, David Smith, Huachen Zhu, Yi Guan, Tommy Tsan-Yuk Lam. ggtree: an R package for visualization and annotation of phylogenetic trees with their covariates and other associated data. Methods in Ecology and Evolution. 2017, 8(1):28-36. doi:10.1111/2041-210X.12628</code></pre>
+<pre class="r"><code>source(&quot;lib/viz_food_tree.r&quot;)</code></pre>
+<p><br></p>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="load-and-prepare-items-data" class="section level1">
+<h1>Load and prepare items data</h1>
+<p>Food trees show the classification of each food item entered in your dietary data. For details, please read <a href="https://doi.org/10.1016/j.chom.2019.05.005">Johnson et al., 2021</a>.</p>
+<p>Move to “Food_tree_eg” directory.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/Food_tree_eg/&quot;)</code></pre>
+<pre><code>## [1] &quot;The data directory has been set as&quot;</code></pre>
+<pre><code>## [1] &quot;~/GitHub/DietDiveR/eg_data/Food_tree_eg/&quot;</code></pre>
+<!-- This is the R-markdown code to change directories. -->
+<p>Replace special characters such as quotation marks, “%”, with “_“, and create a new FoodID out of foodcode and modcode connected with a period. The FormatFoods function will leave all other columns intact.</p>
+<pre class="r"><code>FormatFoods(input_fn= &quot;all.food.desc.txt&quot;, 
+            output_fn=&quot;all.food.desc_formatted.txt&quot;)</code></pre>
+<p><br></p>
+<p>all.food.desc.txt</p>
+<p><img src="Screenshots_for_Tutorial/ASA24%2009%20foodtree%20ownitems/all.food.desc.png" style="width:45.0%" /></p>
+<p><br></p>
+<p>all.food.desc_formatted.txt</p>
+<p><img src="Screenshots_for_Tutorial/ASA24%2009%20foodtree%20ownitems/all.food.desc_formatted.png" style="width:80.0%" /></p>
+<p><br></p>
+<hr />
+<p>You can also create a list of FoodCode and Main.food.description of additional foods not in ASA24 that you would like to include in the analysis. As an example, Soylent_codes.txt has two columns: FoodCode and Main.food.description. You can generate food codes for the food items unique to your dataset. Be sure to use a nine-digit number that is not already in the all.food.desc.txt.</p>
+<p><br></p>
+<p>Soylent_codes.txt</p>
+<p><img src="Screenshots_for_Tutorial/ASA24%2009%20foodtree%20ownitems/soylent_codes.png" style="width:40.0%" /></p>
+<p><br></p>
+<p>Format this soylent_codes.txt for use - replace special characters with “_“. There are no special characters in this file, so Main.food.description will result in the same as Old.Main.food.description with this particular file.</p>
+<pre class="r"><code>FormatFoods(input_fn= &quot;Soylent_codes.txt&quot;, 
+            output_fn=&quot;Soylent_codes_formatted.txt&quot;)</code></pre>
+<p><br></p>
+<p>Soylent_codes_formatted.txt</p>
+<p><img src="Screenshots_for_Tutorial/ASA24%2009%20foodtree%20ownitems/soylent_codes_formatted.png" style="width:70.0%" /></p>
+<p><br></p>
+</div>
+<div id="generate-a-food-tree-with-the-whole-asa24-food-database" class="section level1">
+<h1>Generate a food tree with the whole ASA24 food database</h1>
+<p>Create a folder called “Food_tree_all_ASA24” within “Food_tree_eg” folder to save the output.</p>
+<p>Generate a tree with the whole ASA24 food database first as a reference. The file specified by the addl_foods argument will be added to that specified by food_database_fn. NodeLabelsMCT.txt has the full classification level of each food items and its Main.food.description. The classification level (num.levels) will be the basis of hierarchical food tree generation.</p>
+<pre class="r"><code>MakeFoodTree(nodes_fn=         &quot;NodeLabelsMCT.txt&quot;, 
+             food_database_fn= &quot;all.food.desc_formatted.txt&quot;, 
+             addl_foods_fn=    &quot;Soylent_codes_formatted.txt&quot;, 
+             num_levels= 4,
+             output_tree_fn=    &quot;Food_tree_all_ASA24/ASA24_4Lv.tree.nwk&quot;,
+             output_taxonomy_fn=&quot;Food_tree_all_ASA24/ASA24_4Lv.tax.txt&quot;)  </code></pre>
+<table>
+<colgroup>
+<col width="45%" />
+<col width="55%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Arguments</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>nodes_fn</td>
+<td>food level (node) information for each food item.</td>
+</tr>
+<tr class="even">
+<td>food_database_fn</td>
+<td>whole ASA24 database to use.</td>
+</tr>
+<tr class="odd">
+<td>addl_foods_fn</td>
+<td>additional foods that are not in ASA24 database but you would like to add; soylent_codes in this case. If none, enter “NULL” instead.</td>
+</tr>
+<tr class="even">
+<td>num_levels</td>
+<td>number of food levels (1 - 5) to save.</td>
+</tr>
+<tr class="odd">
+<td>output_tree_fn</td>
+<td>output tree file name. Should end with “.nwk”.</td>
+</tr>
+<tr class="even">
+<td>output_taxonomy_fn</td>
+<td>output taxonomy file (to be used later) name.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>The nodes_fn argument specifies the food level (node) information for each food item. <span style="color: red;">NodeLabelsMCT.txt</span> has the classification level of each food items and its Main.food.description. The classification level will be the basis of hierarchical food tree generation.</p>
+<p><br></p>
+<p>NodeLabelsMCT.txt</p>
+<p><img src="Screenshots_for_Tutorial/ASA24%2009%20foodtree%20ownitems/NodeLabelsMCT.png" style="width:50.0%" /></p>
+<p><br></p>
+<hr />
+</div>
+<div id="visualize-your-food-tree" class="section level1">
+<h1>Visualize your food tree</h1>
+<div id="load-the-generated-food-tree" class="section level2">
+<h2>Load the generated food tree</h2>
+<p>This will load the .nwk file and save it as a tree object called “tree”. It is OK to see a message saying:<br />
+Found more than one class “phylo” in cache; using the first, from namespace ‘phyloseq’<br />
+Also defined by ‘tidytree’</p>
+<pre class="r"><code>tree &lt;- read.tree(&quot;Food_tree_all_ASA24/ASA24_4Lv.tree.nwk&quot;)</code></pre>
+<pre class="r"><code>tree</code></pre>
+<pre><code>## 
+## Phylogenetic tree with 8768 tips and 727 internal nodes.
+## 
+## Tip labels:
+##   Milk_human, Milk_NFS, Milk_cows_fluid_whole, Milk_cows_fluid_whole_low_sodium, Milk_calcium_fortified_cows_fluid_whole, Milk_calcium_fortified_cows_fluid_1_fat, ...
+## Node labels:
+##   foodtreeroot, L1_Milk_and_Milk_Products, L2_Milks_and_milk_drinks, L3_Milk_human, L4_, L3_Milk_fluid, ...
+## 
+## Rooted; includes branch lengths.</code></pre>
+<p>Prepare node labels of L1 for plotting. It assumes that the tree file has nine L1 levels.</p>
+<pre class="r"><code>PrepFoodTreePlots(input.tree=tree)</code></pre>
+<p><br></p>
+</div>
+<div id="create-a-color-coded-and-annotated-food-tree-with-nine-l1-levels" class="section level2">
+<h2>Create a color-coded and annotated food tree with nine L1 levels</h2>
+<p>It is OK to see some warning messages about Coordinate system and scale for ‘y’ already being present.</p>
+<pre class="r"><code>VizFoodTree(input.tree=tree, layout=&quot;circular&quot;)</code></pre>
+<pre><code>## Coordinate system already present. Adding new coordinate system, which will
+## replace the existing one.
+## Scale for y is already present.
+## Adding another scale for y, which will replace the existing scale.
+## Scale for y is already present.
+## Adding another scale for y, which will replace the existing scale.
+## Coordinate system already present. Adding new coordinate system, which will
+## replace the existing one.</code></pre>
+<p>Look at the color-coded and annotated food tree, saved as <code>annotated_tree</code>.</p>
+<pre class="r"><code>annotated_tree</code></pre>
+<p><img src="ASA24_08_create_foodtree_allfooditems_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>Save the tree as a PDF file.</p>
+<pre class="r"><code>ggsave(&quot;Food_tree_all_ASA24/ASA24_4Lv.tree.pdf&quot;,
+       annotated_tree, device=&quot;pdf&quot;, width=6, height=6, units=&quot;in&quot;, dpi=300)</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory before you start running another script.</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

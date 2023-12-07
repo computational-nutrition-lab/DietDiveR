@@ -1,0 +1,193 @@
+---
+title: "Generate foodtrees from your data"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+
+<br>
+
+# Introduction
+
+This brief script is to serve as an example of generating foodtrees and IFC tables with your own dataset. IFC tables contain participants and food items, showing the consumption amount of each food item by each participant. IFC tables also contain the taxonomy (food group information) for each food items and will be used in ordination (grouping) analyses.
+
+This script demonstrates how to:  
+  
+1. Build a foodtree with food items reported by VVKAJ study participants.
+2. Generate IFC tables from the taxonomy information of reported food items.
+
+As explained in the previous script, the functions in Food_tree_scripts folder expects that the input files are tab-delimited txt file with no special characters that impede correct loading such as:  
+"  
+'  
+#  
+&  
+
+The use of the FormatFoods function in 02_load_clean_ASA24.R script has already dealt with special characters in the VVKAJ items data, but it is helpful to know the assumptions which the functions you are going to use were built on.
+
+Before proceeding, create a new folder called “Foodtree” in the “VVKAJ” folder, in which you will save the output. 
+
+<br>
+
+# Load functions and packages  
+
+Name the path to DietDiveR directory where input files are pulled.
+```{r}
+main_wd <- "~/GitHub/DietDiveR"
+```
+
+<br>
+
+## Load the packages/scripts necessary for tree building
+
+Load the reshape2 package necessary for tree building, and if it is not installed, install it.
+```{r}
+if (!require("reshape2", quietly = TRUE))install.packages("reshape2")
+```
+  
+Load the data.tree package necessary for newick.tree.r, and if it is not installed, install it.
+```{r}
+if (!require("data.tree", quietly = TRUE))install.packages("data.tree")
+```
+
+Load functions necessary for foodtree building.
+```{r}
+source("lib/specify_data_dir.R")
+source("lib/Food_tree_scripts/newick.tree.r")
+source("lib/Food_tree_scripts/make.food.tree.r") # This needs 'newick.tree.r' already loaded.
+source("lib/Food_tree_scripts/make.food.ifc.r")
+source("lib/Food_tree_scripts/make.fiber.ifc.r")
+source("lib/Food_tree_scripts/make.dhydrt.ifc.r")
+```
+
+<br>
+
+You can come back to the main directory by:
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+
+<br>
+
+# Generate a foodtree from food items reported in your study
+  
+Specify the directory where the data is.
+```{r}
+SpecifyDataDirectory(directory.name = "eg_data/VVKAJ/")
+```
+
+<!-- This is the R-markdown code to change directories. -->
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_knit$set(root.dir = 'eg_data/VVKAJ/')
+```
+
+Create foodtree with the reduced dataset (only reported foods) classified at a desired level of classification.
+```{r}
+MakeFoodTree(nodes_fn="../Food_tree_eg/NodeLabelsMCT.txt", 
+             food_database_fn =            "VVKAJ_Items_f_id_s_m_QCed.txt",  
+             addl_foods_fn = NULL,
+             num_levels = 4,
+             output_tree_fn =     "Foodtree/VVKAJ_Items_f_id_s_m_QCed_4Lv.tree.nwk", 
+             output_taxonomy_fn = "Foodtree/VVKAJ_Items_f_id_s_m_QCed_4Lv.tax.txt")  
+```
+
+Arguments | Description
+--------- | -----------
+nodes_fn | the food level (node) information for each food item.
+food_database_fn | whole ASA24 database to use.
+addl_foods_fn | additional foods that are not in ASA24 database but you would like to add; soylent_codes could be added in this case. If none, enter “NULL” instead.
+num_levels | number of food levels (1 - 5) to save.
+output_tree_fn | output tree file name. Should end with “.nwk”
+output_taxonomy_fn | output taxonomy file (to be used later) name.
+
+<br>
+
+# Generate standard, grams of fiber, and dehydrated grams per kcal IFC tables to be used later
+
+Make the standard ifc table with data in gram weights of food.
+
+For the food_records_fn argument, you need to supply the items data which contains `FoodAmt` column.
+
+It is OK to see see a warning message: 
+"In write.table(dhydrt.ifc, output_fn, sep = "\t", quote = F, append = TRUE) :  
+ appending column names to file"
+```{r}
+MakeFoodIfc(food_records_fn=  "VVKAJ_Items_f_id_s_m_QCed.txt",   
+            food_record_id =  "SampleID",               
+            food_taxonomy_fn= "Foodtree/VVKAJ_Items_f_id_s_m_QCed_4Lv.tax.txt",  
+            output_fn =       "Foodtree/VVKAJ_Items_f_id_s_m_QCed_4Lv.food.ifc.txt")  
+```
+
+Arguments | Description
+--------- | -----------
+food_records_fn | Same as food_records_fn in MakeFoodTree
+food_record_id | Your SampleID (User x Day)
+food_taxonomy_fn | Taxonomy file produced by MakeFoodTree
+output_fn | Name output ifc file
+
+<br>
+
+Make an ifc table with data in grams of fiber per food
+```{r}
+MakeFiberIfc(food_records_fn=  "VVKAJ_Items_f_id_s_m_QCed.txt", 
+             food_record_id=   "SampleID", 
+             food_taxonomy_fn= "Foodtree/VVKAJ_Items_f_id_s_m_QCed_4Lv.tax.txt", 
+             output_fn=        "Foodtree/VVKAJ_Items_f_id_s_m_QCed_4Lv.fiber.ifc.txt")
+```
+
+<br>
+
+Make an ifc table as dehydrated grams per kcal.
+```{r}
+MakeDhydrtIfc(food_records_fn=  "VVKAJ_Items_f_id_s_m_QCed.txt", 
+              food_record_id =  "SampleID", 
+              food_taxonomy_fn= "Foodtree/VVKAJ_Items_f_id_s_m_QCed_4Lv.tax.txt", 
+              output_fn =       "Foodtree/VVKAJ_Items_f_id_s_m_QCed_4Lv.dhydrt.ifc.txt")
+```
+
+
+<br>  
+
+---
+Come back to the main directory before you start running another script.
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

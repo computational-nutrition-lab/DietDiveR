@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>k-means</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li class="dropdown-header">Visualize foodtrees</li>
+  </ul>
+</li>
+<li class="dropdown-header">NHANES</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore"><em>k</em>-means</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In this section, we are going to perform k-means analysis for each of Nutrient as is, Nutrient average, Food categories as is, and Food categories average.</p>
+<p>Before proceeding, ensure to have four directories (folders) named as:</p>
+<ul>
+<li>kmeans_Nut_asis</li>
+<li>kmeans_Nut_ave</li>
+<li>kmeans_Cat_asis</li>
+<li>kmeans_Cat_ave</li>
+</ul>
+<p>K-means analysis results will be saved in this folder. You can change those directory names, but if you do so, you will need to modify the directory name, “res_dir_xxx_xxxx”, to match your new directory name.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load necessary packages.</p>
+<pre class="r"><code>library(ggplot2)
+library(ggfortify)
+library(cluster)
+library(factoextra)</code></pre>
+<pre><code>## Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa</code></pre>
+<p>Set your ggplot2 theme.</p>
+<pre class="r"><code>theme_set(theme_bw(base_size = 14))</code></pre>
+<p>Import source code to run the analyses to follow.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/k-means.R&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name= &quot;eg_data/VVKAJ/&quot;)</code></pre>
+<!-- This is the R-markdown code to change directories. -->
+<p><br></p>
+</div>
+<div id="nutrient-data-as-is-processed-for-clustering-analyses" class="section level1">
+<h1>Nutrient data as is, processed for clustering analyses</h1>
+<p>Load Nut_asis data.</p>
+<pre class="r"><code>Tot_m_QCed_Nut_asis &lt;- read.table(file=&quot;VVKAJ_Tot_m_QCed_Nut_asis_c_rv.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Scale your input file and name it as k-means_input.</p>
+<pre class="r"><code>kmeans_input &lt;- scale(Tot_m_QCed_Nut_asis)</code></pre>
+<p>Ensure your input file has the correct number of rows and columns.</p>
+<pre class="r"><code>dim(kmeans_input)</code></pre>
+<pre><code>## [1] 45 39</code></pre>
+<p>Specify the directory (folder) to save the results.</p>
+<pre class="r"><code>res_dir_nut_asis = &quot;kmeans_Nut_asis&quot;</code></pre>
+<p>Specify the prefix of filenames to be saved.</p>
+<pre class="r"><code>res_prefix_nut_asis = &quot;VVKAJ_Nut_asis&quot;</code></pre>
+<p>Run the elbow, silhouette, and gap methods to find an optimum K (number of clusters). Do not alter the name of the input file: <code>kmeans_input</code>. This function below assumes that the input is named as <code>kmeans_input</code>. You can only run those three methods for K = 1 through (number of observations - 1). The gap method output will be printed on the Console. The gap values are plotted in xxx_gapmethod.pdf.</p>
+<pre class="r"><code>ChooseK(out.dir= res_dir_nut_asis, out.prefix= res_prefix_nut_asis)</code></pre>
+<pre><code>## Clustering Gap statistic [&quot;clusGap&quot;] from call:
+## clusGap(x = kmeans_input, FUNcluster = kmeans, K.max = k.values[length(k.values)],     B = 50, nstart = 25)
+## B=50 simulated reference sets, k = 1..14; spaceH0=&quot;scaledPCA&quot;
+##  --&gt; Number of clusters (method &#39;firstmax&#39;): 13
+##           logW   E.logW       gap     SE.sim
+##  [1,] 4.534176 4.805370 0.2711936 0.02298366
+##  [2,] 4.413634 4.690320 0.2766854 0.01970103
+##  [3,] 4.324135 4.612156 0.2880211 0.01952644
+##  [4,] 4.232962 4.546859 0.3138978 0.02019184
+##  [5,] 4.172491 4.489167 0.3166767 0.01997891
+##  [6,] 4.112269 4.437340 0.3250711 0.01906811
+##  [7,] 4.060030 4.389245 0.3292146 0.01932907
+##  [8,] 4.002075 4.343304 0.3412295 0.01957126
+##  [9,] 3.941963 4.298034 0.3560717 0.02008874
+## [10,] 3.885026 4.253908 0.3688828 0.02016421
+## [11,] 3.819605 4.209691 0.3900865 0.02020015
+## [12,] 3.761350 4.166198 0.4048475 0.01974978
+## [13,] 3.707321 4.122736 0.4154147 0.02010712
+## [14,] 3.665302 4.079125 0.4138227 0.02003152</code></pre>
+<p>This code will generate three output files all at once in the res_dir_xxx_xxxx:</p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="76%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output file postfix</th>
+<th>File content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>_elbowmethod.pdf</td>
+<td>Shows total within−clusters sum of squares for each K.</td>
+</tr>
+<tr class="even">
+<td>_gapmethod.pdf</td>
+<td>Shows the Gap statistic (k) for each K, and if the factoextra package is used, the optimal K is marked by a dotted line.</td>
+</tr>
+<tr class="odd">
+<td>_silhouettemethod.pdf</td>
+<td>Shows the Average silhouette width (~ goodness of fit) for each K, and if the factoextra package is used, the optimal K is marked by a dotted line.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>Look at the three figures generated by the ChooseK function above. The elbow and gap methods did not give a distinct peak, but the silhouette method gave a peak at K=4. K=2, 3, 4, and 5 also have relatively high silhouette width (~goodness of fit).</p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/ASA24%20k-means/VVKAJ_Nut_asis_elbowmethod.png" style="width:50.0%" alt="" />
+<p class="caption">VVKAJ_Nut_asis_elbowmethod.pdf</p>
+</div>
+<p><br></p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/ASA24%20k-means/VVKAJ_Nut_asis_gapmethod.png" style="width:50.0%" alt="" />
+<p class="caption">VVKAJ_Nut_asis_gapmethod.pdf</p>
+</div>
+<p><br></p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/ASA24%20k-means/VVKAJ_Nut_asis_silhouettemethod.png" style="width:50.0%" alt="" />
+<p class="caption">VVKAJ_Nut_asis_silhouettemethod.pdf</p>
+</div>
+<p><br></p>
+<p>With specific K values in mind, perform k-means analysis with one specified K. This will save Dim1 x Dim2 plot as a .pdf file in your out.dir. Change the filename as necessary.</p>
+<pre class="r"><code>OneK(myK= 4, out.dir= res_dir_nut_asis, out.fn = &quot;VVKAJ_Nut_asis_K4&quot;)</code></pre>
+<pre class="r"><code>oneKplot</code></pre>
+<p><img src="ASA24_07_k-means_files/figure-html/unnamed-chunk-14-1.png" width="60%" /></p>
+<p>Or try multiple Ks and print the biplots in one panel. Likewise, This will save a Dim1 x Dim2 plot for each of the chosen K as a .pdf file in your out.dir. Change the filename to be saved as a PDF as necessary. This MultipleK function uses the factoextra and gridExtra packages.</p>
+<pre class="r"><code>MultipleK(myKs = c(2,3,4,5), out.dir = res_dir_nut_asis, out.fn = &quot;VVKAJ_Nut_asis_K2-5&quot;)</code></pre>
+<p><img src="ASA24_07_k-means_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><br></p>
+</div>
+<div id="nutrient-data-averaged-across-days-processed-for-clustering-analyses" class="section level1">
+<h1>Nutrient data averaged across days, processed for clustering analyses</h1>
+<p>Load Nut_ave data.</p>
+<pre class="r"><code>Tot_m_QCed_Nut_ave &lt;- read.table(file=&quot;VVKAJ_Tot_mean_m_QCed_Nut_ave_c_rv.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Scale your input file and name it as k-means_input.</p>
+<pre class="r"><code>kmeans_input &lt;- scale(Tot_m_QCed_Nut_ave)</code></pre>
+<p>Ensure your input file has the correct number of rows and columns.</p>
+<pre class="r"><code>dim(kmeans_input)</code></pre>
+<pre><code>## [1] 15 29</code></pre>
+<p>Specify the directory (folder) to save the results.</p>
+<pre class="r"><code>res_dir_nut_ave = &quot;kmeans_Nut_ave&quot; </code></pre>
+<p>Specify the prefix of filenames to be saved.</p>
+<pre class="r"><code>res_prefix_nut_ave = &quot;VVKAJ_Nut_ave&quot;</code></pre>
+<p>Run elbow, silhouette, and gap methods to find an optimum K (number of clusters).</p>
+<pre class="r"><code>ChooseK(out.dir= res_dir_nut_ave, out.prefix= res_prefix_nut_ave)</code></pre>
+<pre><code>## Clustering Gap statistic [&quot;clusGap&quot;] from call:
+## clusGap(x = kmeans_input, FUNcluster = kmeans, K.max = k.values[length(k.values)],     B = 50, nstart = 25)
+## B=50 simulated reference sets, k = 1..14; spaceH0=&quot;scaledPCA&quot;
+##  --&gt; Number of clusters (method &#39;firstmax&#39;): 1
+##             logW     E.logW          gap     SE.sim
+##  [1,]  3.2630253  3.2663851  0.003359764 0.05234145
+##  [2,]  3.0784342  3.0438595 -0.034574707 0.05372168
+##  [3,]  2.9161106  2.8695076 -0.046603006 0.05471007
+##  [4,]  2.7752731  2.7095985 -0.065674514 0.05519485
+##  [5,]  2.6142074  2.5583486 -0.055858850 0.05523991
+##  [6,]  2.4625300  2.4007042 -0.061825789 0.05691960
+##  [7,]  2.2924520  2.2365856 -0.055866370 0.06063636
+##  [8,]  2.0889716  2.0602011 -0.028770473 0.06452527
+##  [9,]  1.8802611  1.8654634 -0.014797657 0.06983161
+## [10,]  1.6202210  1.6415037  0.021282670 0.07686758
+## [11,]  1.3401983  1.3770350  0.036836669 0.08485334
+## [12,]  0.9895242  1.0433402  0.053816022 0.09208387
+## [13,]  0.5150737  0.5792387  0.064165052 0.10424095
+## [14,] -0.4562883 -0.1938366  0.262451756 0.12409388</code></pre>
+<p>With specific K values in mind, perform k-means analysis with one specified K.</p>
+<pre class="r"><code>OneK(myK= 5, out.dir= res_dir_nut_ave, out.fn = &quot;VVKAJ_Nut_ave_K5&quot;)  </code></pre>
+<pre class="r"><code>oneKplot</code></pre>
+<p><img src="ASA24_07_k-means_files/figure-html/unnamed-chunk-23-1.png" width="60%" /></p>
+<p>Try multiple Ks and print the biplots in one panel.</p>
+<pre class="r"><code>MultipleK(myKs = c(2,3,4,5), out.dir = res_dir_nut_ave, out.fn = &quot;VVKAJ_Nut_ave_K2-5&quot;)</code></pre>
+<p><img src="ASA24_07_k-means_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><br></p>
+</div>
+<div id="food-categories-data-as-is-processed-for-clustering-analyses" class="section level1">
+<h1>Food categories data as is, processed for clustering analyses</h1>
+<p>Load Cat_asis data.</p>
+<pre class="r"><code>Tot_m_QCed_Cat_asis &lt;- read.table(file=&quot;VVKAJ_Tot_m_QCed_Cat_asis_c_rv.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Scale your input file and name it as k-means_input.</p>
+<pre class="r"><code>kmeans_input &lt;- scale(Tot_m_QCed_Cat_asis)</code></pre>
+<p>Ensure your input file has the correct number of rows and columns.</p>
+<pre class="r"><code>dim(kmeans_input)</code></pre>
+<pre><code>## [1] 45 30</code></pre>
+<p>Specify the directory (folder) to save the results.</p>
+<pre class="r"><code>res_dir_cat_asis = &quot;kmeans_Cat_asis&quot; </code></pre>
+<p>Specify the prefix of filenames to be saved.</p>
+<pre class="r"><code>res_prefix_cat_asis = &quot;VVKAJ_Cat_asis&quot;</code></pre>
+<p>Run elbow, silhouette, and gap methods to find an optimum K (number of clusters).</p>
+<pre class="r"><code>ChooseK(out.dir= res_dir_cat_asis, out.prefix= res_prefix_cat_asis)</code></pre>
+<pre><code>## Clustering Gap statistic [&quot;clusGap&quot;] from call:
+## clusGap(x = kmeans_input, FUNcluster = kmeans, K.max = k.values[length(k.values)],     B = 50, nstart = 25)
+## B=50 simulated reference sets, k = 1..14; spaceH0=&quot;scaledPCA&quot;
+##  --&gt; Number of clusters (method &#39;firstmax&#39;): 1
+##           logW   E.logW       gap     SE.sim
+##  [1,] 4.418470 4.704881 0.2864109 0.02523690
+##  [2,] 4.324929 4.588765 0.2638362 0.01947462
+##  [3,] 4.239884 4.525344 0.2854598 0.01838547
+##  [4,] 4.170741 4.469961 0.2992198 0.01916238
+##  [5,] 4.115400 4.419720 0.3043203 0.01845343
+##  [6,] 4.073602 4.372798 0.2991961 0.01814911
+##  [7,] 4.022522 4.328058 0.3055360 0.01864750
+##  [8,] 3.972951 4.283995 0.3110447 0.01873790
+##  [9,] 3.922178 4.241455 0.3192770 0.01925196
+## [10,] 3.877252 4.198902 0.3216500 0.02015669
+## [11,] 3.826764 4.156332 0.3295683 0.02069141
+## [12,] 3.783749 4.114248 0.3304992 0.02096826
+## [13,] 3.724537 4.071392 0.3468548 0.02156035
+## [14,] 3.672544 4.028501 0.3559563 0.02157291</code></pre>
+<p>With specific K values in mind, perform k-means analysis with one specified K.</p>
+<pre class="r"><code>OneK(myK=3, out.dir= res_dir_cat_asis, out.fn = &quot;VVKAJ_Cat_asis_K3&quot;)</code></pre>
+<pre class="r"><code>oneKplot</code></pre>
+<p><img src="ASA24_07_k-means_files/figure-html/unnamed-chunk-32-1.png" width="60%" /></p>
+<p>Try multiple Ks and print the biplots in one panel.</p>
+<pre class="r"><code>MultipleK(myKs = c(3,4,5,6), out.dir = res_dir_cat_asis, out.fn = &quot;VVKAJ_Cat_asis_K3-6&quot;)</code></pre>
+<p><img src="ASA24_07_k-means_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><br></p>
+</div>
+<div id="food-categories-data-averaged-across-days-processed-for-clustering-analyses" class="section level1">
+<h1>Food categories data averaged across days, processed for clustering analyses</h1>
+<p>Load Cat_ave data.</p>
+<pre class="r"><code>Tot_m_QCed_Cat_ave &lt;- read.table(file=&quot;VVKAJ_Tot_mean_m_QCed_Cat_ave_c_rv.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Scale your input file and name it as k-means_input.</p>
+<pre class="r"><code>kmeans_input &lt;- scale(Tot_m_QCed_Cat_ave)</code></pre>
+<p>Ensure your input file has the correct number of rows and columns.</p>
+<pre class="r"><code>dim(kmeans_input)</code></pre>
+<pre><code>## [1] 15 25</code></pre>
+<p>Specify the directory (folder) to save the results.</p>
+<pre class="r"><code>res_dir_cat_ave = &quot;kmeans_Cat_ave&quot; </code></pre>
+<p>Specify the prefix of filenames to be saved.</p>
+<pre class="r"><code>res_prefix_cat_ave = &quot;VVKAJ_Cat_ave&quot;</code></pre>
+<p>Run elbow, silhouette, and gap methods to find an optimum K (number of clusters).</p>
+<pre class="r"><code>ChooseK(out.dir= res_dir_cat_ave, out.prefix= res_prefix_cat_ave)</code></pre>
+<pre><code>## Clustering Gap statistic [&quot;clusGap&quot;] from call:
+## clusGap(x = kmeans_input, FUNcluster = kmeans, K.max = k.values[length(k.values)],     B = 50, nstart = 25)
+## B=50 simulated reference sets, k = 1..14; spaceH0=&quot;scaledPCA&quot;
+##  --&gt; Number of clusters (method &#39;firstmax&#39;): 1
+##              logW     E.logW           gap     SE.sim
+##  [1,]  3.19066329  3.2065563  1.589302e-02 0.04676962
+##  [2,]  3.00741139  3.0073421 -6.932819e-05 0.05303620
+##  [3,]  2.84352271  2.8345688 -8.953876e-03 0.05360053
+##  [4,]  2.69703510  2.6806427 -1.639236e-02 0.05241182
+##  [5,]  2.55196510  2.5335184 -1.844667e-02 0.05350532
+##  [6,]  2.42386845  2.3824293 -4.143910e-02 0.05665905
+##  [7,]  2.28405617  2.2215331 -6.252309e-02 0.06034179
+##  [8,]  2.12673548  2.0470466 -7.968886e-02 0.06266336
+##  [9,]  1.94250302  1.8514305 -9.107256e-02 0.06602434
+## [10,]  1.72955188  1.6278869 -1.016650e-01 0.07192173
+## [11,]  1.46373426  1.3661157 -9.761852e-02 0.07723756
+## [12,]  1.11437462  1.0370556 -7.731898e-02 0.08325284
+## [13,]  0.64687840  0.5735845 -7.329393e-02 0.09188411
+## [14,] -0.08712478 -0.2004423 -1.133175e-01 0.12555598</code></pre>
+<p>With specific K values in mind, perform k-means analysis with one specified K.</p>
+<pre class="r"><code>OneK(myK= 4, out.dir= res_dir_cat_ave, out.fn = &quot;VVKAJ_Cat_ave_K4&quot;)  </code></pre>
+<pre class="r"><code>oneKplot</code></pre>
+<p><img src="ASA24_07_k-means_files/figure-html/unnamed-chunk-41-1.png" width="60%" /></p>
+<p>Try multiple Ks and print the biplots in one panel.</p>
+<pre class="r"><code>MultipleK(myKs = c(2,3,4,6), out.dir = res_dir_cat_ave, out.fn = &quot;VVKAJ_Cat_ave_K2-4&amp;6&quot;)</code></pre>
+<p><img src="ASA24_07_k-means_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<p><br></p>
+<hr />
+<p>Come back to the main directory before you start running another script.</p>
+<pre class="r"><code>  setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

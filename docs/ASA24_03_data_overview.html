@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Data overview</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li class="dropdown-header">Visualize foodtrees</li>
+  </ul>
+</li>
+<li class="dropdown-header">NHANES</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Data overview</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>We can view summary statistics of either the individual food data or the totals data. First, let us take a look at theitems data. This section is not intended to be a complete guide to analysis, but rather to give you some ideas for how to explore this data.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/data_overview.R&quot;)
+source(&quot;lib/ggplot2themes.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 4.1.3</code></pre>
+<p>Call color palette. <code>distinct100colors.rda</code> is an R data file that contains 100 distinct colors, and most of them are color-blind friendly.</p>
+<pre class="r"><code>distinct100colors &lt;- readRDS(&quot;lib/distinct100colors.rda&quot;)</code></pre>
+<p>Make a vector of colors for each factor of Diet so that plots will have consistent colors.</p>
+<pre class="r"><code># Take the first five colors from distinct100colors. 
+diet_colors &lt;- distinct100colors[1:5]
+
+# Name each color.
+names(diet_colors) &lt;- c(&quot;Vegetarian&quot;, &quot;Vegan&quot;, &quot;Keto&quot;, &quot;American&quot;, &quot;Japanese&quot;) 
+
+# Specific colors are assigned to be used for each diet.
+diet_colors</code></pre>
+<pre><code>## Vegetarian      Vegan       Keto   American   Japanese 
+##  &quot;#800000&quot;  &quot;#FFE119&quot;  &quot;#4363D8&quot;  &quot;#FABED4&quot;  &quot;#469990&quot;</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p><br></p>
+</div>
+<div id="load-and-analyze-qc-ed-asa24-food-items-data" class="section level1">
+<h1>Load and analyze (QC-ed) ASA24 food items data</h1>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/VVKAJ&quot;)</code></pre>
+<p>Load your items data to be analyzed.<br />
+“_f_id_s_m” stands for: “food names formatted”, “SampleID added”, “selected individuals”, “metadata merged”, and “the individuals that passed the QC of averaged totals”.</p>
+<pre class="r"><code>items_f_id_s_m &lt;- read.delim(&quot;VVKAJ_Items_f_id_s_m_QCed.txt&quot;)</code></pre>
+<p><br></p>
+<hr />
+<div id="summary-statistics" class="section level2">
+<h2>Summary statistics</h2>
+<p>Summary statistics of one variable can be obtained by using R’s summary() function.</p>
+<p>View min, quantiles, mean, etc. for a variable in your dataset.</p>
+<pre class="r"><code>summary(items_f_id_s_m$KCAL)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00   10.03   76.80  130.15  167.78 1196.79</code></pre>
+<p>To calculate these summary statistics for multiple variables, use the <code>SummaryStats()</code> function. Calculate the minimum, 1st quantile, median, mean, 3rd quantile, max, and standard deviation for each variable in the input dataframe and save as a .txt file.</p>
+<pre class="r"><code>SummaryStats(inputdf = items_f_id_s_m,
+             outfn = &quot;VVKAJ_Items_f_id_s_m_summ.txt&quot;)</code></pre>
+<p>The .txt should contain data shown below. Non-numeric variables are indicated as “not-numeric”.</p>
+<p><img src="Screenshots_for_Tutorial/ASA24_overview/summarystats.png" style="width:60.0%" /></p>
+<blockquote>
+<p><strong>[NOTE]</strong> These are individual items, not by user or day.</p>
+</blockquote>
+<p><br></p>
+<hr />
+</div>
+<div id="boxplot" class="section level2">
+<h2>Boxplot</h2>
+<p>Generate a boxplot to view data distribution.</p>
+<p>Boxplot of KCAL by users.</p>
+<pre class="r"><code>users_kcal &lt;- ggplot(items_f_id_s_m, aes(x=UserName, y=KCAL)) +
+  geom_boxplot() + no_grid + space_axes + rotate_X_labels
+users_kcal</code></pre>
+<p><img src="ASA24_03_data_overview_files/figure-html/unnamed-chunk-10-1.png" width="60%" /></p>
+<p>Save it as a .pdf file.</p>
+<pre class="r"><code>ggsave(&quot;VVKAJ_Items_f_id_s_m_users_kcal.pdf&quot;, users_kcal,
+       device=&quot;pdf&quot;, width=6, height=4.6, units=&quot;in&quot;)</code></pre>
+<p>Similarly, generate a boxplot of KCAL by gender.</p>
+<pre class="r"><code>gender_kcal &lt;- ggplot(items_f_id_s_m, aes(x=Gender, y=KCAL)) +
+  geom_boxplot() + no_grid + space_axes
+gender_kcal</code></pre>
+<p><img src="ASA24_03_data_overview_files/figure-html/unnamed-chunk-12-1.png" width="60%" /></p>
+<p>Save it as a .pdf file.</p>
+<pre class="r"><code>ggsave(&quot;VVKAJ_Items_f_id_s_m_gender_kcal.pdf&quot;, gender_kcal,
+       device=&quot;pdf&quot;, width=3.5, height=4.6, units=&quot;in&quot;)</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="scatterplot" class="section level2">
+<h2>Scatterplot</h2>
+<p>Scatterplots can be generated to look at the relationship between two numeric variables. Here we look at total fat and kilocalories. We would expect these values to be related because fat contributes a high number of calories in foods.</p>
+<p>Scatterplot of two numeric variables: TFAT and KCAL.</p>
+<pre class="r"><code>TFAT_KCAL &lt;- ggplot(items_f_id_s_m, aes(x=TFAT, y=KCAL)) +
+  geom_point() + no_grid + space_axes + theme(aspect.ratio = 1)
+TFAT_KCAL</code></pre>
+<p><img src="ASA24_03_data_overview_files/figure-html/unnamed-chunk-14-1.png" width="60%" /></p>
+<p>Save it as a .pdf file.</p>
+<pre class="r"><code>ggsave(&quot;VVKAJ_Items_f_id_s_m_TFAT_KCAL.pdf&quot;, TFAT_KCAL, 
+       device=&quot;png&quot;, width=4.6, height=4.1, units=&quot;in&quot;)</code></pre>
+<p>Test if the two variables are correlated.<br />
+The output should show p-value and R correlation coefficient.</p>
+<pre class="r"><code>cor.test(x=items_f_id_s_m$TFAT, y=items_f_id_s_m$KCAL, method=&quot;pearson&quot;)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  items_f_id_s_m$TFAT and items_f_id_s_m$KCAL
+## t = 47.825, df = 676, p-value &lt; 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8601666 0.8946724
+## sample estimates:
+##       cor 
+## 0.8785608</code></pre>
+<p>The output says the correlation coefficient of TFAT and KCAL is 0.8785608, and the p-value for it is 2.2 x 10<sup>-16</sup>.</p>
+<p><br></p>
+</div>
+</div>
+<div id="load-and-analyze-qc-ed-asa24-mean-totals-data" class="section level1">
+<h1>Load and analyze (QC-ed) ASA24 mean totals data</h1>
+<p>Load your QC-ed mean totals data to be analyzed.</p>
+<pre class="r"><code>tot_mean_m_QCed &lt;- read.delim(&quot;VVKAJ_Tot_mean_m_QCed.txt&quot;)</code></pre>
+<p>Note that each row is the mean of total dietary intake of each user.</p>
+<pre class="r"><code>tot_mean_m_QCed[1:4, 1:4]</code></pre>
+<pre><code>##   UserName  FoodAmt     KCAL      PROT
+## 1 VVKAJ101 1998.246 1611.101  54.53020
+## 2 VVKAJ103 1808.167 1873.938 133.34506
+## 3 VVKAJ105 2220.698 2005.860 133.32918
+## 4 VVKAJ107 1755.088 1626.237  45.43402</code></pre>
+<p><br></p>
+<hr />
+<div id="summary-statistics-1" class="section level2">
+<h2>Summary statistics</h2>
+<p>Summary statistics of one variable.</p>
+<pre class="r"><code>summary(tot_mean_m_QCed$KCAL)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1283    1603    1691    1961    2019    3871</code></pre>
+<p>Calculate the min, quantiles, mean, etc. for a variable in your dataset in the same way we did with the items.</p>
+<pre class="r"><code>SummaryStats(inputdf = tot_mean_m_QCed, 
+             outfn = &quot;VVKAJ_tot_mean_m_QCed_summ.txt&quot;)</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="boxplot-1" class="section level2">
+<h2>Boxplot</h2>
+<p>Create a vector named “Diet_by_median” containing the Diet in a desired order (by median in this case).</p>
+<pre class="r"><code>Diet_by_median &lt;- with(tot_mean_m_QCed, 
+                  reorder(Diet, KCAL, median, na.rm=T))</code></pre>
+<p><code>Diet_by_median</code> is a factor, which contains the diets of all the 15 participants and the median values of each Diet group. “Levels” show the order of them.</p>
+<pre class="r"><code>Diet_by_median</code></pre>
+<pre><code>##  [1] Vegetarian Keto       Japanese   Vegan      American   Vegetarian
+##  [7] Keto       Japanese   Vegan      American   Vegetarian Keto      
+## [13] Japanese   Vegan      American  
+## attr(,&quot;scores&quot;)
+##   American   Japanese       Keto      Vegan Vegetarian 
+##   3002.664   1621.649   1869.665   1626.237   1486.866 
+## Levels: Vegetarian Japanese Vegan Keto American</code></pre>
+<p>Show the levels of this factor. This will be useful in plotting a factor in a desired order.</p>
+<pre class="r"><code>levels(Diet_by_median)</code></pre>
+<pre><code>## [1] &quot;Vegetarian&quot; &quot;Japanese&quot;   &quot;Vegan&quot;      &quot;Keto&quot;       &quot;American&quot;</code></pre>
+<p><br></p>
+<p>Generate a boxplot of KCAL by diet of the participants.</p>
+<pre class="r"><code>diet_KCAL_t &lt;- ggplot(tot_mean_m_QCed, aes(x=Diet_by_median, y=KCAL, fill=Diet_by_median)) +
+  geom_boxplot() + labs(x=&quot;Diet&quot;) +
+  theme(legend.position = &quot;none&quot;) + # hide legend  
+  scale_fill_manual(values=diet_colors) +
+  no_grid + space_axes + rotate_X_labels
+diet_KCAL_t</code></pre>
+<p><img src="ASA24_03_data_overview_files/figure-html/unnamed-chunk-24-1.png" width="60%" /></p>
+<p>Save it as a .pdf file.</p>
+<pre class="r"><code>ggsave(&quot;VVKAJ_tot_mean_m_QCed_diet_KCAL.pdf&quot;, diet_KCAL_t, 
+       device=&quot;pdf&quot;, width=5, height=4.5)</code></pre>
+<p><br></p>
+<p>Boxplot of KCAL by Diet, with each datapoint.</p>
+<blockquote>
+<p><strong>[Note]</strong> <code>geom_boxplot</code> must have outlier.shape = NA when plotted with geom_jitter. Otherwise, outlier points will be duplicated and will be misleading.</p>
+</blockquote>
+<pre class="r"><code>diet_KCAL_t_dots &lt;- ggplot(tot_mean_m_QCed, aes(x=Diet_by_median, y=KCAL, fill=Diet_by_median)) +
+  geom_boxplot(outlier.shape = NA) + labs(x=&quot;Diet&quot;) +    
+  geom_jitter(width=0.3) +
+  theme(legend.position = &quot;none&quot;) + # hide legend  
+  scale_fill_manual(values=diet_colors) +
+  no_grid + space_axes + rotate_X_labels
+diet_KCAL_t_dots</code></pre>
+<p><img src="ASA24_03_data_overview_files/figure-html/unnamed-chunk-26-1.png" width="60%" /></p>
+<p>Save it as a .pdf file.</p>
+<pre class="r"><code>ggsave(&quot;VVKAJ_tot_mean_m_QCed_diet_KCAL_dots.pdf&quot;, diet_KCAL_t_dots, 
+       device=&quot;pdf&quot;, width=5, height=4.5)</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="scatterplot-1" class="section level2">
+<h2>Scatterplot</h2>
+<p>Generate a scatterplot of two variables, color-coded by Diet.<br />
+Show the diets in the order of median, based on the boxplot that was generated above.</p>
+<pre class="r"><code>TFAT_KCAL_t &lt;- ggplot(tot_mean_m_QCed, aes(x=TFAT, y=KCAL, fill=Diet_by_median)) +
+  geom_point(shape=21, size=3, color=&quot;black&quot;) + no_grid + space_axes +
+  # order &quot;diet_colors&quot; in the same way as the level order of Diet_by_median.
+  scale_fill_manual(values= diet_colors[levels(Diet_by_median)]) +
+  labs(fill=&quot;Diet&quot;) + theme(aspect.ratio = 1) 
+TFAT_KCAL_t</code></pre>
+<p><img src="ASA24_03_data_overview_files/figure-html/unnamed-chunk-28-1.png" width="60%" /></p>
+<p>Save it as a .pdf file.</p>
+<pre class="r"><code>ggsave(&quot;VVKAJ_tot_mean_m_QCed_TFAT_KCAL.pdf&quot;, TFAT_KCAL_t, device=&quot;pdf&quot;,
+       width=5.5, height=4)</code></pre>
+<p>Test if the two variables are correlated.<br />
+The output should show the p-value and R correlation coefficient.</p>
+<pre class="r"><code>cor.test(x=tot_mean_m_QCed$TFAT, y=tot_mean_m_QCed$KCAL, method=&quot;pearson&quot;)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  tot_mean_m_QCed$TFAT and tot_mean_m_QCed$KCAL
+## t = 7.6702, df = 13, p-value = 3.534e-06
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.7321677 0.9683415
+## sample estimates:
+##       cor 
+## 0.9049994</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory before you start running another script.</p>
+<pre class="r"><code>  setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

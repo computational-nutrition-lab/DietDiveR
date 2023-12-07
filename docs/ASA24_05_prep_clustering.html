@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Prepare for clustering</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li class="dropdown-header">Visualize foodtrees</li>
+  </ul>
+</li>
+<li class="dropdown-header">NHANES</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Prepare for clustering</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Here, we will prepare ASA24 totals data for PCA and clustering analyses.<br />
+We will need to calculate average dietary data per person across all days (if desired), remove variables that have zero variance, and collapse variables by correlation (i.e. remove redundancy of variables that are highly correlated).</p>
+<p><br></p>
+<p>Part of descriptors of filenames for data type and processing pattern are defined as follows for each of the combination of two types of dietary data (nutrients or food categories) and two types of measurements (each day or average across days).</p>
+<table>
+<thead>
+<tr class="header">
+<th>Data type</th>
+<th>Nutrients (PROT - B12_ADD)</th>
+<th>Food categories (F_TOTAL - A_DRINKS)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>As is (1 row = user/day)</td>
+<td>Nut_asis</td>
+<td>Cat_asis</td>
+</tr>
+<tr class="even">
+<td>Averaged across days (1 row = user)</td>
+<td>Nut_ave</td>
+<td>Cat_ave</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/prep_data_for_clustering.R&quot;)</code></pre>
+<p>Call color palette.</p>
+<pre class="r"><code>distinct100colors &lt;- readRDS(&quot;lib/distinct100colors.rda&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p><br></p>
+</div>
+<div id="import-data-and-prepare-them-for-analyses" class="section level1">
+<h1>Import data and prepare them for analyses</h1>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name= &quot;eg_data/VVKAJ/&quot;)</code></pre>
+<!-- This is the R-markdown code to change directories. -->
+<p>There may be some variables that you would like to omit before performing PCA.<br />
+Define which columns to drop.</p>
+<pre class="r"><code>drops &lt;- c(&quot;FoodAmt&quot;, &quot;KCAL&quot;, &quot;MOIS&quot;)</code></pre>
+<p>Load the totals data (for each day, not averaged, but with the individuals in the QC-ed mean totals). Note that <code>_m</code> stands for “metadata added”, not “means”.</p>
+<pre class="r"><code>totals &lt;- read.table(&quot;VVKAJ_Tot_m_QCed.txt&quot;, sep= &quot;\t&quot;, header= T)</code></pre>
+<p>Take only the columns whose names are NOT in the <code>drops</code> vector.</p>
+<pre class="r"><code>totals_2 &lt;- totals[ , !(names(totals) %in% drops)]</code></pre>
+<p>Load the averaged and QC-ed totals that has one data per participant with metadata.</p>
+<pre class="r"><code>totals_mean &lt;- read.table(&quot;VVKAJ_Tot_mean_m_QCed.txt&quot;, sep=&quot;\t&quot;, header=T)  </code></pre>
+<p>Take only the columns whose names are NOT in the <code>drops</code> vector.</p>
+<pre class="r"><code>totals_mean_2 &lt;- totals_mean[ , !(names(totals_mean) %in% drops)]</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="nutrients-use-data-as-is" class="section level1">
+<h1>NUTRIENTS: Use data as is</h1>
+<p>Obtain the column numbers for UserName, BMI, start.col=“PROT” through end.col=“B12_ADD”.</p>
+<pre class="r"><code>userID_col &lt;- match(&quot;UserName&quot;, names(totals_2))
+BMI_col   &lt;-  match(&quot;BMI&quot;     , names(totals_2))
+start_col &lt;-  match(&quot;PROT&quot;    , names(totals_2))
+end_col   &lt;-  match(&quot;B12_ADD&quot; , names(totals_2))</code></pre>
+<p>Select the BMI, body weight, and the nutrient variables.</p>
+<pre class="r"><code>user_BMI_nut &lt;- totals_2[ , c(userID_col, BMI_col, start_col:end_col)]</code></pre>
+<p>Ensure user_BMI_nut has only the selected columns (variables).</p>
+<pre class="r"><code>colnames(user_BMI_nut)</code></pre>
+<pre><code>##  [1] &quot;UserName&quot; &quot;BMI&quot;      &quot;PROT&quot;     &quot;TFAT&quot;     &quot;CARB&quot;     &quot;ALC&quot;     
+##  [7] &quot;CAFF&quot;     &quot;THEO&quot;     &quot;SUGR&quot;     &quot;FIBE&quot;     &quot;CALC&quot;     &quot;IRON&quot;    
+## [13] &quot;MAGN&quot;     &quot;PHOS&quot;     &quot;POTA&quot;     &quot;SODI&quot;     &quot;ZINC&quot;     &quot;COPP&quot;    
+## [19] &quot;SELE&quot;     &quot;VC&quot;       &quot;VB1&quot;      &quot;VB2&quot;      &quot;NIAC&quot;     &quot;VB6&quot;     
+## [25] &quot;FOLA&quot;     &quot;FA&quot;       &quot;FF&quot;       &quot;FDFE&quot;     &quot;VB12&quot;     &quot;VARA&quot;    
+## [31] &quot;RET&quot;      &quot;BCAR&quot;     &quot;ACAR&quot;     &quot;CRYP&quot;     &quot;LYCO&quot;     &quot;LZ&quot;      
+## [37] &quot;ATOC&quot;     &quot;VK&quot;       &quot;CHOLE&quot;    &quot;SFAT&quot;     &quot;S040&quot;     &quot;S060&quot;    
+## [43] &quot;S080&quot;     &quot;S100&quot;     &quot;S120&quot;     &quot;S140&quot;     &quot;S160&quot;     &quot;S180&quot;    
+## [49] &quot;MFAT&quot;     &quot;M161&quot;     &quot;M181&quot;     &quot;M201&quot;     &quot;M221&quot;     &quot;PFAT&quot;    
+## [55] &quot;P182&quot;     &quot;P183&quot;     &quot;P184&quot;     &quot;P204&quot;     &quot;P205&quot;     &quot;P225&quot;    
+## [61] &quot;P226&quot;     &quot;VITD&quot;     &quot;CHOLN&quot;    &quot;VITE_ADD&quot; &quot;B12_ADD&quot;</code></pre>
+<p>Process this input, user_BMI_nut, for clustering analysis as follows.</p>
+<ol style="list-style-type: decimal">
+<li>Take complete cases in your variables of interest,</li>
+<li>Save the original totals of the complete cases individuals as a .txt,</li>
+<li>Keep non-zero columns,</li>
+<li>Remove the userID,</li>
+<li>Identify correlated variables and optionally remove them,</li>
+<li>Save with uncorrelated variables as a .txt,</li>
+<li>Save correlation matrix as a .txt.</li>
+</ol>
+<pre class="r"><code>PrepForClustering(input_df = user_BMI_nut,
+                  userID = &quot;UserName&quot;,
+                  original_totals_df= totals, 
+                  complete_cases_fn=   &quot;VVKAJ_Tot_m_QCed_Nut_asis_c.txt&quot;,
+                  clustering_input_fn= &quot;VVKAJ_Tot_m_QCed_Nut_asis_c_rv.txt&quot;,
+                  corr_matrix_fn=      &quot;VVKAJ_Tot_m_QCed_Nut_asis_c_corr_matrix.txt&quot;,
+                  rm_corr_var = TRUE)</code></pre>
+<pre><code>## user_BMI_nut has 45 rows and 65 variables.
+## The following column(s) in user_BMI_nut have missing data shown below.
+## Rows (samples) containing those missing data will be removed.
+##  named numeric(0)
+## No columns had zero variance. 
+## The numeric data without ID has 45 rows and 64 variables.
+## Clustering 64 variables.
+## After removing correlated variables, 45 rows and 39 variables remained.</code></pre>
+<p><br></p>
+</div>
+<div id="nutrients-take-average-of-each-user-across-all-days" class="section level1">
+<h1>NUTRIENTS: Take average of each user across all days</h1>
+<p>Obtain the column numbers for UserName, BMI, start.col=“PROT” through end.col=“B12_ADD” in totals_mean_2.</p>
+<pre class="r"><code>UserName_col &lt;- match(&quot;UserName&quot; , names(totals_mean_2)) 
+BMI_col   &lt;-    match(&quot;BMI&quot;      , names(totals_mean_2)) 
+start_col &lt;-    match(&quot;PROT&quot;     , names(totals_mean_2))  
+end_col   &lt;-    match(&quot;B12_ADD&quot;  , names(totals_mean_2)) </code></pre>
+<p>Select the BMI, body weight, and the nutrient variables.</p>
+<pre class="r"><code>m_user_BMI_nut &lt;- totals_mean_2[ , c(UserName_col, BMI_col, start_col:end_col)]</code></pre>
+<p>Process this input for clustering analyses.</p>
+<pre class="r"><code>PrepForClustering(input_df = m_user_BMI_nut,
+                  userID = &quot;UserName&quot;,
+                  original_totals_df= totals_mean, 
+                  complete_cases_fn=   &quot;VVKAJ_Tot_mean_m_QCed_Nut_ave_c.txt&quot;,
+                  clustering_input_fn= &quot;VVKAJ_Tot_mean_m_QCed_Nut_ave_c_rv.txt&quot;,
+                  corr_matrix_fn=      &quot;VVKAJ_Tot_mean_m_QCed_Nut_ave_c_corr_matrix.txt&quot;,
+                  rm_corr_var = TRUE)</code></pre>
+<pre><code>## m_user_BMI_nut has 15 rows and 65 variables.
+## The following column(s) in m_user_BMI_nut have missing data shown below.
+## Rows (samples) containing those missing data will be removed.
+##  named numeric(0)
+## No columns had zero variance. 
+## The numeric data without ID has 15 rows and 64 variables.
+## Clustering 64 variables.
+## After removing correlated variables, 15 rows and 29 variables remained.</code></pre>
+<p><br></p>
+</div>
+<div id="food-categories-use-data-as-is" class="section level1">
+<h1>FOOD CATEGORIES: Use data as is</h1>
+<p>Obtain the column numbers for BMI, UserName, start.col=“F_TOTAL” through end.col=“A_DRINKS”.</p>
+<pre class="r"><code>userID_col &lt;- match(&quot;UserName&quot; , names(totals_2))
+BMI_col   &lt;-  match(&quot;BMI&quot;      , names(totals_2))
+start_col &lt;-  match(&quot;F_TOTAL&quot;  , names(totals_2))
+end_col   &lt;-  match(&quot;A_DRINKS&quot; , names(totals_2))</code></pre>
+<p>Select the BMI, body weight, and the nutrient variables.</p>
+<pre class="r"><code>user_BMI_cat &lt;- totals_2[ , c(userID_col, BMI_col, start_col:end_col)]</code></pre>
+<p>Process this input for clustering analyses.</p>
+<pre class="r"><code>PrepForClustering(input_df = user_BMI_cat,
+                  userID = &quot;UserName&quot;,
+                  original_totals_df= totals, 
+                  complete_cases_fn=   &quot;VVKAJ_Tot_m_QCed_Cat_asis_c.txt&quot;,
+                  clustering_input_fn= &quot;VVKAJ_Tot_m_QCed_Cat_asis_c_rv.txt&quot;,
+                  corr_matrix_fn=      &quot;VVKAJ_Tot_m_QCed_Cat_asis_c_corr_matrix.txt&quot;,
+                  rm_corr_var = TRUE)</code></pre>
+<pre><code>## user_BMI_cat has 45 rows and 39 variables.
+## The following column(s) in user_BMI_cat have missing data shown below.
+## Rows (samples) containing those missing data will be removed.
+##  named numeric(0)
+## The following column(s) in  input_df_c_wo_ID  had zero variance and were removed. 
+## The numeric data without ID now has 45 rows and 37 variables.
+## PF_ORGAN 
+##       23 
+## Clustering 37 variables.
+## After removing correlated variables, 45 rows and 30 variables remained.</code></pre>
+<p><br></p>
+</div>
+<div id="food-categories-take-average-of-each-user-across-all-days" class="section level1">
+<h1>FOOD CATEGORIES: Take average of each user across all days</h1>
+<p>Obtain the column numbers for UserName, BMI, start.col=“F_TOTAL” through end.col=“A_DRINKS” in totals_mean_2.</p>
+<pre class="r"><code>UserName_col &lt;- match(&quot;UserName&quot; , names(totals_mean_2)) 
+BMI_col   &lt;-    match(&quot;BMI&quot;      , names(totals_mean_2)) 
+start_col &lt;-    match(&quot;F_TOTAL&quot;     , names(totals_mean_2))  
+end_col   &lt;-    match(&quot;A_DRINKS&quot;  , names(totals_mean_2)) </code></pre>
+<p>Pick up the BMI, body weight, and the nutrient variables.</p>
+<pre class="r"><code>m_user_BMI_cat &lt;- totals_mean_2[ , c(UserName_col, BMI_col, start_col:end_col)]</code></pre>
+<p>Process this input for clustering analyses.</p>
+<pre class="r"><code>PrepForClustering(input_df = m_user_BMI_cat,
+                  userID = &quot;UserName&quot;,
+                  original_totals_df= totals_mean, 
+                  complete_cases_fn=   &quot;VVKAJ_Tot_mean_m_QCed_Cat_ave_c.txt&quot;,
+                  clustering_input_fn= &quot;VVKAJ_Tot_mean_m_QCed_Cat_ave_c_rv.txt&quot;,
+                  corr_matrix_fn=      &quot;VVKAJ_Tot_mean_m_QCed_Cat_ave_c_corr_matrix.txt&quot;,
+                  rm_corr_var = TRUE)</code></pre>
+<pre><code>## m_user_BMI_cat has 15 rows and 39 variables.
+## The following column(s) in m_user_BMI_cat have missing data shown below.
+## Rows (samples) containing those missing data will be removed.
+##  named numeric(0)
+## The following column(s) in  input_df_c_wo_ID  had zero variance and were removed. 
+## The numeric data without ID now has 15 rows and 37 variables.
+## PF_ORGAN 
+##       23 
+## Clustering 37 variables.
+## After removing correlated variables, 15 rows and 25 variables remained.</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory before you start running another script.</p>
+<pre class="r"><code>  setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

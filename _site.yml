@@ -9,26 +9,26 @@ navbar:
     menu:
     - text: "Load and clean ASA24 data"
       href: ASA24_01_load_and_clean.html
-    # - text: "Calculate totals by occasion"
-    #   href: ASA24_02_calc_totals_by_occasion.html
-    # - text: "Data overview"
-    #   href: ASA24_03_data_overview.html
-    # - text: "Percent kcal of CARB, PROT, TFAT"
-    #   href: ASA24_04_percent_kcal.html
-    # - text: "---------"
-    # - text: "Prepare for clustering"
-    #   href: ASA24_05_prep_clustering.html
-    # - text: "PCA"
-    #   href: ASA24_06_PCA.html
-    # - text: "k-means"
-    #   href: ASA24_07_k-means.html
-    # - text: "---------"
-    # - text: "Foodtrees with all food items"
-    #   href: ASA24_08_create_foodtree_allfooditems.html
-    # - text: "Foodtrees with your own data"
-    #   href: ASA24_09_create_foodtree_ownitems.html
+    - text: "Calculate totals by occasion"
+      href: ASA24_02_calc_totals_by_occasion.html
+    - text: "Data overview"
+      href: ASA24_03_data_overview.html
+    - text: "Percent kcal of CARB, PROT, TFAT"
+      href: ASA24_04_percent_kcal.html
+    - text: "---------"
+    - text: "Prepare for clustering"
+      href: ASA24_05_prep_clustering.html
+    - text: "PCA"
+      href: ASA24_06_PCA.html
+    - text: "k-means"
+      href: ASA24_07_k-means.html
+    - text: "---------"
+    - text: "Foodtrees with all food items"
+      href: ASA24_08_create_foodtree_allfooditems.html
+    - text: "Foodtrees with your own data"
+      href: ASA24_09_create_foodtree_ownitems.html
     # - text: "Visualize foodtrees"
-    #   href: ASA24_10_viz_food_tree.html
+      # href: ASA24_10_viz_food_tree.html
     # - text: "Ordination"
     #   href: ASA24_11_ordination.html
     # - text: "Visualize ordination"

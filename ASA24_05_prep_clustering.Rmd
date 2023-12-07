@@ -1,0 +1,263 @@
+---
+title: "Prepare for clustering"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+
+<br>
+
+# Introduction
+
+Here, we will prepare ASA24 totals data for PCA and clustering analyses.  
+We will need to calculate average dietary data per person across all days (if desired), remove variables that have zero variance, and collapse variables by correlation (i.e. remove redundancy of variables that are highly correlated).
+
+<br>
+
+Part of descriptors of filenames for data type and processing pattern are defined as follows for each of the combination of two types of dietary data (nutrients or food categories) and two types of measurements (each day or average across days). 
+
+
+Data type | Nutrients (PROT - B12_ADD) | Food categories (F_TOTAL - A_DRINKS)
+-------- | -------- | --------
+As is (1 row = user/day) | Nut_asis | Cat_asis
+Averaged across days (1 row = user) | Nut_ave | Cat_ave
+
+<br>
+
+# Load functions and packages  
+
+Name the path to DietDiveR directory where input files are pulled.
+```{r}
+main_wd <- "~/GitHub/DietDiveR"
+```
+
+Load the necessary functions.
+```{r}
+source("lib/specify_data_dir.R")
+source("lib/prep_data_for_clustering.R")
+```
+
+Call color palette.
+```{r}
+distinct100colors <- readRDS("lib/distinct100colors.rda")
+```
+
+You can come back to the main directory by:
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<br>
+
+# Import data and prepare them for analyses
+
+Specify the directory where the data is.
+```{r, eval = FALSE}
+SpecifyDataDirectory(directory.name= "eg_data/VVKAJ/")
+```
+
+<!-- This is the R-markdown code to change directories. -->
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_knit$set(root.dir = 'eg_data/VVKAJ')
+```
+
+There may be some variables that you would like to omit before performing PCA.  
+Define which columns to drop.
+```{r}
+drops <- c("FoodAmt", "KCAL", "MOIS")
+```
+
+Load the totals data (for each day, not averaged, but with the individuals in the QC-ed mean totals). Note that `_m` stands for "metadata added", not "means". 
+```{r}
+totals <- read.table("VVKAJ_Tot_m_QCed.txt", sep= "\t", header= T)
+```
+
+Take only the columns whose names are NOT in the `drops` vector.
+```{r}
+totals_2 <- totals[ , !(names(totals) %in% drops)]
+```
+
+Load the averaged and QC-ed totals that has one data per participant with metadata.
+```{r}
+totals_mean <- read.table("VVKAJ_Tot_mean_m_QCed.txt", sep="\t", header=T)  
+```
+
+Take only the columns whose names are NOT in the `drops` vector.
+```{r}
+totals_mean_2 <- totals_mean[ , !(names(totals_mean) %in% drops)]
+```
+
+<br>
+
+---
+
+# NUTRIENTS: Use data as is
+
+Obtain the column numbers for UserName, BMI, start.col="PROT" through end.col="B12_ADD".
+```{r}
+userID_col <- match("UserName", names(totals_2))
+BMI_col   <-  match("BMI"     , names(totals_2))
+start_col <-  match("PROT"    , names(totals_2))
+end_col   <-  match("B12_ADD" , names(totals_2))
+```
+
+Select the BMI, body weight, and the nutrient variables.
+```{r}
+user_BMI_nut <- totals_2[ , c(userID_col, BMI_col, start_col:end_col)]
+```
+
+Ensure user_BMI_nut has only the selected columns (variables).
+```{r}
+colnames(user_BMI_nut)
+```
+
+Process this input, user_BMI_nut, for clustering analysis as follows.
+
+1. Take complete cases in your variables of interest, 
+2. Save the original totals of the complete cases individuals as a .txt, 
+3. Keep non-zero columns, 
+4. Remove the userID,
+5. Identify correlated variables and optionally remove them,
+6. Save with uncorrelated variables as a .txt,
+7. Save correlation matrix as a .txt.  
+
+```{r}
+PrepForClustering(input_df = user_BMI_nut,
+                  userID = "UserName",
+                  original_totals_df= totals, 
+                  complete_cases_fn=   "VVKAJ_Tot_m_QCed_Nut_asis_c.txt",
+                  clustering_input_fn= "VVKAJ_Tot_m_QCed_Nut_asis_c_rv.txt",
+                  corr_matrix_fn=      "VVKAJ_Tot_m_QCed_Nut_asis_c_corr_matrix.txt",
+                  rm_corr_var = TRUE)
+```
+
+<br>
+
+# NUTRIENTS: Take average of each user across all days 
+
+Obtain the column numbers for UserName, BMI, start.col="PROT" through end.col="B12_ADD"  in totals_mean_2.
+```{r}
+UserName_col <- match("UserName" , names(totals_mean_2)) 
+BMI_col   <-    match("BMI"      , names(totals_mean_2)) 
+start_col <-    match("PROT"     , names(totals_mean_2))  
+end_col   <-    match("B12_ADD"  , names(totals_mean_2)) 
+```
+
+Select the BMI, body weight, and the nutrient variables.
+```{r}
+m_user_BMI_nut <- totals_mean_2[ , c(UserName_col, BMI_col, start_col:end_col)]
+```
+
+Process this input for clustering analyses.
+```{r}
+PrepForClustering(input_df = m_user_BMI_nut,
+                  userID = "UserName",
+                  original_totals_df= totals_mean, 
+                  complete_cases_fn=   "VVKAJ_Tot_mean_m_QCed_Nut_ave_c.txt",
+                  clustering_input_fn= "VVKAJ_Tot_mean_m_QCed_Nut_ave_c_rv.txt",
+                  corr_matrix_fn=      "VVKAJ_Tot_mean_m_QCed_Nut_ave_c_corr_matrix.txt",
+                  rm_corr_var = TRUE)
+```
+
+<br>
+
+# FOOD CATEGORIES: Use data as is
+
+Obtain the column numbers for BMI, UserName, start.col="F_TOTAL" through end.col="A_DRINKS".
+```{r}
+userID_col <- match("UserName" , names(totals_2))
+BMI_col   <-  match("BMI"      , names(totals_2))
+start_col <-  match("F_TOTAL"  , names(totals_2))
+end_col   <-  match("A_DRINKS" , names(totals_2))
+```
+
+Select the BMI, body weight, and the nutrient variables.
+```{r}
+user_BMI_cat <- totals_2[ , c(userID_col, BMI_col, start_col:end_col)]
+```
+
+Process this input for clustering analyses.
+```{r}
+PrepForClustering(input_df = user_BMI_cat,
+                  userID = "UserName",
+                  original_totals_df= totals, 
+                  complete_cases_fn=   "VVKAJ_Tot_m_QCed_Cat_asis_c.txt",
+                  clustering_input_fn= "VVKAJ_Tot_m_QCed_Cat_asis_c_rv.txt",
+                  corr_matrix_fn=      "VVKAJ_Tot_m_QCed_Cat_asis_c_corr_matrix.txt",
+                  rm_corr_var = TRUE)
+```
+
+<br>
+
+# FOOD CATEGORIES: Take average of each user across all days
+
+Obtain the column numbers for UserName, BMI, start.col="F_TOTAL" through end.col="A_DRINKS" in totals_mean_2.
+```{r}
+UserName_col <- match("UserName" , names(totals_mean_2)) 
+BMI_col   <-    match("BMI"      , names(totals_mean_2)) 
+start_col <-    match("F_TOTAL"     , names(totals_mean_2))  
+end_col   <-    match("A_DRINKS"  , names(totals_mean_2)) 
+```
+
+Pick up the BMI, body weight, and the nutrient variables.
+```{r}
+m_user_BMI_cat <- totals_mean_2[ , c(UserName_col, BMI_col, start_col:end_col)]
+```
+
+Process this input for clustering analyses.
+```{r}
+PrepForClustering(input_df = m_user_BMI_cat,
+                  userID = "UserName",
+                  original_totals_df= totals_mean, 
+                  complete_cases_fn=   "VVKAJ_Tot_mean_m_QCed_Cat_ave_c.txt",
+                  clustering_input_fn= "VVKAJ_Tot_mean_m_QCed_Cat_ave_c_rv.txt",
+                  corr_matrix_fn=      "VVKAJ_Tot_mean_m_QCed_Cat_ave_c_corr_matrix.txt",
+                  rm_corr_var = TRUE)
+```
+
+<br>  
+
+---
+
+Come back to the main directory before you start running another script.
+```{r, eval=FALSE}
+  setwd(main_wd)
+```
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

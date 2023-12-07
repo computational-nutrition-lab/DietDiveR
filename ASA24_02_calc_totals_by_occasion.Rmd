@@ -1,0 +1,135 @@
+---
+title: "Calculate totals by occation"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+
+<br>
+
+# Introduction
+
+Here we will calculate totals by occasion, user, and day.  
+This will be useful if a researcher wants to look at the sum of each eating occasion per participant. In contrast, the totals file we generated summed all the occasions of a certain day into one datapoint.
+
+<br>
+
+# Load functions and packages  
+
+Name the path to DietDiveR directory where input files are pulled.
+```{r}
+main_wd <- "~/GitHub/DietDiveR"
+```
+
+Load the necessary functions.
+```{r}
+source("lib/specify_data_dir.R")
+source("lib/calc_ASA24totals_by_occasion.R")
+```
+
+You can come back to the main directory by:
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+Specify the directory where the data is.
+```{r, eval = FALSE}
+SpecifyDataDirectory(directory.name= "eg_data/VVKAJ/")
+```
+
+<!-- This is the R-markdown code to change directories. -->
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_knit$set(root.dir = 'eg_data/VVKAJ')
+```
+
+<br>
+
+# Generate sum of foods by occasion
+
+Load your items data.
+```{r}
+items_f_id_s_m_QCed <- read.delim("VVKAJ_Items_f_id_s_m_QCed.txt", sep="\t", header=T)
+```
+
+Generate sum of foods consumed by each user, by day, and by occasion.  
+Output will be saved as: `Items_by_User_Occ`.  
+```{r}
+SumByOccasion(items.data=items_f_id_s_m_QCed, User.Name='UserName', 
+              Recall.No='RecallNo',   Occ.No='Occ_No')
+```
+
+Take a look at the first 10 rows of the first 6 columns.  
+Items are summed by occasion number for each participant's RecallNo.
+```{r}
+Items_by_User_Occ[1:10, 1:6]
+```
+
+The Items_by_User_Occ function adds occasion names (breakfast, snacks etc.) to items.data.  
+Output will be saved as: `Sum_by_User_Day_Occ`.
+```{r}
+AddOccNames(items.data=items_f_id_s_m_QCed, User.Name='UserName', 
+            Recall.No='RecallNo', Occ.No='Occ_No', Occ.Name='Occ_Name')
+```
+
+The output `Sum_by_User_Day_Occ` has the sum of foods consumed by each user, day, and occasion, with occasion names in words.
+  
+Take a look at the first 6 rows. Spelled-out occasion names corresponding to occasion name 
+have been added at the end.
+```{r}
+head(Sum_by_User_Day_Occ)
+```
+
+<br> 
+
+---
+
+Save Sum_by_User_Day_Occ as a txt file.
+```{r}
+write.table(Sum_by_User_Day_Occ, 'VVKAJ_Sum_by_User_Day_Occ.txt', sep="\t", row.names=F, quote=F)
+```
+
+<br>  
+
+---
+Come back to the main directory before you start running another script.
+```{r, eval=FALSE}
+  setwd(main_wd)
+```
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
