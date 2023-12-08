@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>k-means</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li>
+      <a href="ASA24_10_viz_food_tree.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="ASA24_11_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_12_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_13_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    NHANES
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="NHANES_01_load_and_clean_1.html">Load and clean NHANES data - 1</a>
+    </li>
+    <li>
+      <a href="NHANES_02_load_and_clean_2.html">Load and clean NHANES data - 2</a>
+    </li>
+    <li>
+      <a href="NHANES_03_add_meta_GLU_index.html">Add metadata and GLU-index</a>
+    </li>
+    <li>
+      <a href="NHANES_04_overview_GLU_index.html">Data overview</a>
+    </li>
+    <li>
+      <a href="NHANES_05_GLU_index_by_age_gender.html">GLU-index by age and gender</a>
+    </li>
+    <li>
+      <a href="NHANES_06_subset_males60to79.html">Subset males 60-79 years old</a>
+    </li>
+    <li>
+      <a href="NHANES_07_males60to79_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_08_males60to79_prep_for_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="NHANES_09_males60to79_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="NHANES_10_males60to79_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_11_males60to79_generate_foodtrees.html">Generate foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_12_males60to79_viz_foodtrees.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_13_males60to79_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_14_males60to79_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_15_males60to79_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_16_Div.html">Assign DivGroups by dietary diversity</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore"><em>k</em>-means</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Here, we will run k-means analysis with the NHANES 2-day average totals, subsetted for males, 60-79 years old.</p>
+<p>Create two folders named “males60to79_Nut_k-means” and “males60to79_Cat_k-means” inside “Laboratory_data” to save k-means results of Nutrients and Food Category data, respectively.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load necessary packages.</p>
+<pre class="r"><code>library(ggplot2)
+library(ggfortify)
+library(cluster)
+library(factoextra)</code></pre>
+<p>Set your ggplot2 theme.</p>
+<pre class="r"><code>theme_set(theme_bw(base_size = 14))</code></pre>
+<p>Import source code to run the analyses to follow.Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/k-means.R&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/NHANES/Laboratory_data/&quot;)</code></pre>
+<p><br></p>
+</div>
+<div id="nutrient-data-processed-for-clustering-analyses" class="section level1">
+<h1>Nutrient data, processed for clustering analyses</h1>
+<p>Your input data should be a data frame with uncorrelated variables with non-zero variance and with no missing data.</p>
+<pre class="r"><code>nut_kmeansinput &lt;- read.table(&quot;QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_rv.txt&quot;,
+                              sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Ensure your input file has the correct number of rows and columns.</p>
+<pre class="r"><code>dim(nut_kmeansinput)</code></pre>
+<pre><code>## [1] 233  38</code></pre>
+<p>Scale your input file and name it as k-means_input.</p>
+<pre class="r"><code>kmeans_input &lt;- scale(nut_kmeansinput)</code></pre>
+<p>Specify the directory (folder) to save the results. (create a folder named as this if not done so)</p>
+<pre class="r"><code>res_dir_nut = &quot;males60to79_Nut_k-means&quot;</code></pre>
+<p>Specify the prefix of filenames to be saved.</p>
+<pre class="r"><code>res_prefix_nut = &quot;males60to79_Nut&quot;</code></pre>
+<p>Run the elbow, silhouette, and gap methods to find an optimum K (number of clusters).</p>
+<p>Do not alter the name of the input file: kmeans_input. This function below assumes that the input is named as “kmeans_input”. You can only run those three methods for K = 1 through {number of observations - 1}. The gap method output will be printed on the Console. The gap values are plotted in xxx_gapmethod.pdf.</p>
+<pre class="r"><code>ChooseK(out.dir= res_dir_nut, out.prefix= res_prefix_nut)</code></pre>
+<pre><code>## Clustering Gap statistic [&quot;clusGap&quot;] from call:
+## clusGap(x = kmeans_input, FUNcluster = kmeans, K.max = k.values[length(k.values)],     B = 50, nstart = 25)
+## B=50 simulated reference sets, k = 1..14; spaceH0=&quot;scaledPCA&quot;
+##  --&gt; Number of clusters (method &#39;firstmax&#39;): 2
+##           logW   E.logW       gap      SE.sim
+##  [1,] 6.150070 6.972681 0.8226108 0.007558117
+##  [2,] 6.036185 6.888746 0.8525616 0.007272901
+##  [3,] 6.002307 6.851715 0.8494081 0.006786687
+##  [4,] 5.974293 6.821833 0.8475405 0.006445700
+##  [5,] 5.947021 6.798339 0.8513187 0.006603890
+##  [6,] 5.924153 6.778219 0.8540662 0.007025167
+##  [7,] 5.898831 6.760414 0.8615828 0.006986434
+##  [8,] 5.880824 6.744604 0.8637801 0.006801836
+##  [9,] 5.856029 6.730063 0.8740340 0.006800283
+## [10,] 5.841073 6.716490 0.8754175 0.006740785
+## [11,] 5.821761 6.703855 0.8820942 0.006881840
+## [12,] 5.808938 6.691759 0.8828205 0.006940483
+## [13,] 5.791567 6.680376 0.8888092 0.006644822
+## [14,] 5.777561 6.669002 0.8914409 0.006422340</code></pre>
+<p>The Gap method output on the console may say “Warning message: did not converge in 10 iterations.”</p>
+<p>If this happens, the optimum K suggested may not be as conclusive, but we can proceed for now while keeping that in mind.</p>
+<p>As we saw in the k-means analysis with ASA24 data, this code will generate three output files all at once in the res_dir_xxx:</p>
+<table>
+<colgroup>
+<col width="23%" />
+<col width="76%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output file postfix</th>
+<th>File content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>_elbowmethod.pdf</td>
+<td>Shows total within−clusters sum of squares for each K.</td>
+</tr>
+<tr class="even">
+<td>_gapmethod.pdf</td>
+<td>Shows the Gap statistic (k) for each K, and if the factoextra package is used, the optimal K is marked by a dotted line.</td>
+</tr>
+<tr class="odd">
+<td>_silhouettemethod.pdf</td>
+<td>Shows the Average silhouette width (~ goodness of fit) for each K, and if the factoextra package is used, the optimal K is marked by a dotted line.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>Look at the three figures generated by the ChooseK function above. The elbow and gap method did not give a distinct peak (though the gap method indicates K=2 might be optimal), but the silhouette methods gave a peak at K=2.</p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/NHANES%2010%20k-means/males60to79_Nut_elbowmethod.png" style="width:50.0%" alt="" />
+<p class="caption">Output of the elbow method</p>
+</div>
+<p><br></p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/NHANES%2010%20k-means/males60to79_Nut_gapmethod.png" style="width:50.0%" alt="" />
+<p class="caption">Output of the gap method</p>
+</div>
+<p><br></p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/NHANES%2010%20k-means/males60to79_Nut_silhouettemethod.png" style="width:50.0%" alt="" />
+<p class="caption">Output of the silhouette method</p>
+</div>
+<p><br></p>
+<p>With specific K values in mind, perform k-means analysis with one specified K. Also, change the file name to be saved as a PDF. This uses the factoextra package.</p>
+<pre class="r"><code>OneK(myK= 2, out.dir= res_dir_nut, out.fn = &quot;males60to79_Nut_K2&quot;)</code></pre>
+<pre class="r"><code>oneKplot</code></pre>
+<p><img src="NHANES_10_males60to79_k-means_files/figure-html/unnamed-chunk-14-1.png" width="70%" /></p>
+<p><br></p>
+<hr />
+<p>Or try multiple Ks and print respective biplots in one panel.</p>
+<p>Likewise, change the file name to be saved as a PDF as necessary. This uses the factoextra and gridExtra packages.</p>
+<pre class="r"><code>MultipleK(myKs = c(2,3,4,5), out.dir = res_dir_nut, out.fn = &quot;males60to79_Nut_K2-5&quot;)</code></pre>
+<p><img src="NHANES_10_males60to79_k-means_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><br></p>
+</div>
+<div id="food-category-data-processed-for-clustering-analyses" class="section level1">
+<h1>Food category data, processed for clustering analyses</h1>
+<p>Your input data should be a data frame with uncorrelated variables with non-zero variance and with no missing data.</p>
+<pre class="r"><code>cat_kmeansinput &lt;- read.table(&quot;QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat_rv.txt&quot;, 
+                              sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Ensure your input file has the correct number of rows and columns.</p>
+<pre class="r"><code>dim(cat_kmeansinput)</code></pre>
+<pre><code>## [1] 233  31</code></pre>
+<p>Scale your input file and name it as k-means_input.</p>
+<pre class="r"><code>kmeans_input &lt;- scale(cat_kmeansinput)</code></pre>
+<p>Specify the directory (folder) to save the results.</p>
+<pre class="r"><code>res_dir_cat = &quot;males60to79_Cat_k-means&quot;</code></pre>
+<p>Specify the prefix of filenames to be saved.</p>
+<pre class="r"><code>res_prefix_cat = &quot;males60to79_Cat&quot;</code></pre>
+<p>Run the elbow, silhouette, and gap methods to find an optimum K (number of clusters). Do not alter the name of the input file: kmeans_input. This function below assumes that the input is named as “kmeans_input”. You can only run those three methods for K = 1 through {number of observations - 1}. The gap method output will be printed on the Console. The gap values are plotted in xxx_gapmethod.pdf.</p>
+<pre class="r"><code>ChooseK(out.dir= res_dir_cat, out.prefix= res_prefix_cat)</code></pre>
+<pre><code>## Warning: did not converge in 10 iterations
+
+## Warning: did not converge in 10 iterations</code></pre>
+<pre><code>## Clustering Gap statistic [&quot;clusGap&quot;] from call:
+## clusGap(x = kmeans_input, FUNcluster = kmeans, K.max = k.values[length(k.values)],     B = 50, nstart = 25)
+## B=50 simulated reference sets, k = 1..14; spaceH0=&quot;scaledPCA&quot;
+##  --&gt; Number of clusters (method &#39;firstmax&#39;): 2
+##           logW   E.logW       gap      SE.sim
+##  [1,] 6.077407 6.823007 0.7456004 0.007190084
+##  [2,] 6.022779 6.781099 0.7583202 0.007088643
+##  [3,] 5.999514 6.754640 0.7551255 0.007103413
+##  [4,] 5.977161 6.732629 0.7554676 0.007004655
+##  [5,] 5.960613 6.713888 0.7532751 0.006951759
+##  [6,] 5.940540 6.697324 0.7567846 0.007075712
+##  [7,] 5.918677 6.682256 0.7635787 0.007051532
+##  [8,] 5.904437 6.668338 0.7639010 0.006789814
+##  [9,] 5.883634 6.655356 0.7717221 0.007049463
+## [10,] 5.865838 6.642750 0.7769119 0.007257051
+## [11,] 5.844629 6.631363 0.7867344 0.007228006
+## [12,] 5.830350 6.620251 0.7899009 0.007318270
+## [13,] 5.807032 6.609471 0.8024391 0.007124858
+## [14,] 5.798131 6.599320 0.8011884 0.007234342</code></pre>
+<p>Look at the three figures generated by the ChooseK function above. The elbow and gap method did not give a distinct peak (though the gap method indicates K=2 might be optimal), but the silhouette method gave a peak at K=3.</p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/NHANES%2010%20k-means/males60to79_Cat_elbowmethod.png" style="width:50.0%" alt="" />
+<p class="caption">Output of the elbow method</p>
+</div>
+<p><br></p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/NHANES%2010%20k-means/males60to79_Cat_gapmethod.png" style="width:50.0%" alt="" />
+<p class="caption">Output of the gap method</p>
+</div>
+<p><br></p>
+<div class="figure">
+<img src="Screenshots_for_Tutorial/NHANES%2010%20k-means/males60to79_Cat_silhouettemethod.png" style="width:50.0%" alt="" />
+<p class="caption">Output of the silhouette method</p>
+</div>
+<p>With specific K values in mind, perform k-means analysis with one specified K. Also, change the file name to be saved as a PDF.</p>
+<pre class="r"><code>OneK(myK= 3, out.dir= res_dir_cat, out.fn = &quot;males60to79_Cat_K3&quot;)</code></pre>
+<pre class="r"><code>oneKplot</code></pre>
+<p><img src="NHANES_10_males60to79_k-means_files/figure-html/unnamed-chunk-23-1.png" width="70%" /></p>
+<p>Or try multiple Ks and print respective biplots in one panel.</p>
+<p>Likewise, change the file name to be saved as a PDF as necessary. This uses the factoextra and gridExtra packages.</p>
+<pre class="r"><code>MultipleK(myKs = c(2,3,4,5), out.dir = res_dir_cat, out.fn = &quot;males60to79_Cat_K2-5&quot;)</code></pre>
+<p><img src="NHANES_10_males60to79_k-means_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<hr />
+<p>Come back to the main directory.</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

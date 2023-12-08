@@ -125,7 +125,7 @@ SummaryStats(inputdf = items_f_id_s_m,
 
 The .txt should contain data shown below. Non-numeric variables are indicated as “not-numeric”.
 
-![](Screenshots_for_Tutorial/ASA24_overview/summarystats.png){width=60%}
+![](Screenshots_for_Tutorial/ASA24 03 overview/summarystats.png){width=60%}
 
 
 > **[NOTE]** These are individual items, not by user or day.

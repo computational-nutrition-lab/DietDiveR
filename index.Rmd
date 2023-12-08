@@ -32,7 +32,7 @@ body{ /* Normal  */
 <div class="row" style="padding-top: 30px;">
 <div class="col-sm-6">
 
-# **Welcome to DietDiveR package tutorial**
+# **Welcome to DietDiveR tutorial!**
 
 This tutorial shows how to analyze ASA24 and NHANES data.
 
@@ -50,6 +50,6 @@ This tutorial shows how to analyze ASA24 and NHANES data.
 ## [Computational Nutrition Lab](https://abbyj6.wixsite.com/website)
 
 <a href = "https://crumplab.github.io">
-![](images/DietDiveR_Logo.png)
+![](images/DietDiveR Logo.png)
 </a>
 </div>

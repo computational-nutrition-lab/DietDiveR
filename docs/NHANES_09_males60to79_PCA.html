@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>PCA</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li>
+      <a href="ASA24_10_viz_food_tree.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="ASA24_11_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_12_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_13_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    NHANES
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="NHANES_01_load_and_clean_1.html">Load and clean NHANES data - 1</a>
+    </li>
+    <li>
+      <a href="NHANES_02_load_and_clean_2.html">Load and clean NHANES data - 2</a>
+    </li>
+    <li>
+      <a href="NHANES_03_add_meta_GLU_index.html">Add metadata and GLU-index</a>
+    </li>
+    <li>
+      <a href="NHANES_04_overview_GLU_index.html">Data overview</a>
+    </li>
+    <li>
+      <a href="NHANES_05_GLU_index_by_age_gender.html">GLU-index by age and gender</a>
+    </li>
+    <li>
+      <a href="NHANES_06_subset_males60to79.html">Subset males 60-79 years old</a>
+    </li>
+    <li>
+      <a href="NHANES_07_males60to79_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_08_males60to79_prep_for_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="NHANES_09_males60to79_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="NHANES_10_males60to79_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_11_males60to79_generate_foodtrees.html">Generate foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_12_males60to79_viz_foodtrees.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_13_males60to79_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_14_males60to79_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_15_males60to79_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_16_Div.html">Assign DivGroups by dietary diversity</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">PCA</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In this script, we will perform Principal Component Analysis (PCA) with the NHANES 2-day average totals, subsetted for males, 60-79 years old.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load necessary packages.</p>
+<pre class="r"><code>library(ggplot2)
+library(ggfortify)</code></pre>
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/ggplot2themes.R&quot;)
+source(&quot;lib/PCA.R&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/NHANES/Laboratory_data/&quot;)</code></pre>
+<p>Create two folders named “males60to79_Nut_PCA” and “males60to79_Cat_PCA” inside “Laboratory_data” to save PCA results of Nutrients and Food Category data, respectively.</p>
+<p><br></p>
+</div>
+<div id="pca-with-nutrients-and-bmi" class="section level1">
+<h1>PCA with nutrients and BMI</h1>
+<p>Your input data should be a dataframe with uncorrelated variables with non-zero variance and with no missing data.</p>
+<pre class="r"><code>pca_input &lt;- read.table(&quot;QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_rv.txt&quot;, 
+                        sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Ensure your input file has the correct number of rows and columns.</p>
+<pre class="r"><code>dim(pca_input)</code></pre>
+<pre><code>## [1] 233  38</code></pre>
+<pre class="r"><code>colnames(pca_input)</code></pre>
+<pre><code>##  [1] &quot;BMXBMI&quot; &quot;SODI&quot;   &quot;CARB&quot;   &quot;FF&quot;     &quot;TFAT&quot;   &quot;PFAT&quot;   &quot;CHL&quot;    &quot;ATOC&quot;  
+##  [9] &quot;ATOA&quot;   &quot;VARA&quot;   &quot;ACAR&quot;   &quot;BCAR&quot;   &quot;CRYP&quot;   &quot;LYCO&quot;   &quot;LZ&quot;     &quot;VB1&quot;   
+## [17] &quot;VB2&quot;    &quot;NIAC&quot;   &quot;FDFE&quot;   &quot;VB12&quot;   &quot;B12A&quot;   &quot;VC&quot;     &quot;VD&quot;     &quot;CALC&quot;  
+## [25] &quot;POTA&quot;   &quot;MAGN&quot;   &quot;ZINC&quot;   &quot;CAFF&quot;   &quot;THEO&quot;   &quot;ALCO&quot;   &quot;S140&quot;   &quot;S120&quot;  
+## [33] &quot;M161&quot;   &quot;M201&quot;   &quot;M221&quot;   &quot;P184&quot;   &quot;P226&quot;   &quot;P225&quot;</code></pre>
+<p>Perform PCA with the subset data, scaled.</p>
+<pre class="r"><code>scaled_pca &lt;- prcomp(x= pca_input, scale= TRUE)   </code></pre>
+<p>Specify the directory (folder that you created in “Laboratory_data”) to save the results.</p>
+<pre class="r"><code>res_dir_Nut = &quot;males60to79_Nut_PCA&quot; </code></pre>
+<p>Specify the prefix of filenames to be saved.</p>
+<pre class="r"><code>res_prefix_Nut = &quot;males60to79_Nut_fn&quot;</code></pre>
+<p>Save PCA output files in a specified folder (out.dir) and a prefix (out.prefix).</p>
+<pre class="r"><code>OutputPCA(pca.data= pca_input, pca.result= scaled_pca, 
+          out.dir= res_dir_Nut, out.prefix= res_prefix_Nut)</code></pre>
+<p>As we saw in the PCA with ASA24 data, this code will generate several output files all at once in the res_dir: res_prefix_Nut.</p>
+<table>
+<colgroup>
+<col width="35%" />
+<col width="64%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output file postfix</th>
+<th>File content</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>_biplotdots.pdf PCA</td>
+<td>biplot with the datapoints as dots and with the variables shown as arrows</td>
+</tr>
+<tr class="even">
+<td>_biplotlabeled.pdf</td>
+<td>PCA biplot with the datapoints labed with numbers and with the variables shown as arrows</td>
+</tr>
+<tr class="odd">
+<td>_biplotlabeledwoarrows.pdf</td>
+<td>The datapoints labed with numbers; variables are hidden</td>
+</tr>
+<tr class="even">
+<td>_directions.pdf</td>
+<td>Variables shown as arrows only; the datapoints are hidden</td>
+</tr>
+<tr class="odd">
+<td>_loadings_PC1.pdf</td>
+<td>Loadings of PC1 shown as a bar chart.</td>
+</tr>
+<tr class="even">
+<td>_loadings_PC2.pdf</td>
+<td>Loadings of PC2 shown as a bar chart.</td>
+</tr>
+<tr class="odd">
+<td>_PC_loadings.txt</td>
+<td>Text file with loadings of each PC for the variables.</td>
+</tr>
+<tr class="even">
+<td>_PC_var_explained.txt</td>
+<td>Amount of variation explained by each PC</td>
+</tr>
+<tr class="odd">
+<td>_PCs.txt</td>
+<td>The input file (totals/items) and the PCA results combined</td>
+</tr>
+<tr class="even">
+<td>_scree.pdf</td>
+<td>PCA scree plot, showing the amount of variance explained by each PC.</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>Combine the input with all the variables and the PC results.</p>
+<p>“input” is your items/totals input file with no missing data in your variables, but including the ones that are highly correlated and therefore were removed when processed into clustering input; however, these variables are going to be included here so that we will be able to take a look at all the variables and see which of them are correlated with the PCA axes and metadata etc.</p>
+<pre class="r"><code>SaveInputAndPCs(input=&quot;QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut.txt&quot;, 
+                pca.results = scaled_pca, 
+                out.dir= res_dir_Nut, out.prefix= res_prefix_Nut)</code></pre>
+<blockquote>
+<p><strong>[NOTE]</strong> Even though the input file has both nutrients (Nut) and food categories (Cat) data, PCA was done with only either Nut or Cat, not both.</p>
+</blockquote>
+<p><br></p>
+<hr />
+<div id="color-code-datapoints-on-a-biplot-by-a-factor---glu_index-in-this-case" class="section level2">
+<h2>Color-code datapoints on a biplot by a factor - GLU_index, in this case</h2>
+<p>Load the totals_males60to79 data with no missing data in your variables of interest.</p>
+<pre class="r"><code>totals_males60to79 &lt;- read.table(&quot;QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut.txt&quot;, 
+                                 sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Change GLU_index to a factor so that factors will be displayed in order.</p>
+<pre class="r"><code>totals_males60to79$GLU_index &lt;- factor(totals_males60to79$GLU_index, 
+                                       levels= c(&quot;Normal&quot;, &quot;Prediabetic&quot;, &quot;Diabetic&quot;))</code></pre>
+<p>Use the autoplot function. Specify which PC to display in the x and y arguments.</p>
+<pre class="r"><code>food_Nut_PCA &lt;- autoplot(scaled_pca, x=1, y=2,    
+                         loadings=T, loadings.label=T, loadings.colour = &#39;grey50&#39;,  # loadings.label=T if want to see it
+                         data = totals_males60to79,  size= 3 ) +     
+  geom_point(size = 3, alpha = 1, na.rm = T, shape = 21, aes(fill= GLU_index)) +
+  theme_bw(base_size = 12) + theme(aspect.ratio = 1) +  
+  theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  scale_fill_manual( values= c(&quot;steelblue3&quot;, &quot;yellow&quot;, &quot;hotpink&quot;)) </code></pre>
+<pre class="r"><code>food_Nut_PCA</code></pre>
+<p><img src="NHANES_09_males60to79_PCA_files/figure-html/unnamed-chunk-16-1.png" width="70%" /></p>
+<p>Save as a .pdf.</p>
+<pre class="r"><code>ggsave(&quot;males60to79_Nut_PCA/males60to79_c_Nut_PCA_by_GLU_index_PC12.pdf&quot;, 
+       food_Nut_PCA, device=&quot;pdf&quot;, width=7, height=6.5)</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="pca-with-food-categories-and-bmi" class="section level1">
+<h1>PCA with food categories and BMI</h1>
+<p>Your input data should be a dataframe with uncorrelated variables with non-zero variance and with no missing data.</p>
+<pre class="r"><code>pca_input &lt;- read.table(&quot;QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat_rv.txt&quot;,
+                        sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Ensure your input file has the correct number of rows and columns.</p>
+<pre class="r"><code>dim(pca_input)</code></pre>
+<pre><code>## [1] 233  31</code></pre>
+<p>Perform PCA with the subset data, scaled.</p>
+<pre class="r"><code>scaled_pca &lt;- prcomp(x= pca_input, scale= TRUE)   </code></pre>
+<p>Specify the directory (folder that you created in “Laboratory_data”) to save the results.</p>
+<pre class="r"><code>res_dir_Cat = &quot;males60to79_Cat_PCA&quot; </code></pre>
+<p>Specify the prefix of filenames to be saved.</p>
+<pre class="r"><code>res_prefix_Cat = &quot;males60to79_Cat&quot;</code></pre>
+<p>Save PCA output files in a specified folder (out.dir) and a prefix (out.prefix).</p>
+<pre class="r"><code>OutputPCA(pca.data=pca_input, pca.result=scaled_pca, 
+          out.dir= res_dir_Cat, out.prefix= res_prefix_Cat)</code></pre>
+<p>Combine the input with all the variables and the PC results.</p>
+<pre class="r"><code>SaveInputAndPCs(input=&quot;QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat.txt&quot;, 
+                pca.results = scaled_pca, 
+                out.dir= res_dir_Cat, out.prefix= res_prefix_Cat)</code></pre>
+<blockquote>
+<p><strong>[NOTE]</strong> Even though the input file has both nutrients (Nut) and food categories (Cat) data, PCA was done with only either Nut or Cat, not both.</p>
+</blockquote>
+<p><br></p>
+<hr />
+<div id="color-code-datapoints-on-a-biplot-by-a-factor---glu_index-in-this-case-1" class="section level2">
+<h2>Color-code datapoints on a biplot by a factor - GLU_index, in this case</h2>
+<p>Load the totals_males60to79 data with no missing data in your variables of interest.</p>
+<pre class="r"><code>totals_males60to79 &lt;- read.table(&quot;QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat.txt&quot;, 
+                                 sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Change GLU_index to a factor so that factors will be displayed in order.</p>
+<pre class="r"><code>totals_males60to79$GLU_index &lt;- factor(totals_males60to79$GLU_index, 
+                                   levels= c(&quot;Normal&quot;, &quot;Prediabetic&quot;, &quot;Diabetic&quot;))  </code></pre>
+<p>Use the autoplot function. Specify which PC to display in the x and y arguments.</p>
+<p>The ‘data’ argument needs the original input for PCA, not after selecting uncorrelated variables.</p>
+<pre class="r"><code>food_Cat_PCA &lt;- autoplot(scaled_pca, x=1, y=2,  
+                         loadings=T, loadings.label=T, loadings.colour = &#39;grey50&#39;,  # loadings.label=T if want to see it
+                         data = totals_males60to79,  size= 3 ) +          
+  geom_point(size = 3, alpha = 1, na.rm = T, shape = 21,  aes(fill= GLU_index)) +
+  theme_bw(base_size = 12) + theme(aspect.ratio = 1) +  
+  theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  scale_fill_manual( values= c(&quot;steelblue3&quot;, &quot;yellow&quot;, &quot;hotpink&quot;)) </code></pre>
+<pre class="r"><code>food_Cat_PCA</code></pre>
+<p><img src="NHANES_09_males60to79_PCA_files/figure-html/unnamed-chunk-28-1.png" width="70%" /></p>
+<pre class="r"><code>ggsave(&quot;males60to79_Cat_PCA/males60to79_c_Cat_PCA_by_GLU_index_PC12.pdf&quot;, 
+       food_Cat_PCA, device=&quot;pdf&quot;, width=7, height=6.5)</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory.</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

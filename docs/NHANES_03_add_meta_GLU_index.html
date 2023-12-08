@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Add metadata and GLU-index</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li>
+      <a href="ASA24_10_viz_food_tree.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="ASA24_11_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_12_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_13_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    NHANES
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="NHANES_01_load_and_clean_1.html">Load and clean NHANES data - 1</a>
+    </li>
+    <li>
+      <a href="NHANES_02_load_and_clean_2.html">Load and clean NHANES data - 2</a>
+    </li>
+    <li>
+      <a href="NHANES_03_add_meta_GLU_index.html">Add metadata and GLU-index</a>
+    </li>
+    <li>
+      <a href="NHANES_04_overview_GLU_index.html">Data overview</a>
+    </li>
+    <li>
+      <a href="NHANES_05_GLU_index_by_age_gender.html">GLU-index by age and gender</a>
+    </li>
+    <li>
+      <a href="NHANES_06_subset_males60to79.html">Subset males 60-79 years old</a>
+    </li>
+    <li>
+      <a href="NHANES_07_males60to79_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_08_males60to79_prep_for_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="NHANES_09_males60to79_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="NHANES_10_males60to79_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_11_males60to79_generate_foodtrees.html">Generate foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_12_males60to79_viz_foodtrees.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_13_males60to79_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_14_males60to79_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_15_males60to79_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_16_Div.html">Assign DivGroups by dietary diversity</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Add metadata and GLU-index</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In this script, we will add participants’ metadata, and GLU_index variable based on their blood glucose levels.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>  main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Install the foreign package if it is not installed yet.</p>
+<pre class="r"><code>if (!require(&quot;foreign&quot;, quietly = TRUE)) install.packages(&quot;foreign&quot;)</code></pre>
+<!-- Load foreign in the background -->
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/load_clean_NHANES.R&quot;)
+source(&quot;lib/add_gender_and_age.R&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name= &quot;eg_data/NHANES/&quot;)</code></pre>
+<p><br></p>
+<p>Create a folder called “Laboratory_data” under “NHANES”, so that our results with laboratory data (glucose tolerance test) can be saved.</p>
+<p><br></p>
+</div>
+<div id="load-nhanes15-16totals-with-demographic-data" class="section level1">
+<h1>Load NHANES15-16totals with demographic data</h1>
+<p>Load the QC-ed total (with food categories), filtered for KCAL, PROT, TFAT, VC. 4,164 people.</p>
+<pre class="r"><code>QCtotal_d &lt;- read.table(&quot;Total_D12_FC_QC_mean_QC_demo.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Check the number of participants in the QCtotals - should be 4,164 people.</p>
+<pre class="r"><code>length(unique(QCtotal_d$SEQN))</code></pre>
+<pre><code>## [1] 4164</code></pre>
+</div>
+<div id="add-gender-and-age-body-measure-and-metadata" class="section level1">
+<h1>Add Gender and Age, body measure, and metadata</h1>
+<p>We are going to use the following columns:<br />
+RIAGENDR = gender<br />
+RIDAGEYR = age</p>
+<p>Add gender and age_groups to QCtotal_d_glu_body_meta. The output is named “totals_out”.</p>
+<pre class="r"><code>AddGenderAgeGroups(input=QCtotal_d, age.col=&quot;RIDAGEYR&quot;, gender.col=&quot;RIAGENDR&quot;)</code></pre>
+<p>Rename the output as QCtotal_d_ga.</p>
+<pre class="r"><code>QCtotal_d_ga &lt;- totals_out  </code></pre>
+<p>Ensure grouping has been done correctly.</p>
+<pre class="r"><code>head(QCtotal_d_ga[, c(&quot;RIAGENDR&quot;, &quot;Gender&quot;, &quot;RIDAGEYR&quot;, &quot;AgeGroup&quot;, &quot;Gender_Age&quot;)])</code></pre>
+<pre><code>##   RIAGENDR Gender RIDAGEYR AgeGroup Gender_Age
+## 1        1      M       62      60s      M_60s
+## 2        1      M       53      50s      M_50s
+## 3        1      M       78      70s      M_70s
+## 4        1      M       22      20s      M_20s
+## 5        1      M       56      50s      M_50s
+## 6        1      M       46      40s      M_40s</code></pre>
+<p>Check the frequency of the groups. As expected, people aged 18-19 are less frequent.</p>
+<pre class="r"><code>table(QCtotal_d_ga$Gender_Age)  </code></pre>
+<pre><code>## 
+##  F_18_19    F_20s    F_30s    F_40s    F_50s    F_60s    F_70s F_80plus 
+##       95      344      331      381      344      360      207      138 
+##  M_18_19    M_20s    M_30s    M_40s    M_50s    M_60s    M_70s M_80plus 
+##       94      279      309      288      302      340      232      120</code></pre>
+<pre class="r"><code>table(QCtotal_d_ga$AgeGroup)    </code></pre>
+<pre><code>## 
+##  18_19    20s    30s    40s    50s    60s    70s 80plus 
+##    189    623    640    669    646    700    439    258</code></pre>
+<p><br></p>
+</div>
+<div id="add-body-measure-data" class="section level1">
+<h1>Add body measure data</h1>
+<p>Download the body measure data from NHANES website and save it in “Raw_data” folder.</p>
+<pre class="r"><code>download.file(&quot;https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.XPT&quot;, 
+              destfile= &quot;Raw_data/BMX_I.XPT&quot;, mode=&quot;wb&quot;)  </code></pre>
+<p>Load the body measure data.</p>
+<pre class="r"><code>bodymea &lt;- read.xport(&quot;Raw_data/BMX_I.XPT&quot;)</code></pre>
+<p>Explanation of variables can be found from <a href="https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/BMX_I.htm">NHANES</a>.</p>
+<p>Relevant variables here include:</p>
+<table>
+<colgroup>
+<col width="21%" />
+<col width="78%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>BMDSTATS</td>
+<td>Body Measures Component Status Code. 1 == Complete data for age group; 2 == Partial: Only height and weight obtained.</td>
+</tr>
+<tr class="even">
+<td>BMXHT</td>
+<td>Standing Height (cm)</td>
+</tr>
+<tr class="odd">
+<td>BMIHT</td>
+<td>Standing Height Comment</td>
+</tr>
+<tr class="even">
+<td>BMXBMI</td>
+<td>Body Mass Index (kg/m<sup>2</sup>)</td>
+</tr>
+<tr class="odd">
+<td>BMXWAIST</td>
+<td>Waist Circumference (cm)</td>
+</tr>
+</tbody>
+</table>
+<p>Add body measure to <code>QCtotal_d</code>.</p>
+<pre class="r"><code>QCtotal_d_ga_body &lt;- merge(x=QCtotal_d_ga, y=bodymea, by=&quot;SEQN&quot;)</code></pre>
+<p><br></p>
+<hr />
+<p>Download the metadata for people, who are in Total Day 1 from the NHANES website, and save it in “Raw_data” folder.</p>
+<pre class="r"><code>download.file(&quot;https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.XPT&quot;, 
+              destfile= &quot;Raw_data/DR1TOT_I.XPT&quot;, mode=&quot;wb&quot;)  </code></pre>
+<p>Load the metadata in Total Day 1.</p>
+<pre class="r"><code>metadata_raw &lt;- read.xport(&quot;Raw_data/DR1TOT_I.XPT&quot;)</code></pre>
+<p>Total Day 1 has “dietary data for day 1” and “metadata”, but we only need the metadata; thus, take out only the metadata columns (variables) and exclude the day 1 data. Column names’ descriptions can be found here on the <a href="https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1TOT_I.htm">NHANES 2015-16 page</a>.</p>
+<p>First, specify the first and the last column names to select.<br />
+Look for the column number that matches the first and last variable specified.</p>
+<pre class="r"><code>sta_col_num_a &lt;- match(&quot;DBQ095Z&quot;  , names(metadata_raw))  # Salt-related questions
+end_col_num_a &lt;- match(&quot;DRQSPREP&quot; , names(metadata_raw))
+sta_col_num_b &lt;- match(&quot;DRQSDIET&quot; , names(metadata_raw))  # Diet-related questions
+end_col_num_b &lt;- match(&quot;DRQSDT91&quot; , names(metadata_raw))
+sta_col_num_c &lt;- match(&quot;DRD340&quot;   , names(metadata_raw))  # Fish-related questions
+end_col_num_c &lt;- match(&quot;DRD370V&quot;  , names(metadata_raw))</code></pre>
+<p>Only select the metadata variables and SEQN, which is in column 1.</p>
+<pre class="r"><code>metadata_only &lt;- metadata_raw[, c(1,
+                                  sta_col_num_a:end_col_num_a,
+                                  sta_col_num_b:end_col_num_b,
+                                  sta_col_num_c:end_col_num_c
+                                  )]</code></pre>
+<p>Check that this has only the SEQN and metadata columns.</p>
+<pre class="r"><code>colnames(metadata_only)</code></pre>
+<pre><code>##  [1] &quot;SEQN&quot;     &quot;DBQ095Z&quot;  &quot;DBD100&quot;   &quot;DRQSPREP&quot; &quot;DRQSDIET&quot; &quot;DRQSDT1&quot; 
+##  [7] &quot;DRQSDT2&quot;  &quot;DRQSDT3&quot;  &quot;DRQSDT4&quot;  &quot;DRQSDT5&quot;  &quot;DRQSDT6&quot;  &quot;DRQSDT7&quot; 
+## [13] &quot;DRQSDT8&quot;  &quot;DRQSDT9&quot;  &quot;DRQSDT10&quot; &quot;DRQSDT11&quot; &quot;DRQSDT12&quot; &quot;DRQSDT91&quot;
+## [19] &quot;DRD340&quot;   &quot;DRD350A&quot;  &quot;DRD350AQ&quot; &quot;DRD350B&quot;  &quot;DRD350BQ&quot; &quot;DRD350C&quot; 
+## [25] &quot;DRD350CQ&quot; &quot;DRD350D&quot;  &quot;DRD350DQ&quot; &quot;DRD350E&quot;  &quot;DRD350EQ&quot; &quot;DRD350F&quot; 
+## [31] &quot;DRD350FQ&quot; &quot;DRD350G&quot;  &quot;DRD350GQ&quot; &quot;DRD350H&quot;  &quot;DRD350HQ&quot; &quot;DRD350I&quot; 
+## [37] &quot;DRD350IQ&quot; &quot;DRD350J&quot;  &quot;DRD350JQ&quot; &quot;DRD350K&quot;  &quot;DRD360&quot;   &quot;DRD370A&quot; 
+## [43] &quot;DRD370AQ&quot; &quot;DRD370B&quot;  &quot;DRD370BQ&quot; &quot;DRD370C&quot;  &quot;DRD370CQ&quot; &quot;DRD370D&quot; 
+## [49] &quot;DRD370DQ&quot; &quot;DRD370E&quot;  &quot;DRD370EQ&quot; &quot;DRD370F&quot;  &quot;DRD370FQ&quot; &quot;DRD370G&quot; 
+## [55] &quot;DRD370GQ&quot; &quot;DRD370H&quot;  &quot;DRD370HQ&quot; &quot;DRD370I&quot;  &quot;DRD370IQ&quot; &quot;DRD370J&quot; 
+## [61] &quot;DRD370JQ&quot; &quot;DRD370K&quot;  &quot;DRD370KQ&quot; &quot;DRD370L&quot;  &quot;DRD370LQ&quot; &quot;DRD370M&quot; 
+## [67] &quot;DRD370MQ&quot; &quot;DRD370N&quot;  &quot;DRD370NQ&quot; &quot;DRD370O&quot;  &quot;DRD370OQ&quot; &quot;DRD370P&quot; 
+## [73] &quot;DRD370PQ&quot; &quot;DRD370Q&quot;  &quot;DRD370QQ&quot; &quot;DRD370R&quot;  &quot;DRD370RQ&quot; &quot;DRD370S&quot; 
+## [79] &quot;DRD370SQ&quot; &quot;DRD370T&quot;  &quot;DRD370TQ&quot; &quot;DRD370U&quot;  &quot;DRD370UQ&quot; &quot;DRD370V&quot;</code></pre>
+<p>Add meatadata to <code>QCtotal_d_glu_body</code>.</p>
+<pre class="r"><code>QCtotal_d_ga_body_meta &lt;- merge(x=QCtotal_d_ga_body, y=metadata_only, by=&quot;SEQN&quot;)</code></pre>
+<p>Save as a .txt file. This can be used for answering research questions other than glycaemic index.</p>
+<pre class="r"><code>write.table(QCtotal_d_ga_body_meta, &quot;Total_D12_FC_QC_mean_QC_demo_ga_body_meta.txt&quot;,
+            sep=&quot;\t&quot;, row.names=F, quote=F)</code></pre>
+<p><br></p>
+</div>
+<div id="load-the-blood-glucose-data-add-glu_index-and-filter-out-rows-containing-missing-data" class="section level1">
+<h1>Load the blood glucose data, add GLU_index, and filter out rows containing missing data</h1>
+<p>Download the blood glucose data from NHANES website, and save it in “Raw_data” folder.</p>
+<pre class="r"><code>download.file(&quot;https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/GLU_I.XPT&quot;, 
+              destfile= &quot;Raw_data/GLU_I.XPT&quot;, mode=&quot;wb&quot;)  </code></pre>
+<p>Load the blood glucose data and see.</p>
+<pre class="r"><code>glu &lt;- read.xport(&quot;Raw_data/GLU_I.XPT&quot;)</code></pre>
+<p>glu has LBXGLU - Fasting Glucose (mg/dL).</p>
+<pre class="r"><code>head(glu)</code></pre>
+<pre><code>##    SEQN  WTSAF2YR LBXGLU LBDGLUSI
+## 1 83733  54722.34    101     5.59
+## 2 83734  25471.09     84     4.66
+## 3 83736  38179.51     84     4.66
+## 4 83737  25800.85    107     5.93
+## 5 83741 108751.29     95     5.27
+## 6 83743  52877.26     97     5.38</code></pre>
+<p>Check its distribution.</p>
+<pre class="r"><code>hist(glu$LBXGLU)</code></pre>
+<p><img src="NHANES_03_add_meta_GLU_index_files/figure-html/unnamed-chunk-26-1.png" width="60%" /></p>
+<p>Add glu to QCtotal_d_ga_body_meta.</p>
+<pre class="r"><code>QCtotal_d_ga_body_meta_glu &lt;- merge(x=QCtotal_d_ga_body_meta, y=glu, by=&quot;SEQN&quot;)</code></pre>
+<p><br></p>
+<hr />
+<div id="add-glu_index-according-to-their-glucose-level-normal-prediabetic-and-diabetic." class="section level2">
+<h2>Add GLU_index according to their glucose level: Normal, Prediabetic, and Diabetic.</h2>
+<table>
+<thead>
+<tr class="header">
+<th>GLU_index</th>
+<th>Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Normal</td>
+<td>99 mg/dL or lower</td>
+</tr>
+<tr class="even">
+<td>Prediabetic</td>
+<td>100 to 125 mg/dL</td>
+</tr>
+<tr class="odd">
+<td>Diabetic</td>
+<td>126 mg/dL or higher</td>
+</tr>
+</tbody>
+</table>
+<p>If LBXGLU is missing, put “NA”; if it has a value, add GLU_index category in “GLU_index” column.</p>
+<pre class="r"><code>QCtotal_d_ga_body_meta_glu$GLU_index &lt;- ifelse(
+  
+  # test sentence
+  is.na(QCtotal_d_ga_body_meta_glu$LBXGLU) == TRUE,
+  
+  # if LBXGLU is NA, put NA to GLU_index column. 
+  NA,
+  
+  # Otherwise, put &quot;Normal&quot;, &quot;Prediabetic&quot; or &quot;Diabetic&quot; to GLU_index column. 
+  ifelse(QCtotal_d_ga_body_meta_glu$LBXGLU &lt; 100,
+         &quot;Normal&quot;, 
+         ifelse(QCtotal_d_ga_body_meta_glu$LBXGLU &lt; 126,
+                &quot;Prediabetic&quot;,
+                &quot;Diabetic&quot;))
+)</code></pre>
+<p>Check the first 30 rows of glucose and GLU_index columns in QCtotal_d_glu_body_meta.</p>
+<pre class="r"><code>QCtotal_d_ga_body_meta_glu[1:30, c(&quot;LBXGLU&quot;, &quot;GLU_index&quot;)]</code></pre>
+<pre><code>##    LBXGLU   GLU_index
+## 1     101 Prediabetic
+## 2      84      Normal
+## 3      84      Normal
+## 4     107 Prediabetic
+## 5      95      Normal
+## 6     130    Diabetic
+## 7     284    Diabetic
+## 8     398    Diabetic
+## 9      95      Normal
+## 10     97      Normal
+## 11     97      Normal
+## 12    111 Prediabetic
+## 13    113 Prediabetic
+## 14    114 Prediabetic
+## 15     94      Normal
+## 16     92      Normal
+## 17    119 Prediabetic
+## 18     94      Normal
+## 19    101 Prediabetic
+## 20    104 Prediabetic
+## 21    105 Prediabetic
+## 22    105 Prediabetic
+## 23    109 Prediabetic
+## 24     99      Normal
+## 25     79      Normal
+## 26     97      Normal
+## 27     90      Normal
+## 28     NA        &lt;NA&gt;
+## 29     99      Normal
+## 30     89      Normal</code></pre>
+<p><br></p>
+<hr />
+<p>There are some missing data, so check the frequency with useNA argument to show NAs.</p>
+<pre class="r"><code>table(QCtotal_d_ga_body_meta_glu$GLU_index, useNA=&quot;always&quot;)</code></pre>
+<pre><code>## 
+##    Diabetic      Normal Prediabetic        &lt;NA&gt; 
+##         287         788         848          88</code></pre>
+<p>Select individuals that have no missing data in the LBXGLU column.</p>
+<pre class="r"><code>QCtotal_d_ga_body_meta_glu_comp &lt;-  QCtotal_d_ga_body_meta_glu[!is.na(QCtotal_d_ga_body_meta_glu$LBXGLU), ]</code></pre>
+<p>Check the number of rows - should have 1,923 rows.</p>
+<pre class="r"><code>nrow(QCtotal_d_ga_body_meta_glu_comp)</code></pre>
+<pre><code>## [1] 1923</code></pre>
+<p>Double-check there is no missing data in GLU_index.</p>
+<pre class="r"><code>table(QCtotal_d_ga_body_meta_glu_comp$GLU_index, useNA=&quot;always&quot;)</code></pre>
+<pre><code>## 
+##    Diabetic      Normal Prediabetic        &lt;NA&gt; 
+##         287         788         848           0</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="exclude-individuals-who-are-following-special-diets" class="section level1">
+<h1>Exclude individuals who are following special diets</h1>
+<p>There may be some participants following special diets such as low-sodium or gluten-free. Detailed explanation about the special diet question can be found on the <a href="https://wwwn.cdc.gov/nchs/nhanes/search/variablelist.aspx?Component=Dietary&amp;Cycle=2015-2016">documentation</a>.</p>
+<p>For this demonstration, we will select only those who are eating freely without following any diet.</p>
+<p>Check the number of individuals who are following any specific diet (DRQSDIET==1).</p>
+<pre class="r"><code>table(QCtotal_d_ga_body_meta_glu_comp$DRQSDIET, useNA=&quot;always&quot;)</code></pre>
+<pre><code>## 
+##    1    2 &lt;NA&gt; 
+##  313 1610    0</code></pre>
+<p>DRQSDIET==1 is following a special diet, so select only rows with DRQSDIET==2.</p>
+<pre class="r"><code>QCtotal_d_ga_body_meta_glu_comp_2 &lt;- subset(QCtotal_d_ga_body_meta_glu_comp, DRQSDIET == 2)</code></pre>
+<p>How many people remained? – 1,610 remained.</p>
+<pre class="r"><code>table(QCtotal_d_ga_body_meta_glu_comp_2$DRQSDIET)</code></pre>
+<pre><code>## 
+##    2 
+## 1610</code></pre>
+<p>Check the sample size of each category.</p>
+<pre class="r"><code>table(QCtotal_d_ga_body_meta_glu_comp_2$GLU_index, useNA=&quot;always&quot;)</code></pre>
+<pre><code>## 
+##    Diabetic      Normal Prediabetic        &lt;NA&gt; 
+##         208         679         723           0</code></pre>
+<p>Save the dataset as a .txt file in the folder called “Laboratory_data”.</p>
+<pre class="r"><code>write.table(QCtotal_d_ga_body_meta_glu_comp_2, file=&quot;Laboratory_data/QCtotal_d_ga_body_meta_glu_comp_2.txt&quot;,
+            sep= &quot;\t&quot;, row.names=F, quote= F)</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory before you start running another script.</p>
+<pre class="r"><code>  setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

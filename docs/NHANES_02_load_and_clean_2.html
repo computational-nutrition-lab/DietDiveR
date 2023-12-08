@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Load and clean NHANES data - 2</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li>
+      <a href="ASA24_10_viz_food_tree.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="ASA24_11_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_12_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_13_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    NHANES
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="NHANES_01_load_and_clean_1.html">Load and clean NHANES data - 1</a>
+    </li>
+    <li>
+      <a href="NHANES_02_load_and_clean_2.html">Load and clean NHANES data - 2</a>
+    </li>
+    <li>
+      <a href="NHANES_03_add_meta_GLU_index.html">Add metadata and GLU-index</a>
+    </li>
+    <li>
+      <a href="NHANES_04_overview_GLU_index.html">Data overview</a>
+    </li>
+    <li>
+      <a href="NHANES_05_GLU_index_by_age_gender.html">GLU-index by age and gender</a>
+    </li>
+    <li>
+      <a href="NHANES_06_subset_males60to79.html">Subset males 60-79 years old</a>
+    </li>
+    <li>
+      <a href="NHANES_07_males60to79_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_08_males60to79_prep_for_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="NHANES_09_males60to79_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="NHANES_10_males60to79_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_11_males60to79_generate_foodtrees.html">Generate foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_12_males60to79_viz_foodtrees.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_13_males60to79_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_14_males60to79_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_15_males60to79_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_16_Div.html">Assign DivGroups by dietary diversity</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Load and clean NHANES data - 2</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Install the foreign package if it is not installed yet.</p>
+<pre class="r"><code>if (!require(&quot;foreign&quot;, quietly = TRUE)) install.packages(&quot;foreign&quot;)</code></pre>
+<!-- Load foreign in the background-->
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/load_clean_NHANES.R&quot;)
+source(&quot;lib/QCOutliers.R&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>  setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name= &quot;eg_data/NHANES/&quot;)</code></pre>
+<p><br></p>
+</div>
+<div id="qc-the-food-data" class="section level1">
+<h1>QC the food data</h1>
+<p>Here, we will filter food data by age, completeness, &gt;1 food item reported/day, and complete data on both days.</p>
+<p>Download demographics data (DEMO_I.XPT) from NHANES website.<br />
+Name the file and destination. mod=“wb” is needed for Windows OS. Other OS users may need to delete it.</p>
+<pre class="r"><code>download.file(&quot;https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.XPT&quot;, 
+              destfile=&quot;Raw_data/DEMO_I.XPT&quot;, mode=&quot;wb&quot;)</code></pre>
+<p>Load the demographics file.</p>
+<pre class="r"><code>demog &lt;- read.xport(&quot;Raw_data/DEMO_I.XPT&quot;)</code></pre>
+<p>Demographics data has the age, gender, etc. of each participant. Read <a href="https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DEMO_I.htm">documentation on demographics</a> for details.</p>
+<pre class="r"><code>head(demog, 1)</code></pre>
+<pre><code>##    SEQN SDDSRVYR RIDSTATR RIAGENDR RIDAGEYR RIDAGEMN RIDRETH1 RIDRETH3 RIDEXMON
+## 1 83732        9        2        1       62       NA        3        3        1
+##   RIDEXAGM DMQMILIZ DMQADFC DMDBORN4 DMDCITZN DMDYRSUS DMDEDUC3 DMDEDUC2
+## 1       NA        2      NA        1        1       NA       NA        5
+##   DMDMARTL RIDEXPRG SIALANG SIAPROXY SIAINTRP FIALANG FIAPROXY FIAINTRP MIALANG
+## 1        1       NA       1        2        2       1        2        2       1
+##   MIAPROXY MIAINTRP AIALANGA DMDHHSIZ DMDFMSIZ DMDHHSZA DMDHHSZB DMDHHSZE
+## 1        2        2        1        2        2        0        0        1
+##   DMDHRGND DMDHRAGE DMDHRBR4 DMDHREDU DMDHRMAR DMDHSEDU WTINT2YR WTMEC2YR
+## 1        1       62        1        5        1        3 134671.4 135629.5
+##   SDMVPSU SDMVSTRA INDHHIN2 INDFMIN2 INDFMPIR
+## 1       1      125       10       10     4.39</code></pre>
+<p>Only select the data of adults (18 years of age or older).</p>
+<pre class="r"><code>adults &lt;- demog[demog$RIDAGEYR &gt;= 18, ]</code></pre>
+<p>Check the number of adults - should be 5,992.</p>
+<pre class="r"><code>length(unique(adults$SEQN))</code></pre>
+<pre><code>## [1] 5992</code></pre>
+<p>Load the formatted food data prepared in the previous section.</p>
+<pre class="r"><code>Food_D1_FC_cc_f &lt;- read.table(&quot;Food_D1_FC_cc_f.txt&quot;, sep=&quot;\t&quot;, header=T)
+Food_D2_FC_cc_f &lt;- read.table(&quot;Food_D2_FC_cc_f.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Check the number of complete and incomplete data for each day. According to <a href="https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DR1IFF_I.htm">the documentation</a>, <code>DR1DRSTZ</code> = 1 is complete data and values other than 1 are incomplete for Day 1. Same goes with <code>DR2DRSTZ</code> for Day 2.</p>
+<p>Using the table function, we will find that 119,273 rows are complete for Day 1, and 98,778 rows for Day 2.</p>
+<pre class="r"><code>table(Food_D1_FC_cc_f$DR1DRSTZ)  # Day 1</code></pre>
+<pre><code>## 
+##      1      4 
+## 119273   2208</code></pre>
+<pre class="r"><code>table(Food_D2_FC_cc_f$DR2DRSTZ)  # Day 2</code></pre>
+<pre><code>## 
+##     1     4 
+## 98778  1902</code></pre>
+<p><br></p>
+<hr />
+<div id="day-1" class="section level2">
+<h2>Day 1</h2>
+<p>Subset only those with complete data (STZ==1) in <code>Food_D1_FC_cc_f</code>.</p>
+<pre class="r"><code>food1 &lt;- subset(Food_D1_FC_cc_f, DR1DRSTZ == 1)</code></pre>
+<p>Generate a vector of SEQN in food1, which is a list of participants.</p>
+<pre class="r"><code>keepnames1 &lt;- unique(food1$SEQN)  # Should be 8,326 names</code></pre>
+<p>Make a table with the number of food items they reported on day 1.</p>
+<pre class="r"><code>freqtable1 &lt;- as.data.frame(table(food1$SEQN))</code></pre>
+<p>Keep rows with more than 1 food item reported.</p>
+<pre class="r"><code>freqtable1_m &lt;- freqtable1[freqtable1$Freq &gt; 1, ]</code></pre>
+<p>Change the column name for ID as “SEQN” for clarity.</p>
+<pre class="r"><code>colnames(freqtable1_m)[1] &lt;- &quot;SEQN&quot;</code></pre>
+<p>Keep the names of those who reported complete data and more than 1 food item per day.</p>
+<pre class="r"><code>keepnames1_mult &lt;- keepnames1[keepnames1 %in% freqtable1_m$SEQN] # 8,324</code></pre>
+<p>Select only adults from <code>keepnames1_mult</code>.</p>
+<pre class="r"><code>keepnames1_mult_adults &lt;- keepnames1_mult[keepnames1_mult %in% adults$SEQN] # 5,266</code></pre>
+<p>Select only the participants whose names are in <code>keepnames1_mult_adults</code>.</p>
+<pre class="r"><code>food1b &lt;- food1[food1$SEQN %in% keepnames1_mult_adults, ] # 78,442 rows</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="day-2" class="section level2">
+<h2>Day 2</h2>
+<p>Subset only those with complete data (STZ==1).</p>
+<pre class="r"><code>food2 &lt;- subset(Food_D2_FC_cc_f, DR2DRSTZ == 1)</code></pre>
+<p>Generate a vector of SEQN in food2, which is a list of participants.</p>
+<pre class="r"><code>keepnames2 &lt;- unique(food2$SEQN)  # 6,875</code></pre>
+<p>Make a table with the number of food items they reported on day 2.</p>
+<pre class="r"><code>freqtable2 &lt;- as.data.frame(table(food2$SEQN))</code></pre>
+<p>Keep rows with more than 1 food item reported.</p>
+<pre class="r"><code>freqtable2_m &lt;- freqtable2[freqtable2$Freq &gt; 1, ]</code></pre>
+<p>Change the column name for ID as “SEQN” for clarity.</p>
+<pre class="r"><code>colnames(freqtable2_m)[1] &lt;- &quot;SEQN&quot;</code></pre>
+<p>Keep the names of those who reported complete data and more than 1 food item per day.</p>
+<pre class="r"><code>keepnames2_mult &lt;- keepnames2[keepnames2 %in% freqtable2_m$SEQN] # 6,869
+length(keepnames2_mult)</code></pre>
+<pre><code>## [1] 6869</code></pre>
+<p>Select only adults from <code>keepnames2_mult</code>.</p>
+<pre class="r"><code>keepnames2_mult_adults &lt;- keepnames2_mult[keepnames2_mult %in% adults$SEQN] # 4,401</code></pre>
+<p>Select only the participants whose names are in <code>keepnames2_mult_adults</code>.</p>
+<pre class="r"><code>food2b &lt;- food2[food2$SEQN %in% keepnames2_mult_adults, ] # 66,690 rows
+nrow(food2b)</code></pre>
+<pre><code>## [1] 66690</code></pre>
+<p>Create a vector of SEQN of those that have both day 1 and day 2 data.</p>
+<pre class="r"><code>food1bnames &lt;- unique(food1b$SEQN)
+food2bnames &lt;- unique(food2b$SEQN)
+keepnames12 &lt;- food1bnames[food1bnames %in% food2bnames] </code></pre>
+<p>Check the number of participants remained. 4,401 people met the criteria.</p>
+<pre class="r"><code>length(keepnames12)</code></pre>
+<pre><code>## [1] 4401</code></pre>
+<p><br></p>
+<p>From here, procedures A and B serve the following purposes. (B consists of B-1, B-2, B-3, and B-4.)<br />
+<strong>Procedure A</strong>: Further process food1b and food2b for building a food tree.<br />
+<strong>Procedure B-1-4</strong>: Calculate totals from the QC-ed food items and QC totals.</p>
+</div>
+</div>
+<div id="procedure-a-further-process-food1b-and-food2b-for-building-a-food-tree" class="section level1">
+<h1>Procedure A: Further process food1b and food2b for building a food tree</h1>
+<p>Make a day variable to distinguish them.</p>
+<pre class="r"><code>food1b$Day &lt;- 1
+food2b$Day &lt;- 2</code></pre>
+<p>Copy these datasets to avoid overwriting.</p>
+<pre class="r"><code>food1e &lt;- food1b
+food2e &lt;- food2b</code></pre>
+<p>Remove the prefixes “DR1I”, “DR1” from the columnnames.<br />
+The <code>gsub</code> function replaces all matches with the specified pattern.</p>
+<pre class="r"><code>colnames(food1e) &lt;- gsub(colnames(food1e), pattern = &quot;^DR1I&quot;, replacement = &quot;&quot;)
+colnames(food1e) &lt;- gsub(colnames(food1e), pattern = &quot;^DR1&quot;,  replacement = &quot;&quot;)
+colnames(food2e) &lt;- gsub(colnames(food2e), pattern = &quot;^DR2I&quot;, replacement = &quot;&quot;)
+colnames(food2e) &lt;- gsub(colnames(food2e), pattern = &quot;^DR2&quot;,  replacement = &quot;&quot;)</code></pre>
+<p>Ensure the columns of food1c and food2c match before joining them.<br />
+(returns TRUE if the two are identical)</p>
+<pre class="r"><code>identical(colnames(food1e), colnames(food2e))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Combine food1 and food2 as a longtable (add food2 rows after food1 rows).</p>
+<pre class="r"><code>food12e &lt;- rbind(food1e, food2e)</code></pre>
+<p>Select only the individuals listed in <code>keepnames12</code>.</p>
+<pre class="r"><code>food12f &lt;- food12e[food12e$SEQN %in% keepnames12, ]</code></pre>
+<p>Add the demographic data to food12f. → This will further be QCed at the end of Procedure B-4.</p>
+<pre class="r"><code>food12f_demo &lt;- merge(x=food12f, y=demog, by=&quot;SEQN&quot;, all.x=T)</code></pre>
+<p><br></p>
+</div>
+<div id="procedure-b-1-further-process-food1b-and-food2b-for-calculating-totals-and-clustering" class="section level1">
+<h1>Procedure B-1: Further process food1b and food2b for calculating totals and clustering</h1>
+<p>Copy datasets to avoid overwriting.</p>
+<pre class="r"><code>food1bb &lt;- food1b
+food2bb &lt;- food2b</code></pre>
+<p>Change “FoodAmt” back to “DR1GRMS” to be consistent with the variable names in dayXvariables.</p>
+<pre class="r"><code>names(food1bb)[names(food1bb) == &quot;FoodAmt&quot;] &lt;- &quot;DR1IGRMS&quot;
+names(food2bb)[names(food2bb) == &quot;FoodAmt&quot;] &lt;- &quot;DR2IGRMS&quot;</code></pre>
+<p><strong>[NOTE]</strong> Create a set of variables to use downstream.</p>
+<p>This will be more conveniently done by using spreadsheet software such as MS Excel rather than R. This process is to generate: <span style="text-decoration:underline">NHANES_Food_VarNames_FC_Day1.txt</span> and <span style="text-decoration:underline">NHANES_Food_VarNames_FC_Day2.txt</span> so that we will be able to select nutrients and food category variables and a few others that are necessary, out of many other variables present in the NHANES food data.</p>
+<p>Appendix 2 of <a href="https://wwwn.cdc.gov/Nchs/Nhanes/2015-2016/DRXFCD_I.htm#Appendix_2._Variables_in_the_Individual_Foods_Files_(DR1IFF_I_and_DR2IFF_I)_by_Position">food data documentation</a> shows the variables in the Individual Foods Files (DR1IFF_I and DR2IFF_I).</p>
+<p><img src="Screenshots_for_Tutorial/NHANES%2001-02%20load%20clean/Load_Scenario%20B-1%20Appendix%202.jpg" style="width:60.0%" /></p>
+<p><br></p>
+<p>However, we need food category information as well, similar to ASA24. Food category variables (Food Patterns Equivalents Database per 100 grams of FNDDS) can be found in the <a href="https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fped-databases/">FPED page</a>. Select the same years of FPED as your NHANES release you are using. The variable labels <span style="text-decoration:underline">(F_CITMLB through A_DRINKS, for FPED 2015-2016)</span> are the food category variables you need.</p>
+<p>The first few lines of FPED_1516.xls</p>
+<p><img src="Screenshots_for_Tutorial/NHANES%2001-02%20load%20clean/Load_%20Scenario%20B-1%20FPED_1516.jpg" style="width:80.0%" /> <br></p>
+<p>Those two sets of variables need to come one after another vertically, so that they will form a long list of variables, for which we would like to calculate totals from the food data.</p>
+<p>Lastly, we need to have “FoodCode” and “FoodID” columns in order to build a food tree from our food data. So, add “FoodCode” and “FoodID” one per line, after the nutrients and food category variables in the lists of variables for Day 1 and Day 2 you have created.</p>
+<p>If you are analyzing NHANES 2015-2016, this tutorial provides you with <span style="text-decoration:underline">NHANES_Food_VarNames_FC_Day1.txt</span> and <span style="text-decoration:underline">NHANES_Food_VarNames_FC_Day2.txt</span> files in the “Food_VarNames” folder. These two .txt files were generated following the steps described above and have the necessary variable names. If you are analyzing other releases of NHANES, create a spreadsheet workbook, and copy and paste the variables from the Appendix of the documentation of the selected version of NHANES and food category variables from the appropriate version of FPED. Remember to add “FoodCode” and “FoodID” at the end of them, too.</p>
+<p><br></p>
+<p>The first few lines of NHANES_Food_VarNames_FC_Day1.txt looks like as follows:</p>
+<p><img src="Screenshots_for_Tutorial/NHANES%2001-02%20load%20clean/Load_Scenario%20B-1%20NHANES%20food%20var%20names.jpg" style="width:15.0%" /></p>
+<p><br></p>
+<hr />
+<div id="select-variables-and-combine-day-1-and-day-2" class="section level2">
+<h2>Select variables and combine Day 1 and Day 2</h2>
+</div>
+<div id="day-1-1" class="section level2">
+<h2>Day 1</h2>
+<p>Import the list of variables to be selected in Day 1.</p>
+<pre class="r"><code>day1variables &lt;- read.table(&#39;Food_VarNames/NHANES_Food_VarNames_FC_Day1.txt&#39;, header=F)</code></pre>
+<p>Select the variables to pick up from the food data.</p>
+<pre class="r"><code>var_to_use1 &lt;- names(food1bb) %in% day1variables$V1</code></pre>
+<p>Select only the specified variables.</p>
+<pre class="r"><code>food1c &lt;- food1bb[, var_to_use1]</code></pre>
+<p>Remove “DR1T”, “DR1” from the column names.</p>
+<pre class="r"><code>colnames(food1c) &lt;- gsub(colnames(food1c), pattern = &quot;^DR1I&quot;, replacement = &quot;&quot;)
+colnames(food1c) &lt;- gsub(colnames(food1c), pattern = &quot;^DR1&quot;,  replacement = &quot;&quot;)</code></pre>
+<p>Check the column names.</p>
+<pre class="r"><code>colnames(food1c)</code></pre>
+<pre><code>##   [1] &quot;SEQN&quot;             &quot;FoodCode&quot;         &quot;GRMS&quot;            
+##   [4] &quot;KCAL&quot;             &quot;PROT&quot;             &quot;CARB&quot;            
+##   [7] &quot;SUGR&quot;             &quot;FIBE&quot;             &quot;TFAT&quot;            
+##  [10] &quot;SFAT&quot;             &quot;MFAT&quot;             &quot;PFAT&quot;            
+##  [13] &quot;CHOL&quot;             &quot;ATOC&quot;             &quot;ATOA&quot;            
+##  [16] &quot;RET&quot;              &quot;VARA&quot;             &quot;ACAR&quot;            
+##  [19] &quot;BCAR&quot;             &quot;CRYP&quot;             &quot;LYCO&quot;            
+##  [22] &quot;LZ&quot;               &quot;VB1&quot;              &quot;VB2&quot;             
+##  [25] &quot;NIAC&quot;             &quot;VB6&quot;              &quot;FOLA&quot;            
+##  [28] &quot;FA&quot;               &quot;FF&quot;               &quot;FDFE&quot;            
+##  [31] &quot;CHL&quot;              &quot;VB12&quot;             &quot;B12A&quot;            
+##  [34] &quot;VC&quot;               &quot;VD&quot;               &quot;VK&quot;              
+##  [37] &quot;CALC&quot;             &quot;PHOS&quot;             &quot;MAGN&quot;            
+##  [40] &quot;IRON&quot;             &quot;ZINC&quot;             &quot;COPP&quot;            
+##  [43] &quot;SODI&quot;             &quot;POTA&quot;             &quot;SELE&quot;            
+##  [46] &quot;CAFF&quot;             &quot;THEO&quot;             &quot;ALCO&quot;            
+##  [49] &quot;MOIS&quot;             &quot;S040&quot;             &quot;S060&quot;            
+##  [52] &quot;S080&quot;             &quot;S100&quot;             &quot;S120&quot;            
+##  [55] &quot;S140&quot;             &quot;S160&quot;             &quot;S180&quot;            
+##  [58] &quot;M161&quot;             &quot;M181&quot;             &quot;M201&quot;            
+##  [61] &quot;M221&quot;             &quot;P182&quot;             &quot;P183&quot;            
+##  [64] &quot;P184&quot;             &quot;P204&quot;             &quot;P205&quot;            
+##  [67] &quot;P225&quot;             &quot;P226&quot;             &quot;F_CITMLB&quot;        
+##  [70] &quot;F_OTHER&quot;          &quot;F_JUICE&quot;          &quot;F_TOTAL&quot;         
+##  [73] &quot;V_DRKGR&quot;          &quot;V_REDOR_TOMATO&quot;   &quot;V_REDOR_OTHER&quot;   
+##  [76] &quot;V_REDOR_TOTAL&quot;    &quot;V_STARCHY_POTATO&quot; &quot;V_STARCHY_OTHER&quot; 
+##  [79] &quot;V_STARCHY_TOTAL&quot;  &quot;V_OTHER&quot;          &quot;V_TOTAL&quot;         
+##  [82] &quot;V_LEGUMES&quot;        &quot;G_WHOLE&quot;          &quot;G_REFINED&quot;       
+##  [85] &quot;G_TOTAL&quot;          &quot;PF_MEAT&quot;          &quot;PF_CUREDMEAT&quot;    
+##  [88] &quot;PF_ORGAN&quot;         &quot;PF_POULT&quot;         &quot;PF_SEAFD_HI&quot;     
+##  [91] &quot;PF_SEAFD_LOW&quot;     &quot;PF_MPS_TOTAL&quot;     &quot;PF_EGGS&quot;         
+##  [94] &quot;PF_SOY&quot;           &quot;PF_NUTSDS&quot;        &quot;PF_LEGUMES&quot;      
+##  [97] &quot;PF_TOTAL&quot;         &quot;D_MILK&quot;           &quot;D_YOGURT&quot;        
+## [100] &quot;D_CHEESE&quot;         &quot;D_TOTAL&quot;          &quot;OILS&quot;            
+## [103] &quot;SOLID_FATS&quot;       &quot;ADD_SUGARS&quot;       &quot;A_DRINKS&quot;        
+## [106] &quot;FoodID&quot;</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="day-2-1" class="section level2">
+<h2>Day 2</h2>
+<pre class="r"><code>day2variables &lt;- read.table(&#39;Food_VarNames/NHANES_Food_VarNames_FC_Day2.txt&#39;, header=F)
+var_to_use2 &lt;- names(food2bb) %in% day2variables$V1
+food2c &lt;- food2bb[, var_to_use2]
+colnames(food2c) &lt;- gsub(colnames(food2c), pattern = &quot;^DR2I&quot;, replacement = &quot;&quot;)
+colnames(food2c) &lt;- gsub(colnames(food2c), pattern = &quot;^DR2&quot;, replacement = &quot;&quot;)</code></pre>
+<p>Make a day variable before combining <code>food1c</code> and <code>food2c</code>.</p>
+<pre class="r"><code>food1c$Day &lt;- 1
+food2c$Day &lt;- 2</code></pre>
+<p>Ensure the columns of food1c and food2c match, before joining them.</p>
+<pre class="r"><code>identical(colnames(food1c), colnames(food2c))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>If not, create a dataframe that has the column names of both <code>food1c</code> and <code>food2c</code>, and examine the column names side-by-side.</p>
+<pre class="r"><code>names_df &lt;- data.frame(matrix(nrow= max(ncol(food1c), ncol(food2c)), ncol=2))
+colnames(names_df) &lt;- c(&quot;food1c&quot;, &quot;food2c&quot;)
+names_df$food1c &lt;- colnames(food1c)
+names_df$food2c &lt;- colnames(food2c)</code></pre>
+<pre class="r"><code>names_df</code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##               food1c           food2c
+## 1               SEQN             SEQN
+## 2           FoodCode         FoodCode
+## 3               GRMS             GRMS
+## 4               KCAL             KCAL
+## 5               PROT             PROT
+## 6               CARB             CARB
+## 7               SUGR             SUGR
+## 8               FIBE             FIBE
+## 9               TFAT             TFAT
+## 10              SFAT             SFAT
+## 11              MFAT             MFAT
+## 12              PFAT             PFAT
+## 13              CHOL             CHOL
+## 14              ATOC             ATOC
+## 15              ATOA             ATOA
+## 16               RET              RET
+## 17              VARA             VARA
+## 18              ACAR             ACAR
+## 19              BCAR             BCAR
+## 20              CRYP             CRYP
+## 21              LYCO             LYCO
+## 22                LZ               LZ
+## 23               VB1              VB1
+## 24               VB2              VB2
+## 25              NIAC             NIAC
+## 26               VB6              VB6
+## 27              FOLA             FOLA
+## 28                FA               FA
+## 29                FF               FF
+## 30              FDFE             FDFE
+## 31               CHL              CHL
+## 32              VB12             VB12
+## 33              B12A             B12A
+## 34                VC               VC
+## 35                VD               VD
+## 36                VK               VK
+## 37              CALC             CALC
+## 38              PHOS             PHOS
+## 39              MAGN             MAGN
+## 40              IRON             IRON
+## 41              ZINC             ZINC
+## 42              COPP             COPP
+## 43              SODI             SODI
+## 44              POTA             POTA
+## 45              SELE             SELE
+## 46              CAFF             CAFF
+## 47              THEO             THEO
+## 48              ALCO             ALCO
+## 49              MOIS             MOIS
+## 50              S040             S040
+## 51              S060             S060
+## 52              S080             S080
+## 53              S100             S100
+## 54              S120             S120
+## 55              S140             S140
+## 56              S160             S160
+## 57              S180             S180
+## 58              M161             M161
+## 59              M181             M181
+## 60              M201             M201
+## 61              M221             M221
+## 62              P182             P182
+## 63              P183             P183
+## 64              P184             P184
+## 65              P204             P204
+## 66              P205             P205
+## 67              P225             P225
+## 68              P226             P226
+## 69          F_CITMLB         F_CITMLB
+## 70           F_OTHER          F_OTHER
+## 71           F_JUICE          F_JUICE
+## 72           F_TOTAL          F_TOTAL
+## 73           V_DRKGR          V_DRKGR
+## 74    V_REDOR_TOMATO   V_REDOR_TOMATO
+## 75     V_REDOR_OTHER    V_REDOR_OTHER
+## 76     V_REDOR_TOTAL    V_REDOR_TOTAL
+## 77  V_STARCHY_POTATO V_STARCHY_POTATO
+## 78   V_STARCHY_OTHER  V_STARCHY_OTHER
+## 79   V_STARCHY_TOTAL  V_STARCHY_TOTAL
+## 80           V_OTHER          V_OTHER
+## 81           V_TOTAL          V_TOTAL
+## 82         V_LEGUMES        V_LEGUMES
+## 83           G_WHOLE          G_WHOLE
+## 84         G_REFINED        G_REFINED
+## 85           G_TOTAL          G_TOTAL
+## 86           PF_MEAT          PF_MEAT
+## 87      PF_CUREDMEAT     PF_CUREDMEAT
+## 88          PF_ORGAN         PF_ORGAN
+## 89          PF_POULT         PF_POULT
+## 90       PF_SEAFD_HI      PF_SEAFD_HI
+## 91      PF_SEAFD_LOW     PF_SEAFD_LOW
+## 92      PF_MPS_TOTAL     PF_MPS_TOTAL
+## 93           PF_EGGS          PF_EGGS
+## 94            PF_SOY           PF_SOY
+## 95         PF_NUTSDS        PF_NUTSDS
+## 96        PF_LEGUMES       PF_LEGUMES
+## 97          PF_TOTAL         PF_TOTAL
+## 98            D_MILK           D_MILK
+## 99          D_YOGURT         D_YOGURT
+## 100         D_CHEESE         D_CHEESE
+## 101          D_TOTAL          D_TOTAL
+## 102             OILS             OILS
+## 103       SOLID_FATS       SOLID_FATS
+## 104       ADD_SUGARS       ADD_SUGARS
+## 105         A_DRINKS         A_DRINKS
+## 106           FoodID           FoodID
+## 107              Day              Day</code></pre>
+</details>
+<p><br></p>
+<p>Combine food1 and food2 as a longtable.</p>
+<pre class="r"><code>food12c &lt;- rbind(food1c, food2c)</code></pre>
+<p>Limit to only the individuals listed in <code>keepnames12</code>.</p>
+<pre class="r"><code>food12d &lt;- food12c[food12c$SEQN %in% keepnames12, ]</code></pre>
+<p>Add the demographic data to food12f for data overview. This will be QC-ed later at the end of this script.</p>
+<pre class="r"><code>food12d_demo &lt;- merge(x=food12d, y=demog, by=&quot;SEQN&quot;, all.x=T)</code></pre>
+<p>Save the combined and QC-ed food items as a .txt file.<br />
+This has nutrient information, food categories, and day variable for each food item reported, and shall be used to calculate totals in B-2. <strong>THIS WILL BE A VERY LARGE FILE.</strong></p>
+<pre class="r"><code>write.table(food12d_demo, &quot;Food_D12_FC_QC_demo.txt&quot;, sep=&quot;\t&quot;, quote=F, row.names=F)  </code></pre>
+<p><br></p>
+<p>You may also want to consider special diets that some participants are following: e.g. DASH diet, diabetic diet, etc. Depending on your research question, you may want to exclude those following special diets. The diet information is found in metadata attached to totals day 1. We will revisit diet information in the next section.</p>
+<p><br></p>
+</div>
+</div>
+<div id="b-2-calculate-totalsdayparticipant-with-the-food-data-of-the-selected-seqns" class="section level1">
+<h1>B-2: Calculate totals/day/participant with the food data of the selected SEQNs</h1>
+<p>Load the QC-ed food items.</p>
+<pre class="r"><code>food12d_demo &lt;- read.table(&quot;Food_D12_FC_QC_demo.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>This has “FoodID” and “FoodCode” columns.</p>
+<p>Calculate totals for day 1 and day 2, from the first.val argument through the last.val argument and combine the two datasets.</p>
+<pre class="r"><code>TotalNHANES(food12d= food12d_demo,
+            first.val= &quot;GRMS&quot;,    
+            last.val=  &quot;A_DRINKS&quot;, 
+            outfn= &quot;Total_D12_FC_QC_eachday.txt&quot;)  </code></pre>
+<p>Load the resultant total for each day.</p>
+<pre class="r"><code>total12d &lt;- read.table(&quot;Total_D12_FC_QC_eachday.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p><code>total12d</code> has the sum of each variable (columns) for each day and participant.</p>
+<pre class="r"><code>head(total12d, 2)</code></pre>
+<pre><code>##    SEQN    GRMS KCAL  PROT   CARB   SUGR FIBE  TFAT   SFAT   MFAT   PFAT CHOL
+## 1 83732 3399.99 1781 76.03 193.29  42.31 23.6 79.24 23.430 31.897 18.528  138
+## 2 83733 4630.72 2964 62.36 356.85 180.84  7.3 77.91 25.722 19.098 19.216  407
+##    ATOC ATOA RET VARA ACAR BCAR CRYP LYCO   LZ   VB1   VB2   NIAC   VB6 FOLA
+## 1 10.59    0 230  307  336  624  282 1206 1120 2.344 1.949 20.401 2.279  450
+## 2  4.19    0 352  453  405  966   20    0 1279 1.859 2.478 29.444 1.823  478
+##    FA  FF FDFE   CHL VB12 B12A    VC  VD    VK CALC PHOS MAGN  IRON ZINC  COPP
+## 1 163 286  564 290.7 1.89    0 110.5 2.6 139.0  623 1052  255 16.01 8.73 1.095
+## 2 112 365  556 672.7 2.92    0  30.2 4.6  87.6  594 1414  262 11.01 4.82 0.571
+##   SODI POTA  SELE CAFF THEO ALCO    MOIS  S040  S060  S080  S100  S120  S140
+## 1 5298 2641 113.6  360    0  0.0 3028.29 0.013 0.010 0.053 0.092 0.365 1.271
+## 2 3164 2249  89.9  192    0 89.3 4024.25 0.563 0.441 0.275 0.764 0.863 2.688
+##     S160  S180  M161   M181  M201  M221   P182  P183  P184  P204  P205  P225
+## 1 13.199 7.334 1.585 28.937 0.332 0.276 16.024 2.294 0.004 0.110 0.004 0.017
+## 2 13.234 6.144 0.693 17.837 0.155 0.000 16.712 2.140 0.000 0.206 0.005 0.026
+##    P226 F_CITMLB F_OTHER F_JUICE F_TOTAL V_DRKGR V_REDOR_TOMATO V_REDOR_OTHER
+## 1 0.002   1.0368       0       0  1.0368       0          0.058      0.000000
+## 2 0.036   0.0000       0       0  0.0000       0          0.000      0.086233
+##   V_REDOR_TOTAL V_STARCHY_POTATO V_STARCHY_OTHER V_STARCHY_TOTAL  V_OTHER
+## 1      0.058000                0               0               0 1.625470
+## 2      0.086233                0               0               0 0.911606
+##    V_TOTAL V_LEGUMES G_WHOLE G_REFINED  G_TOTAL PF_MEAT PF_CUREDMEAT PF_ORGAN
+## 1 1.683470  0.660244       0  6.903612 6.903612  0.0000        7.569        0
+## 2 0.997839  0.000000       0  9.312880 9.312880  2.7937        0.000        0
+##   PF_POULT PF_SEAFD_HI PF_SEAFD_LOW PF_MPS_TOTAL PF_EGGS PF_SOY PF_NUTSDS
+## 1        0           0            0       7.5690 0.00000      0         0
+## 2        0           0            0       2.7937 2.39316      0         0
+##   PF_LEGUMES PF_TOTAL D_MILK D_YOGURT D_CHEESE D_TOTAL     OILS SOLID_FATS
+## 1   2.691764  7.56900 0.0000        0        0  0.0000 24.93141   35.37410
+## 2   0.000000  5.18686 0.1122        0        0  0.1122  4.68600   57.96754
+##   ADD_SUGARS A_DRINKS Day NoOfItems
+## 1    3.20152    0.000   1        17
+## 2   40.16171    6.336   1         8</code></pre>
+<p>Merge total12d and demographics by SEQN.</p>
+<pre class="r"><code>total12d_demo &lt;- merge(x= total12d, y=demog, by=&quot;SEQN&quot;, all.x=TRUE)</code></pre>
+<p>Save it as a .txt file.</p>
+<pre class="r"><code>write.table(total12d_demo, &quot;Total_D12_FC_QC_eachday_demo.txt&quot;, sep=&quot;\t&quot;, quote=F, row.names=F)</code></pre>
+<p><br></p>
+</div>
+<div id="b-3-calculate-the-mean-across-days-totalsparticipant" class="section level1">
+<h1>B-3: Calculate the mean across days totals/participant</h1>
+<p>Calculate the mean of the two days of the totals data per participant.</p>
+<pre class="r"><code>AverageTotalNHANES(total12d= total12d, 
+                   first.val= &quot;GRMS&quot;, 
+                   last.val= &quot;NoOfItems&quot;, 
+                   outfn= &quot;Total_D12_FC_QC_mean.txt&quot;)  </code></pre>
+<p>Load the mean total.</p>
+<pre class="r"><code>meantotal12d &lt;- read.table(&quot;Total_D12_FC_QC_mean.txt&quot;, sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Add demographic data to mean total. Merge QC-totals and demographics by SEQN.</p>
+<pre class="r"><code>meantotal12d_demo &lt;- merge(x= meantotal12d, y=demog, by=&quot;SEQN&quot;, all.x=TRUE)</code></pre>
+<p><br></p>
+</div>
+<div id="b-4-qc-the-mean-total-in-the-same-way-as-asa24" class="section level1">
+<h1>B-4: QC the mean total in the same way as ASA24</h1>
+<p>For individual food data, there is no code for cleaning.<br />
+Based on other data and analysis we do not expect outliers to severely affect main analysis conclusions (<a href="https://epi.grants.cancer.gov/asa24/resources/asa24-data-cleaning-2020.pdf">ASA24 data cleaning doc</a>). However, it is always a good idea to take a look at the distributions of any of your variables of interest. You can calculate totals by occasion, similar to what is described in the ASA24 tutorial.</p>
+<hr />
+<p>For totals, the same QC can be applied as ASA24 totals QC procedure.<br />
+Totals data may contain outliers due to errors in dietary reporting. These errors may be due to omission or inaccurate over- or under-estimation of portion size, leading to improbable nutrient totals. ASA24 provides <a href="https://epi.grants.cancer.gov/asa24/resources/cleaning.html#guidelines">General Guidelines for Reviewing &amp; Cleaning Data</a> for identifying and removing suspicious records.</p>
+<p>Here, we will identify records that contain values that fall outside typically observed ranges of kilocalories (KCAL), protein (PROT), total fat (TFAT), and vitamin C (VC). The ASA24 guide provides ranges of beta carotene (BCAR), too, however, outlier checking for BCAR is omitted in this tutorial but can be considered if you identify it as a nutrient that has a high variance in your study dataset.</p>
+<blockquote>
+<p><strong>[NOTE]</strong> Your input dataframe (QCtotals) will be overwritten after each outlier removal.</p>
+<p>Run all these QC steps in this order. When asked, choose to remove the outliers that fall outside the specified range for each nutrient.</p>
+</blockquote>
+<p><br></p>
+<p>Split your dataset to males and females because different thresholds apply for males and females.</p>
+<pre class="r"><code>meantotal12d_demo_M &lt;- subset(meantotal12d_demo, RIAGENDR==1)  
+meantotal12d_demo_F &lt;- subset(meantotal12d_demo, RIAGENDR==2)  </code></pre>
+<p><br></p>
+<hr />
+<div id="qc-for-males" class="section level2">
+<h2>QC for males</h2>
+<p>Define your males totals dataset to be used as input.</p>
+<pre class="r"><code>QCtotals &lt;- meantotal12d_demo_M</code></pre>
+<p>Flag if KCAL is &lt;650 or &gt;5700 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, 
+           target.colname = &quot;KCAL&quot;, min = 650, max = 5700)</code></pre>
+<p>This function will print out rows that fall outside the specified min-max range, and a dialogue box will appear outside the R Studio (shown below), asking whether to remove them. You should make sure to review these records carefully to double-check if the removal is warranted. It is possible to have a valid record that could meet the threshold for removal. Only you will know if you can trust the record when working with real data.</p>
+<p><img src="Screenshots_for_Tutorial/ASA24%2001%20load_clean/QC%20totals%20Dialogue%20box.png" /></p>
+<p>If you find potential outlier(s) here, click “No”, and view those total(s) with their other nutrient intake information by running the following;</p>
+<pre class="r"><code>KCAL_outliers &lt;- subset(QCtotals, KCAL &lt; 650 | KCAL &gt; 5700)     </code></pre>
+<p>Sort the rows by KCAL and show only the specified variables.</p>
+<pre class="r"><code>KCAL_outliers[order(KCAL_outliers$KCAL, decreasing = T),
+              c(&#39;SEQN&#39;, &#39;KCAL&#39;, &#39;GRMS&#39;, &#39;PROT&#39;, &#39;TFAT&#39;, &#39;CARB&#39;)]  </code></pre>
+<details>
+<summary>
+Click to expand output
+</summary>
+<pre><code>##       SEQN   KCAL      GRMS    PROT    TFAT    CARB
+## 101  83966 8491.5  6612.205 335.830 410.320 884.400
+## 2299 88940 7599.5  6931.510 262.960 385.590 782.480
+## 384  84596 6080.0  8918.225 218.135 221.240 541.610
+## 27   83790 6063.0 13353.210 181.210 197.205 908.415
+## 3786 92345 5935.0 11337.440 268.665 190.195 680.740
+## 1651 87422 5867.5  4568.280 161.715 263.075 746.130
+## 1075 86100 5814.5  6231.715 211.370 287.185 541.640
+## 187  84142 5781.0  4759.985 226.360 274.255 618.230
+## 2641 89721  622.5   693.175  18.525  16.100 102.970
+## 135  84030  604.0  1117.965  30.410  19.190  76.670
+## 2670 89788  571.5  1128.650  17.845   8.095 111.245
+## 79   83919  526.5  1564.250  15.820  29.545  49.240
+## 4284 93441  512.0   975.250  25.215  16.265  66.575
+## 1905 88064  496.0  4741.915  11.470  19.845  67.985
+## 2892 90318  485.5  1840.470  27.125  23.185  41.555
+## 903  85743  470.0   256.670  15.490  19.360  58.485
+## 109  83987  442.0   737.375  11.170  15.975  65.050
+## 3583 91849  439.0   586.075  14.855  14.055  63.875</code></pre>
+</details>
+<p><br></p>
+<p>If you think they are true outlier(s), then run the QCOutliers command for KCAL again, and click “Yes” to remove the outlier. Here for this tutorial, we will remove this individual.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, 
+           target.colname = &quot;KCAL&quot;, min = 650, max = 5700)</code></pre>
+<pre><code>## There are 18 observations with &lt; 650 or &gt; 5700 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  2078 rows remained.</code></pre>
+<p>Continue the QC process with other variables.</p>
+<p>Flag if PROT is &lt;25 or &gt;240 → ask remove or not→ if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, 
+           target.colname = &quot;PROT&quot;, min = 25, max = 240)</code></pre>
+<pre><code>## There are 12 observations with &lt; 25 or &gt; 240 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  2066 rows remained.</code></pre>
+<p>Flag if TFAT is &lt;25 or &gt;230 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, 
+           target.colname = &quot;TFAT&quot;, min = 25, max = 230)</code></pre>
+<pre><code>## There are 38 observations with &lt; 25 or &gt; 230 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  2028 rows remained.</code></pre>
+<p>Flag if VC (Vitamin C) is &lt;5 or &gt;400 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals,  
+           target.colname = &quot;VC&quot;, min = 5, max = 400)</code></pre>
+<pre><code>## There are 64 observations with &lt; 5 or &gt; 400 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  1964 rows remained.</code></pre>
+<p><br></p>
+<p>Name the males totals after QC.</p>
+<pre class="r"><code>QCed_M &lt;- QCtotals</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="qc-for-females" class="section level2">
+<h2>QC for females</h2>
+<p>Define your female totals dataset to be used as input.</p>
+<pre class="r"><code>QCtotals &lt;- meantotal12d_demo_F  </code></pre>
+<p>Flag if KCAL is &lt;600 or &gt;4400 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;KCAL&quot;, min = 600, max = 4400)</code></pre>
+<pre><code>## There are 27 observations with &lt; 600 or &gt; 4400 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  2278 rows remained.</code></pre>
+<p>Flag if PROT is &lt;10 or &gt;180 → ask remove or not → if yes, remove those rows</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;PROT&quot;, min = 10, max = 180)</code></pre>
+<pre><code>## There are 5 observations with &lt; 10 or &gt; 180 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  2273 rows remained.</code></pre>
+<p>Flag if TFAT is &lt;15 or &gt;185 → ask remove or not → if yes, remove those rows</p>
+<pre class="r"><code>  QCOutliers(input.data = QCtotals, target.colname = &quot;TFAT&quot;, min = 15, max = 185)</code></pre>
+<pre><code>## There are 20 observations with &lt; 15 or &gt; 185 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  2253 rows remained.</code></pre>
+<p>Flag if VC (Vitamin C) is &lt;5 or &gt;350 → ask remove or not → if yes, remove those rows.</p>
+<pre class="r"><code>QCOutliers(input.data = QCtotals, target.colname = &quot;VC&quot;, min = 5, max = 350)</code></pre>
+<pre><code>## There are 53 observations with &lt; 5 or &gt; 350 . 
+## Remove? (Yes/no/cancel) 
+## Outlier rows were removed; the cleaned data is saved as an object called &quot;QCtotals&quot;.
+##  2200 rows remained.</code></pre>
+<p><br></p>
+<p>Name the females totals after QC.</p>
+<pre class="r"><code>QCed_F &lt;- QCtotals</code></pre>
+<p><br></p>
+<hr />
+<p>Combine the rows of M and F.</p>
+<pre class="r"><code>QCtotals_MF &lt;- rbind(QCed_M, QCed_F)</code></pre>
+<p>Now, you have prepared formatted and QC-ed food items, totals for each day, and mean totals across two days for each participant.</p>
+<p><br></p>
+</div>
+</div>
+<div id="adjust-totals-and-items-after-qc" class="section level1">
+<h1>Adjust totals and items after QC</h1>
+<div id="remove-the-qc-ed-individuals-from-the-totals-each-day" class="section level2">
+<h2>Remove the QC-ed individual(s) from the totals each day</h2>
+<p>In the previous section, we have removed individual(s) that did not pass the QC from mean total data. We will remove those individual(s) from the totals (calculated in B-2, before taking means of days), so that we will have the same individuals in QC-ed mean_total and total for each day.</p>
+<p>Among the individuals in total12d_demo, select only those in QCtotals_MF.</p>
+<pre class="r"><code>total12d_demo_QCed &lt;- total12d_demo[total12d_demo$SEQN %in% QCtotals_MF$SEQN, ]</code></pre>
+<p>Save as a .txt file. This will be the total for each of the “QC-ed” individuals for each day, if you would like to perform clustering analyses with Day 1 and Day 2 separately.</p>
+<pre class="r"><code>write.table(total12d_demo_QCed, &quot;Total_D12_FC_QC_eachday_demo_QCed.txt&quot;, sep=&quot;\t&quot;, quote=F, row.names=F)</code></pre>
+<p><br></p>
+</div>
+<div id="similarly-remove-the-qc-ed-individuals-from-the-food-items-to-be-consistent-with-the-qc-ed-averaged-totals" class="section level2">
+<h2>Similarly, remove the QC-ed individual(s) from the food items to be consistent with the QC-ed averaged totals</h2>
+<p>Among the individuals in food12f_demo (generated in Procedure A), select only those in QCtotals_MF.</p>
+<pre class="r"><code>food12f_demo_QCed &lt;- food12f_demo[ food12f_demo$SEQN %in% QCtotals_MF$SEQN, ]</code></pre>
+<p>Save as a .txt file. This will be the items for each of the “QC-ed” individuals for each day, to be used for ordination etc.</p>
+<pre class="r"><code>write.table(food12f_demo_QCed, &quot;Food_D12_FC_QC_demo_QCed.txt&quot;, sep=&quot;\t&quot;, quote=F, row.names=F)</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory before you start running another script.</p>
+<pre class="r"><code>  setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Perform ordination</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li>
+      <a href="ASA24_10_viz_food_tree.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="ASA24_11_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_12_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_13_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    NHANES
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="NHANES_01_load_and_clean_1.html">Load and clean NHANES data - 1</a>
+    </li>
+    <li>
+      <a href="NHANES_02_load_and_clean_2.html">Load and clean NHANES data - 2</a>
+    </li>
+    <li>
+      <a href="NHANES_03_add_meta_GLU_index.html">Add metadata and GLU-index</a>
+    </li>
+    <li>
+      <a href="NHANES_04_overview_GLU_index.html">Data overview</a>
+    </li>
+    <li>
+      <a href="NHANES_05_GLU_index_by_age_gender.html">GLU-index by age and gender</a>
+    </li>
+    <li>
+      <a href="NHANES_06_subset_males60to79.html">Subset males 60-79 years old</a>
+    </li>
+    <li>
+      <a href="NHANES_07_males60to79_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_08_males60to79_prep_for_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="NHANES_09_males60to79_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="NHANES_10_males60to79_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_11_males60to79_generate_foodtrees.html">Generate foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_12_males60to79_viz_foodtrees.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_13_males60to79_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_14_males60to79_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_15_males60to79_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_16_Div.html">Assign DivGroups by dietary diversity</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Perform ordination</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In this script, we will take the phylogeny of food items into account in clustering individuals according to their dietary data. In order to do so, we will use <a href="https://joey711.github.io/phyloseq/index.html">the phyloseq package</a>, which uses phylogeny of microbes and their abundance. We will replace microbes with food items consumed by our dietary study participants.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p><br></p>
+<hr />
+<p>If you have not downloaded and installed the phyloseq package yet, you can do so by first installing BiocManager (if you have not done so):</p>
+<pre class="r"><code>if (!require(&quot;BiocManager&quot;, quietly = TRUE)) install.packages(&quot;BiocManager&quot;)</code></pre>
+<p>Then download and install the phyloseq package.</p>
+<pre class="r"><code>BiocManager::install(&quot;phyloseq&quot;)</code></pre>
+<p>Install the devtools package necessary for installing the pairwiseAdonis package.</p>
+<pre class="r"><code>if (!require(&quot;devtools&quot;,    quietly = TRUE))install.packages(&quot;devtools&quot;)</code></pre>
+<p>Install pairwise adonis function from Github. (<a href="https://github.com/pmartinezarbizu/pairwiseAdonis" class="uri">https://github.com/pmartinezarbizu/pairwiseAdonis</a>)</p>
+<pre class="r"><code>devtools::install_github(&quot;pmartinezarbizu/pairwiseAdonis/pairwiseAdonis&quot;)</code></pre>
+<p><br></p>
+<hr />
+<p>Load necessary packages.</p>
+<pre class="r"><code>library(foreign)
+library(vegan)
+library(phyloseq)
+library(ggplot2)
+library(ggtree) # Shows how to cite the ggtree package. Make sure to cite it accordingly.
+library(cluster) # necessary to the &quot;pairwiseAdonis&quot; package.
+library(pairwiseAdonis)</code></pre>
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/ordination.R&quot;)
+source(&quot;lib/ggplot2themes.R&quot;)
+source(&quot;lib/sort_IFC_by_ID.R&quot;)
+source(&quot;lib/plot.axis.1to4.by.factor.R&quot;)</code></pre>
+<p>Load the distinct 100 colors for use.</p>
+<pre class="r"><code>distinct100colors &lt;- readRDS(&quot;lib/distinct100colors.rda&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/NHANES/Laboratory_data/&quot;)</code></pre>
+<p><br></p>
+</div>
+<div id="create-a-phyloseq-object-for-ordination" class="section level1">
+<h1>Create a phyloseq object for ordination</h1>
+<div id="load-files-for-creating-a-phyloseq-object" class="section level2">
+<h2>Load files for creating a phyloseq object</h2>
+<div id="food" class="section level3">
+<h3>Food</h3>
+<p>Load IFC table, and sort the columnnames (userID), leaving the last column (taxonomy) intact. This dataframe will be saved as <code>food</code>. Also, save <code>food</code> as a .txt file to be used in the “correlation between Axes and foods” section.</p>
+<pre class="r"><code>SortIFCByID(ifc.input =           &quot;Foodtree/Food_D12_FC_QC_demo_QCed_males60to79_3Lv.food.ifc.txt&quot;,
+            outfn.for.corr.axis = &quot;Foodtree/Food_D12_FC_QC_demo_QCed_males60to79_3Lv.food.ifc_sorted.txt&quot;)</code></pre>
+<p><code>food</code> is a matrix of Food descriptions (rows) x SampleID (columns).</p>
+<p>The column name of “food” is the ordered SEQNs preceded with an ‘X’.</p>
+<pre class="r"><code>head(food)[1:6, 1:4]</code></pre>
+<pre><code>##                                  X83755 X83789 X83820 X83834
+## Milk NFS                           0.00      0    0.0   0.00
+## Milk whole                         0.00      0  122.0   0.00
+## Milk reduced fat 2                76.25      0   76.4 320.25
+## Milk low fat 1                     0.00      0    0.0   0.00
+## Milk fat free skim                 0.00      0    0.0   0.00
+## Milk lactose free reduced fat 2    0.00      0    0.0   0.00</code></pre>
+<p>Format the food file and create an ifc_table called IFC.</p>
+<pre class="r"><code>PrepFood(data = food)</code></pre>
+</div>
+<div id="taxonomy-tax" class="section level3">
+<h3>Taxonomy (tax)</h3>
+<p>Load taxonomy file generated by the MakeFoodTree function.</p>
+<pre class="r"><code>tax &lt;- read.delim(&quot;Foodtree/Food_D12_FC_QC_demo_QCed_males60to79_3Lv.tax.txt&quot;)</code></pre>
+<p>Format the tax file and create a taxonomy table called TAX.</p>
+<pre class="r"><code>PrepTax(data=tax)</code></pre>
+</div>
+<div id="sample" class="section level3">
+<h3>Sample</h3>
+<p>Load the demographics data.</p>
+<pre class="r"><code>demog &lt;- read.xport(&quot;../Raw_data/DEMO_I.XPT&quot;)  </code></pre>
+<p>Load our dataset that has the “GLU_index” information.</p>
+<pre class="r"><code>glu &lt;- read.delim( file=&quot;QCtotal_d_ga_body_meta_glu_comp_2.txt&quot;, sep= &quot;\t&quot;, header= T )</code></pre>
+<p>Take out only the SEQN and GLU_index.</p>
+<pre class="r"><code>SEQN_GLU &lt;- glu[, c(&quot;SEQN&quot;, &quot;GLU_index&quot;)]</code></pre>
+<p>Add GLU_index to metadata.</p>
+<pre class="r"><code>demog_glu &lt;- merge(x=SEQN_GLU, y=demog, all.x=T, by=&quot;SEQN&quot;)</code></pre>
+<p>Now, it has GLU_index.</p>
+<pre class="r"><code>head(demog_glu, 2)</code></pre>
+<pre><code>##    SEQN   GLU_index SDDSRVYR RIDSTATR RIAGENDR RIDAGEYR RIDAGEMN RIDRETH1
+## 1 83733 Prediabetic        9        2        1       53       NA        3
+## 2 83736      Normal        9        2        2       42       NA        4
+##   RIDRETH3 RIDEXMON RIDEXAGM DMQMILIZ DMQADFC DMDBORN4 DMDCITZN DMDYRSUS
+## 1        3        1       NA        2      NA        2        2        7
+## 2        4        2       NA        2      NA        1        1       NA
+##   DMDEDUC3 DMDEDUC2 DMDMARTL RIDEXPRG SIALANG SIAPROXY SIAINTRP FIALANG
+## 1       NA        3        3       NA       1        2        2       1
+## 2       NA        4        3        1       1        2        2       1
+##   FIAPROXY FIAINTRP MIALANG MIAPROXY MIAINTRP AIALANGA DMDHHSIZ DMDFMSIZ
+## 1        2        2       1        2        2        1        1        1
+## 2        2        2       1        2        2        1        5        5
+##   DMDHHSZA DMDHHSZB DMDHHSZE DMDHRGND DMDHRAGE DMDHRBR4 DMDHREDU DMDHRMAR
+## 1        0        0        0        1       53        2        3        3
+## 2        0        2        0        2       42        1        4        3
+##   DMDHSEDU WTINT2YR WTMEC2YR SDMVPSU SDMVSTRA INDHHIN2 INDFMIN2 INDFMPIR
+## 1       NA 24328.56 25282.43       1      125        4        4     1.32
+## 2       NA 17627.67 18234.74       2      126        7        7     1.23</code></pre>
+<p>Add ‘X’ in front of the SEQN and define it as rownames.</p>
+<pre class="r"><code>rownames(demog_glu) &lt;- paste(&quot;X&quot;, demog_glu$SEQN, sep=&quot;&quot;) </code></pre>
+<p>Prep metadata for generating a phyloseq object.</p>
+<pre class="r"><code>PrepMeta_NHANES(data = demog_glu)</code></pre>
+</div>
+<div id="foodtree" class="section level3">
+<h3>Foodtree</h3>
+<p>Load foodtree file generated by the MakeFoodTree function.</p>
+<pre class="r"><code>foodtree &lt;- read_tree(&quot;Foodtree/Food_D12_FC_QC_demo_QCed_males60to79_3Lv.nwk&quot;)</code></pre>
+<p>It is OK to see a message that says:<br />
+“Found more than one class”phylo” in cache; using the first, from namespace ‘phyloseq’<br />
+Also defined by ‘tidytree’”</p>
+<p>Format the food tree and save it as <code>TREE</code>.</p>
+<pre class="r"><code>PrepTree(data=foodtree)</code></pre>
+<p>It is OK to see the same message as the previous line.</p>
+<p><br></p>
+</div>
+</div>
+<div id="create-a-phyloseq-object-with-ifc-tax-samples-and-tree" class="section level2">
+<h2>Create a phyloseq object with IFC, TAX, SAMPLES, and TREE</h2>
+<pre class="r"><code>phyfoods &lt;- phyloseq(IFC, TAX, SAMPLES, TREE)</code></pre>
+<p>It is OK to see the same message as the previous line. They may appear multiple times.</p>
+<p>Check your metadata by using the functions in the phyloseq package. Show the sample names. Change n to adjust the number of rows to show.</p>
+<pre class="r"><code>head(sample_names(phyfoods), n=6)  </code></pre>
+<pre><code>## [1] &quot;X83755&quot; &quot;X83789&quot; &quot;X83820&quot; &quot;X83834&quot; &quot;X83886&quot; &quot;X83894&quot;</code></pre>
+<p>Show their metadata.</p>
+<pre class="r"><code>head(sample_data(phyfoods), n=4)</code></pre>
+<pre><code>##         SEQN   GLU_index SDDSRVYR RIDSTATR RIAGENDR RIDAGEYR RIDAGEMN RIDRETH1
+## X83755 83755    Diabetic        9        2        1       67       NA        4
+## X83789 83789 Prediabetic        9        2        1       66       NA        3
+## X83820 83820      Normal        9        2        1       70       NA        3
+## X83834 83834 Prediabetic        9        2        1       69       NA        4
+##        RIDRETH3 RIDEXMON RIDEXAGM DMQMILIZ DMQADFC DMDBORN4 DMDCITZN DMDYRSUS
+## X83755        4        2       NA        1       1        1        1       NA
+## X83789        3        2       NA        2      NA        1        1       NA
+## X83820        3        2       NA        2      NA        1        1       NA
+## X83834        4        2       NA        2      NA        1        1       NA
+##        DMDEDUC3 DMDEDUC2 DMDMARTL RIDEXPRG SIALANG SIAPROXY SIAINTRP FIALANG
+## X83755       NA        5        2       NA       1        2        2       1
+## X83789       NA        5        6       NA       1        2        2       1
+## X83820       NA        5        6       NA       1        2        2       1
+## X83834       NA        3        5       NA       1        2        2       1
+##        FIAPROXY FIAINTRP MIALANG MIAPROXY MIAINTRP AIALANGA DMDHHSIZ DMDFMSIZ
+## X83755        2        2       1        2        2        1        1        1
+## X83789        2        2       1        2        2        1        2        1
+## X83820        2        2       1        2        2       NA        2        1
+## X83834        2        2       1        2        2        1        1        1
+##        DMDHHSZA DMDHHSZB DMDHHSZE DMDHRGND DMDHRAGE DMDHRBR4 DMDHREDU DMDHRMAR
+## X83755        0        0        1        1       67        1        5        2
+## X83789        0        0        1        1       66        1        5        6
+## X83820        0        0        2        1       70        1        5        6
+## X83834        0        0        1        1       69        1        3        5
+##        DMDHSEDU  WTINT2YR  WTMEC2YR SDMVPSU SDMVSTRA INDHHIN2 INDFMIN2 INDFMPIR
+## X83755       NA  14080.10  13991.64       1      126        5        5     2.04
+## X83789       NA 181684.44 181461.24       1      132       10        9     5.00
+## X83820       NA  56259.36  57057.11       2      132       10        8     4.18
+## X83834       NA  11885.52  12267.52       2      131        3        3     0.97</code></pre>
+<p>Show only the columns (variables) of metadata.</p>
+<pre class="r"><code>sample_variables(phyfoods)</code></pre>
+<pre><code>##  [1] &quot;SEQN&quot;      &quot;GLU_index&quot; &quot;SDDSRVYR&quot;  &quot;RIDSTATR&quot;  &quot;RIAGENDR&quot;  &quot;RIDAGEYR&quot; 
+##  [7] &quot;RIDAGEMN&quot;  &quot;RIDRETH1&quot;  &quot;RIDRETH3&quot;  &quot;RIDEXMON&quot;  &quot;RIDEXAGM&quot;  &quot;DMQMILIZ&quot; 
+## [13] &quot;DMQADFC&quot;   &quot;DMDBORN4&quot;  &quot;DMDCITZN&quot;  &quot;DMDYRSUS&quot;  &quot;DMDEDUC3&quot;  &quot;DMDEDUC2&quot; 
+## [19] &quot;DMDMARTL&quot;  &quot;RIDEXPRG&quot;  &quot;SIALANG&quot;   &quot;SIAPROXY&quot;  &quot;SIAINTRP&quot;  &quot;FIALANG&quot;  
+## [25] &quot;FIAPROXY&quot;  &quot;FIAINTRP&quot;  &quot;MIALANG&quot;   &quot;MIAPROXY&quot;  &quot;MIAINTRP&quot;  &quot;AIALANGA&quot; 
+## [31] &quot;DMDHHSIZ&quot;  &quot;DMDFMSIZ&quot;  &quot;DMDHHSZA&quot;  &quot;DMDHHSZB&quot;  &quot;DMDHHSZE&quot;  &quot;DMDHRGND&quot; 
+## [37] &quot;DMDHRAGE&quot;  &quot;DMDHRBR4&quot;  &quot;DMDHREDU&quot;  &quot;DMDHRMAR&quot;  &quot;DMDHSEDU&quot;  &quot;WTINT2YR&quot; 
+## [43] &quot;WTMEC2YR&quot;  &quot;SDMVPSU&quot;   &quot;SDMVSTRA&quot;  &quot;INDHHIN2&quot;  &quot;INDFMIN2&quot;  &quot;INDFMPIR&quot;</code></pre>
+<p>Check the level 1 foods in your food tree.</p>
+<pre class="r"><code>L1s &lt;- tax_table(phyfoods)[, &quot;L1&quot;]
+as.vector(unique(L1s))</code></pre>
+<pre><code>## [1] &quot;L1_Milk_and_Milk_Products&quot;                     
+## [2] &quot;L1_Meat_Poultry_Fish_and_Mixtures&quot;             
+## [3] &quot;L1_Eggs&quot;                                       
+## [4] &quot;L1_Dry_Beans_Peas_Other_Legumes_Nuts_and_Seeds&quot;
+## [5] &quot;L1_Grain_Product&quot;                              
+## [6] &quot;L1_Fruits&quot;                                     
+## [7] &quot;L1_Vegetables&quot;                                 
+## [8] &quot;L1_Fats_Oils_and_Salad_Dressings&quot;              
+## [9] &quot;L1_Sugars_Sweets_and_Beverages&quot;</code></pre>
+<p>The L1 categories that are included in your dataset will be shown here. The following analysis (food tree and ordination) assumes that your dataset has at least one food in each of the nine L1 categories. Your dataset most likely contains all the nine categories, but if your dataset only contains special diet-adhering subjects, you may need to adjust the source code to accommodate missing L1 categories.</p>
+<p>Change to the folder called “Ordination” in your “Ordination” folder.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/NHANES/Laboratory_data/Ordination/&quot;)</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="perform-ordination-with-weighted-unifrac-distance" class="section level1">
+<h1>Perform ordination with WEIGHTED unifrac distance</h1>
+<p>Perform Principal Coordinate Analysis (PCoA) with WEIGHTED unifrac distance of your food data. This may take a few minutes depending on your data size. e.g. a large phyloseq object (7.9 MB) could take a few minutes.</p>
+<pre class="r"><code>ordinated_w &lt;- phyloseq::ordinate(phyfoods, method=&quot;PCoA&quot;, distance=&quot;unifrac&quot;, weighted=TRUE) </code></pre>
+<p>A warning message may appear saying:<br />
+Warning message:<br />
+In matrix(tree$edge[order(tree$edge[, 1]), ][, 2], byrow = TRUE, :<br />
+data length [xxxx] is not a sub-multiple or multiple of the number of rows [xxxx]</p>
+<p>This warns that the food tree we are using is not bifurcating. But it is OK, since we do not expect our food trees to be bifurcating.</p>
+<p>Save the percent variance explained by the axes as a vector to use in plots.</p>
+<pre class="r"><code>eigen_percent_w &lt;- ordinated_w$values$Relative_eig</code></pre>
+<p>Save the percent variance explained as a txt file.</p>
+<pre class="r"><code>Eigen(eigen.input = eigen_percent_w, 
+      output.fn=&quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED_eigen.txt&quot;)</code></pre>
+<p><br></p>
+<div id="plot-your-ordination-results" class="section level2">
+<h2>Plot your ordination results</h2>
+<p>Merge the first n axes to the metadata and save it as a txt file. The merged dataframe, <code>meta_usersdf</code>, will be used for plotting.</p>
+<pre class="r"><code>MergeAxesAndMetadata_NHANES(ord.object= ordinated_w, number.of.axes= 10, meta.data= demog_glu, 
+                            output.fn= &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED_meta_users.txt&quot;)</code></pre>
+<p>Load the output again for plotting.</p>
+<pre class="r"><code>loaded_glu_w &lt;- read.table(&quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED_meta_users.txt&quot;,
+                           sep=&quot;\t&quot;, header=T)</code></pre>
+<p>Convert the GLU_index as a factor to plot it in order.</p>
+<pre class="r"><code>loaded_glu_w$GLU_index &lt;- factor(loaded_glu_w$GLU_index, levels= c(&quot;Normal&quot;, &quot;Prediabetic&quot;, &quot;Diabetic&quot;))
+table(loaded_glu_w$GLU_index)</code></pre>
+<pre><code>## 
+##      Normal Prediabetic    Diabetic 
+##          47         127          62</code></pre>
+<p>Load the eigenvalues as a vector.</p>
+<pre class="r"><code>eigen_loaded &lt;- read.table(&quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED_eigen.txt&quot;, header=T)</code></pre>
+<p>Make a vector that contains the variance explained.</p>
+<pre class="r"><code>eigen_loaded_vec &lt;- eigen_loaded[, 2]</code></pre>
+<p><br></p>
+<hr />
+<p>Save Axes 1 &amp; 2, 1 &amp; 3, 2 &amp; 3, 3 &amp; 4, 2 &amp; 4 biplots with and without ellipses with specified confidence interval. The reults are saved with filenames with the specified “prefix_AxisXY.pdf” or “prefix_AxisXY_ellipses.pdf”. You need to supply the same number of colors in the order of the factor level to be used. <code>dot.colors</code> are for datapoints, and <code>ellipses.colors</code> are for ellipses outlines.</p>
+<pre class="r"><code>PlotAxis1to4ByFactor(axis.meta.df    = loaded_glu_w, 
+                     factor.to.color = &quot;GLU_index&quot;, 
+                     eigen.vector    = eigen_percent_w ,
+                     dot.colors      = c(&quot;steelblue3&quot;, &quot;yellow&quot;, &quot;hotpink&quot;), 
+                     ellipses.colors = c(&quot;steelblue3&quot;, &quot;gold3&quot;, &quot;hotpink&quot;),  
+                     ellipses.cflevel = 0.95,
+                     out.prefix = &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED&quot;)</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="permanova-tests" class="section level2">
+<h2>Permanova tests</h2>
+<p>The GLU_index groups look different. Use beta-diversity and adonis tests to see if they are actually distinct from one another.</p>
+<p>Generate a weighted unifrac distance matrix.</p>
+<pre class="r"><code>dist_matrix_w &lt;- phyloseq::distance(phyfoods, method = &quot;wunifrac&quot;) # weighted</code></pre>
+<p>Perform dispersion test.</p>
+<p>vegan::betadisper computes centeroids and distance of each datapoint from it.</p>
+<pre class="r"><code>dispr_w &lt;- vegan::betadisper(d=dist_matrix_w, phyloseq::sample_data(phyfoods)$GLU_index)</code></pre>
+<p>Show the centroids and dispersion of each group.</p>
+<pre class="r"><code>plot(dispr_w)</code></pre>
+<p><img src="NHANES_13_males60to79_ordination_files/figure-html/unnamed-chunk-42-1.png" width="70%" /></p>
+<p>The distribution of the dots of each GLU_index group should be the same as in the Axis1 x Axis 2 biplot generated by the PlotAxis1to4ByFactor function.</p>
+<p>Use dispr to do a permutation test for homogeneity of multivariate dispersion. The set.seed function ensures the same permutation results will be obtained every time; otherwise, the p-values will slightly differ each run, as it is a permutation test.</p>
+<pre class="r"><code>set.seed(123)
+vegan::permutest(dispr_w, perm = 5000)</code></pre>
+<pre><code>## 
+## Permutation test for homogeneity of multivariate dispersions
+## Permutation: free
+## Number of permutations: 5000
+## 
+## Response: Distances
+##            Df   Sum Sq    Mean Sq      F N.Perm Pr(&gt;F)
+## Groups      2 0.000378 0.00018895 0.1913   5000 0.8326
+## Residuals 233 0.230160 0.00098781</code></pre>
+<p>If p&gt;0.05, which is true in this case, the dispersion of each group are not different, and the assumption for adonis is met.</p>
+<p>Use adonis to test whether there is a difference between groups’ composition. i.e., composition among groups (food they consumed) is similar or not.</p>
+<pre class="r"><code>set.seed(123)
+vegan::adonis(dist_matrix_w ~ phyloseq::sample_data(phyfoods)$GLU_index, permutations = 5000)</code></pre>
+<pre><code>## 
+## Call:
+## vegan::adonis(formula = dist_matrix_w ~ phyloseq::sample_data(phyfoods)$GLU_index,      permutations = 5000) 
+## 
+## Permutation: free
+## Number of permutations: 5000
+## 
+## Terms added sequentially (first to last)
+## 
+##                                            Df SumsOfSqs  MeanSqs F.Model
+## phyloseq::sample_data(phyfoods)$GLU_index   2    0.0943 0.047128  1.4115
+## Residuals                                 233    7.7794 0.033388        
+## Total                                     235    7.8737                 
+##                                                R2  Pr(&gt;F)  
+## phyloseq::sample_data(phyfoods)$GLU_index 0.01197 0.04699 *
+## Residuals                                 0.98803          
+## Total                                     1.00000          
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The results indicate that the overall adonis is significant (p&lt;0.05). If overall adonis is significant, you can run pairwise adonis to see which group pairs are different.</p>
+<pre class="r"><code>pairwise.adonis(dist_matrix_w, phyloseq::sample_data(phyfoods)$GLU_index, perm = 5000,
+                p.adjust.m = &quot;none&quot;)  </code></pre>
+<pre><code>##                     pairs Df  SumsOfSqs  F.Model          R2    p.value
+## 1 Diabetic vs Prediabetic  1 0.04637781 1.399251 0.007427052 0.10237952
+## 2      Diabetic vs Normal  1 0.03741384 1.104643 0.010218274 0.28174365
+## 3   Prediabetic vs Normal  1 0.05402857 1.619903 0.009330170 0.04159168
+##   p.adjusted sig
+## 1 0.10237952    
+## 2 0.28174365    
+## 3 0.04159168   .</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="save-weighted-unifrac-distance-matrix" class="section level2">
+<h2>Save weighted unifrac distance matrix</h2>
+<p>Generate and save an WEIGHTED unifrac distance matrix of “Samples”.</p>
+<pre class="r"><code>WeightedUnifracDis(input.phyloseq.obj = phyfoods, 
+                   output.fn = &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED_uni_dis.txt&quot;)        </code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="perform-ordination-with-unweighted-unifrac-distance" class="section level1">
+<h1>Perform ordination with unweighted unifrac distance</h1>
+<p>Perform Principal Coordinate Analysis (PCoA) with UNweighted unifrac distance of your food data. This may take a few minutes depending on your data size. e.g. a large phyloseq object (7.9 MB) takes ~ 1 min.</p>
+<pre class="r"><code>ordinated_u &lt;- phyloseq::ordinate(phyfoods, method=&quot;PCoA&quot;, distance=&quot;unifrac&quot;, weighted=FALSE) </code></pre>
+<p>Save the percent variance explained by the axes as a vector to use in plots.</p>
+<pre class="r"><code>eigen_percent_u &lt;- ordinated_u$values$Relative_eig</code></pre>
+<p>Save the percent variance explained as a txt file.</p>
+<pre class="r"><code>Eigen(eigen.input = eigen_percent_u, 
+      output.fn=&quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_UNweighted_eigen.txt&quot;)</code></pre>
+<p><br></p>
+<div id="plot-your-ordination-results-1" class="section level2">
+<h2>Plot your ordination results</h2>
+<p>Merge the first n axes to the metadata and save it as a txt file. The merged dataframe, <code>meta_usersdf</code>, will be used for plotting.</p>
+<pre class="r"><code>MergeAxesAndMetadata_NHANES(ord.object= ordinated_u, number.of.axes= 10, meta.data= demog_glu, 
+                            output.fn= &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_UNweighted_meta_users.txt&quot;)</code></pre>
+<p>Load the output again for plotting.</p>
+<pre class="r"><code>loaded_glu_u &lt;- read.table(&quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_UNweighted_meta_users.txt&quot;,
+                           sep=&quot;\t&quot;, header=T)  </code></pre>
+<p>Convert the GLU_index as a factor to plot it in order.</p>
+<pre class="r"><code>loaded_glu_u$GLU_index &lt;- factor(loaded_glu_u$GLU_index, levels = c(&quot;Normal&quot;, &quot;Prediabetic&quot;, &quot;Diabetic&quot;))</code></pre>
+<p>Take a look at meta_usersdf_loaded.</p>
+<pre class="r"><code>head(loaded_glu_u, 2)</code></pre>
+<pre><code>##   Row.names  SEQN   GLU_index SDDSRVYR RIDSTATR RIAGENDR RIDAGEYR RIDAGEMN
+## 1    X83755 83755    Diabetic        9        2        1       67       NA
+## 2    X83789 83789 Prediabetic        9        2        1       66       NA
+##   RIDRETH1 RIDRETH3 RIDEXMON RIDEXAGM DMQMILIZ DMQADFC DMDBORN4 DMDCITZN
+## 1        4        4        2       NA        1       1        1        1
+## 2        3        3        2       NA        2      NA        1        1
+##   DMDYRSUS DMDEDUC3 DMDEDUC2 DMDMARTL RIDEXPRG SIALANG SIAPROXY SIAINTRP
+## 1       NA       NA        5        2       NA       1        2        2
+## 2       NA       NA        5        6       NA       1        2        2
+##   FIALANG FIAPROXY FIAINTRP MIALANG MIAPROXY MIAINTRP AIALANGA DMDHHSIZ
+## 1       1        2        2       1        2        2        1        1
+## 2       1        2        2       1        2        2        1        2
+##   DMDFMSIZ DMDHHSZA DMDHHSZB DMDHHSZE DMDHRGND DMDHRAGE DMDHRBR4 DMDHREDU
+## 1        1        0        0        1        1       67        1        5
+## 2        1        0        0        1        1       66        1        5
+##   DMDHRMAR DMDHSEDU WTINT2YR  WTMEC2YR SDMVPSU SDMVSTRA INDHHIN2 INDFMIN2
+## 1        2       NA  14080.1  13991.64       1      126        5        5
+## 2        6       NA 181684.4 181461.24       1      132       10        9
+##   INDFMPIR      Axis.1      Axis.2     Axis.3       Axis.4      Axis.5
+## 1     2.04 -0.11664677 -0.02798665  0.2150702 -0.101761495 -0.01171610
+## 2     5.00  0.01421703 -0.07604162 -0.1075092 -0.007704721 -0.09039281
+##        Axis.6     Axis.7     Axis.8     Axis.9     Axis.10
+## 1  0.13498463 -0.0115458 0.08167232 0.04694426 -0.09992649
+## 2 -0.05136006 -0.0142396 0.08034174 0.12698673  0.02684341</code></pre>
+<p><br></p>
+<hr />
+<p>Save Axes 1 &amp; 2, 1 &amp; 3, 2 &amp; 3, 3 &amp; 4, 2 &amp; 4 biplots with and without ellipses with specified confidence interval. The reults are saved with filenames with the specified “prefix_AxisXY.pdf” or “prefix_AxisXY_ellipses.pdf”. You need to supply the same number of colors in the order of the factor level to be used. <code>dot.colors</code> are for datapoints, and <code>ellipses.colors</code> are for ellipses outlines.</p>
+<p><strong>[NOTE]</strong> For the “UNweighted” results, , change the input, eigen vectors, and prefix names accordingly.</p>
+<pre class="r"><code>PlotAxis1to4ByFactor(axis.meta.df    = loaded_glu_u, 
+                     factor.to.color = &quot;GLU_index&quot;, 
+                     eigen.vector    = eigen_percent_u ,
+                     dot.colors      = c(&quot;steelblue3&quot;, &quot;yellow&quot;, &quot;hotpink&quot;), 
+                     ellipses.colors = c(&quot;steelblue3&quot;, &quot;gold3&quot;, &quot;hotpink&quot;),  
+                     ellipses.cflevel = 0.95,
+                     out.prefix = &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_UNweighted&quot;)</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="permanova-tests-1" class="section level2">
+<h2>Permanova tests</h2>
+<p>It is not clear from the plots whether The GLU_index groups are different. Use beta-diversity and adonis tests to see if they are they actually distinct from one another.</p>
+<p>Generate an UNweighted unifrac distance matrix.</p>
+<pre class="r"><code>dist_matrix_u &lt;- phyloseq::distance(phyfoods, method=&quot;unifrac&quot;)  # UNweighted</code></pre>
+<p>Dispersion test and plot</p>
+<p>vegan::betadisper computes centeroids and distance of each datapoint from it.</p>
+<pre class="r"><code>dispr_u &lt;- vegan::betadisper(dist_matrix_u, phyloseq::sample_data(phyfoods)$GLU_index)</code></pre>
+<p>Can show the centroids and dispersion of each group.</p>
+<pre class="r"><code>plot(dispr_u)</code></pre>
+<p><img src="NHANES_13_males60to79_ordination_files/figure-html/unnamed-chunk-57-1.png" width="70%" /></p>
+<p>Use dispr to do a permutation test for homogeneity of multivariate dispersion.</p>
+<pre class="r"><code>set.seed(123)
+vegan::permutest(dispr_u, perm = 5000)</code></pre>
+<pre><code>## 
+## Permutation test for homogeneity of multivariate dispersions
+## Permutation: free
+## Number of permutations: 5000
+## 
+## Response: Distances
+##            Df   Sum Sq    Mean Sq      F N.Perm Pr(&gt;F)
+## Groups      2 0.000383 0.00019149 0.3883   5000 0.6707
+## Residuals 233 0.114892 0.00049310</code></pre>
+<p>If p&gt;0.05, which is true in this case, the dispersion of each group are not different, and the assumption for adonis is met.</p>
+<p>Use adonis to test whether there is a difference between groups’ composition. # i.e., composition among groups (food they consumed) is similar or not.</p>
+<pre class="r"><code>set.seed(123)
+vegan::adonis(dist_matrix_u ~ phyloseq::sample_data(phyfoods)$GLU_index, permutations = 5000) </code></pre>
+<pre><code>## 
+## Call:
+## vegan::adonis(formula = dist_matrix_u ~ phyloseq::sample_data(phyfoods)$GLU_index,      permutations = 5000) 
+## 
+## Permutation: free
+## Number of permutations: 5000
+## 
+## Terms added sequentially (first to last)
+## 
+##                                            Df SumsOfSqs MeanSqs F.Model      R2
+## phyloseq::sample_data(phyfoods)$GLU_index   2     0.991 0.49544  1.0963 0.00932
+## Residuals                                 233   105.295 0.45191         0.99068
+## Total                                     235   106.286                 1.00000
+##                                            Pr(&gt;F)  
+## phyloseq::sample_data(phyfoods)$GLU_index 0.07259 .
+## Residuals                                          
+## Total                                              
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>If overall adonis is significant, which is not true in this case, but we will run pairwise adonis for demonstration purposes.</p>
+<pre class="r"><code>pairwise.adonis(dist_matrix_u, phyloseq::sample_data(phyfoods)$GLU_index, perm = 5000,
+                p.adjust.m = &quot;none&quot;)</code></pre>
+<pre><code>##                     pairs Df SumsOfSqs  F.Model          R2    p.value
+## 1 Diabetic vs Prediabetic  1 0.4728741 1.046838 0.005566902 0.27774445
+## 2      Diabetic vs Normal  1 0.5168609 1.140209 0.010543805 0.06098780
+## 3   Prediabetic vs Normal  1 0.5065434 1.122512 0.006483920 0.09438112
+##   p.adjusted sig
+## 1 0.27774445    
+## 2 0.06098780    
+## 3 0.09438112</code></pre>
+<p><br></p>
+<hr />
+</div>
+<div id="save-unweighted-unifrac-distance-matrix" class="section level2">
+<h2>Save unweighted unifrac distance matrix</h2>
+<p>Generate and save an UNweighted unifrac distance matrix of “Samples”.</p>
+<pre class="r"><code>UnweightedUnifracDis(input.phyloseq.obj = phyfoods, 
+                     output.fn = &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_UNweighted_uni_dis.txt&quot;)        </code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory.</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

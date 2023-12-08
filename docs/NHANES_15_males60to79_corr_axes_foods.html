@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Correlation between ordination axes and foods</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li>
+      <a href="ASA24_10_viz_food_tree.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="ASA24_11_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_12_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_13_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    NHANES
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="NHANES_01_load_and_clean_1.html">Load and clean NHANES data - 1</a>
+    </li>
+    <li>
+      <a href="NHANES_02_load_and_clean_2.html">Load and clean NHANES data - 2</a>
+    </li>
+    <li>
+      <a href="NHANES_03_add_meta_GLU_index.html">Add metadata and GLU-index</a>
+    </li>
+    <li>
+      <a href="NHANES_04_overview_GLU_index.html">Data overview</a>
+    </li>
+    <li>
+      <a href="NHANES_05_GLU_index_by_age_gender.html">GLU-index by age and gender</a>
+    </li>
+    <li>
+      <a href="NHANES_06_subset_males60to79.html">Subset males 60-79 years old</a>
+    </li>
+    <li>
+      <a href="NHANES_07_males60to79_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_08_males60to79_prep_for_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="NHANES_09_males60to79_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="NHANES_10_males60to79_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_11_males60to79_generate_foodtrees.html">Generate foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_12_males60to79_viz_foodtrees.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_13_males60to79_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_14_males60to79_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_15_males60to79_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_16_Div.html">Assign DivGroups by dietary diversity</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Correlation between ordination axes and foods</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>In this script, we will analyze correlation between ordination axes values and foods.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load necessary packages.</p>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/corr.axes.foods.R&quot;)
+source(&quot;lib/ggplot2themes.R&quot;)</code></pre>
+<p>Load the distinct 100 colors for use.</p>
+<pre class="r"><code>distinct100colors &lt;- readRDS(&quot;lib/distinct100colors.rda&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/NHANES/Laboratory_data/Ordination/&quot;)</code></pre>
+<p><br></p>
+</div>
+<div id="weighted-unifrac-distance-ordination-results" class="section level1">
+<h1>Weighted unifrac distance ordination results</h1>
+<p>From sorted IFC table, generate a table of total amount of food consumed by all the individuals, and a table with correlation coefficients, p-values, and q-values with a desired threshold between food items and Axes that were saved in the ordination section. This function will print out the food items’ names while calculating the correlation measures.</p>
+<p>Be careful not to confuse WEIGHTED and UNweighted unifrac distances as you name the files.</p>
+<pre class="r"><code>CorrAxesFood(food_ifc_soted = &quot;../Foodtree/Food_D12_FC_QC_demo_QCed_males60to79_3Lv.food.ifc_sorted.txt&quot;, 
+             AmountSums_out_fn =          &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_AmountSums.txt&quot;,
+             qval_threshold = 0.05,
+             meta_users =            &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED_meta_users.txt&quot;,
+             corr_axes_foods_outfn = &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED_corr_axes_foods_thr0.05.txt&quot;)</code></pre>
+<table>
+<colgroup>
+<col width="35%" />
+<col width="64%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>food_ifc_soted</td>
+<td>xxx.food.ifc.sorted.txt file, saved in the ordination section</td>
+</tr>
+<tr class="even">
+<td>AmountSums_out_fn</td>
+<td>Output filename to be saved which has the total consumption amount of each food</td>
+</tr>
+<tr class="odd">
+<td>qval_threshold</td>
+<td>q-value threshold to call a correlation significant</td>
+</tr>
+<tr class="even">
+<td>meta_users</td>
+<td>xxx.meta_users.txt file, waved in the ordination section</td>
+</tr>
+<tr class="odd">
+<td>corr_axes_foods_outfn</td>
+<td>Output filename to be saved which has the correlation between foods and Axes</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<hr />
+<div id="load-and-analyze-the-output" class="section level2">
+<h2>Load and analyze the output</h2>
+<pre class="r"><code>dat &lt;- read.delim(&quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_WEIGHTED_corr_axes_foods_thr0.05.txt&quot;)</code></pre>
+<p>Check the number of food items with significant q-values.</p>
+<pre class="r"><code>nrow(subset(dat, Significance==&quot;*&quot;))</code></pre>
+<pre><code>## [1] 31</code></pre>
+<p>There are 31 food items correlated with particular food items.</p>
+<p>Show only food items that are significantly correlated with one of the axes.</p>
+<pre class="r"><code>subset(dat, Significance==&quot;*&quot;)</code></pre>
+<pre><code>##                                              Food    Axis correlation
+## 1                                       Water tap  Axis.1  -0.8487995
+## 2                       Water bottled unsweetened  Axis.1   0.8097436
+## 3                                   Coffee brewed  Axis.3  -0.7107605
+## 4                                 Soft drink cola  Axis.5  -0.5557616
+## 5                                   Coffee brewed  Axis.2   0.5292725
+## 6                                      Beer light  Axis.6   0.4848544
+## 7                                      Milk whole  Axis.2   0.4815899
+## 8                             Milk reduced fat 2   Axis.2   0.4609677
+## 9                                      Beer light  Axis.5   0.4542099
+## 10                                  Coffee brewed  Axis.4   0.4453274
+## 11                                Soft drink cola  Axis.4  -0.3908675
+## 12                                Soft drink cola  Axis.6   0.3809187
+## 13                      Water bottled unsweetened  Axis.4   0.3594993
+## 14                                           Beer  Axis.7   0.3520281
+## 15 Ice cream regular flavors other than chocolate Axis.10  -0.3476261
+## 16                            Milk reduced fat 2   Axis.9  -0.3410168
+## 17                            Milk fat free skim   Axis.8   0.3205856
+## 18 Tea iced brewed black pre sweetened with sugar  Axis.6  -0.3165401
+## 19                                     Banana raw  Axis.7  -0.3154898
+## 20                                     Milk whole Axis.10  -0.3105564
+## 21                                           Beer  Axis.9  -0.3065722
+## 22                            Milk fat free skim   Axis.5  -0.2857583
+## 23                                Soft drink cola  Axis.8  -0.2854799
+## 24                                      Water tap  Axis.3   0.2784664
+## 25                                      Water tap  Axis.4   0.2763216
+## 26                           Soft drink cola diet  Axis.9  -0.2737740
+## 27                            Milk reduced fat 2   Axis.3   0.2719744
+## 28 Orange juice 100 canned bottled or in a carton Axis.10  -0.2654601
+## 29              Tea iced brewed black unsweetened  Axis.6  -0.2622820
+## 30                                Milk low fat 1   Axis.9   0.2607144
+## 31                            Milk fat free skim   Axis.7  -0.2610995
+##            pval         qval Significance
+## 1  1.049973e-66 1.761854e-62            *
+## 2  4.280100e-56 3.591004e-52            *
+## 3  1.299079e-37 7.266184e-34            *
+## 4  1.571715e-20 6.593345e-17            *
+## 5  1.938004e-18 6.503943e-15            *
+## 6  2.560240e-15 7.160137e-12            *
+## 7  4.171242e-15 9.999063e-12            *
+## 8  8.100359e-14 1.699050e-10            *
+## 9  2.051963e-13 3.825770e-10            *
+## 10 6.751299e-13 1.132868e-09            *
+## 11 4.907704e-10 7.486480e-07            *
+## 12 1.445241e-09 2.020928e-06            *
+## 13 1.311234e-08 1.692501e-05            *
+## 14 2.726032e-08 3.267344e-05            *
+## 15 4.158947e-08 4.652476e-05            *
+## 16 7.747876e-08 8.125585e-05            *
+## 17 4.848080e-07 4.785340e-04            *
+## 18 6.862093e-07 6.396995e-04            *
+## 19 7.503549e-07 6.626818e-04            *
+## 20 1.136569e-06 9.535811e-04            *
+## 21 1.580760e-06 1.263103e-03            *
+## 22 8.198166e-06 6.108955e-03            *
+## 23 8.373419e-06 6.108955e-03            *
+## 24 1.416126e-05 9.901082e-03            *
+## 25 1.658287e-05 1.113042e-02            *
+## 26 1.996896e-05 1.288766e-02            *
+## 27 2.274451e-05 1.413529e-02            *
+## 28 3.615393e-05 2.166653e-02            *
+## 29 4.513158e-05 2.611407e-02            *
+## 30 5.029718e-05 2.722538e-02            *
+## 31 4.897894e-05 2.722538e-02            *</code></pre>
+<p>It is also possible to view each axis separately.</p>
+<pre class="r"><code># Select Axis 1 rows
+dat_1 &lt;- subset(dat, Axis==&quot;Axis.1&quot;)
+head(dat_1[order(dat_1$qval), ], 10)</code></pre>
+<pre><code>##                            Food   Axis correlation         pval         qval
+## 1                     Water tap Axis.1 -0.84879953 1.049973e-66 1.761854e-62
+## 2     Water bottled unsweetened Axis.1  0.80974358 4.280100e-56 3.591004e-52
+## 51                Coffee brewed Axis.1 -0.21150806 1.079057e-03 3.550310e-01
+## 62  Egg whole boiled or poached Axis.1 -0.19837925 2.199611e-03 5.953140e-01
+## 68                     Milk NFS Axis.1  0.09053595 1.656542e-01 8.020252e-01
+## 78          Milk fat free skim  Axis.1 -0.13590236 3.694459e-02 8.020252e-01
+## 87    Buttermilk reduced fat 2  Axis.1  0.10484862 1.081434e-01 8.020252e-01
+## 90             Buttermilk whole Axis.1  0.10484862 1.081434e-01 8.020252e-01
+## 93   Kefir NS as to fat content Axis.1 -0.10772118 9.876618e-02 8.020252e-01
+## 109                   Rice milk Axis.1  0.10389110 1.114203e-01 8.020252e-01
+##     Significance
+## 1              *
+## 2              *
+## 51              
+## 62              
+## 68              
+## 78              
+## 87              
+## 90              
+## 93              
+## 109</code></pre>
+<pre class="r"><code># Select Axis 2 rows and sort by qval.  
+dat_2 &lt;- subset(dat, Axis==&quot;Axis.2&quot;)
+head(dat_2[order(dat_2$qval), ], 10)</code></pre>
+<pre><code>##                              Food   Axis correlation         pval         qval
+## 5                   Coffee brewed Axis.2   0.5292725 1.938004e-18 6.503943e-15
+## 7                      Milk whole Axis.2   0.4815899 4.171242e-15 9.999063e-12
+## 8             Milk reduced fat 2  Axis.2   0.4609677 8.100359e-14 1.699050e-10
+## 40            Milk fat free skim  Axis.2  -0.2317225 3.308411e-04 1.387878e-01
+## 45         Tea iced bottled black Axis.2   0.2211288 6.228534e-04 2.322551e-01
+## 53 Sugar white granulated or lump Axis.2   0.2063469 1.435065e-03 4.543468e-01
+## 58          Coffee creamer powder Axis.2   0.2008213 1.932983e-03 5.592321e-01
+## 66                      Water tap Axis.2  -0.1920650 3.051289e-03 7.757670e-01
+## 85          Buttermilk low fat 1  Axis.2   0.1086787 9.578786e-02 8.020252e-01
+## 98                       Soy milk Axis.2  -0.0818681 2.101663e-01 8.020252e-01
+##    Significance
+## 5             *
+## 7             *
+## 8             *
+## 40             
+## 45             
+## 53             
+## 58             
+## 66             
+## 85             
+## 98</code></pre>
+<pre class="r"><code># Select Axis 3 rows and sort by qval.  
+dat_3 &lt;- subset(dat, Axis==&quot;Axis.3&quot;)
+head(dat_3[order(dat_3$qval), ], 10)</code></pre>
+<pre><code>##                               Food   Axis correlation         pval         qval
+## 3                    Coffee brewed Axis.3 -0.71076052 1.299079e-37 7.266184e-34
+## 24                       Water tap Axis.3  0.27846636 1.416126e-05 9.901082e-03
+## 27             Milk reduced fat 2  Axis.3  0.27197439 2.274451e-05 1.413529e-02
+## 47                       Apple raw Axis.3  0.22009987 6.613055e-04 2.361001e-01
+## 50       Water bottled unsweetened Axis.3  0.21549415 8.618017e-04 2.896430e-01
+## 70                      Milk whole Axis.3  0.08554006 1.903598e-01 8.020252e-01
+## 75                 Milk low fat 1  Axis.3 -0.10695949 1.011874e-01 8.020252e-01
+## 117      Yogurt low fat milk plain Axis.3  0.10484862 1.081434e-01 8.020252e-01
+## 124 Yogurt Greek nonfat milk plain Axis.3  0.08761323 1.797989e-01 8.020252e-01
+## 144 Yogurt Greek nonfat milk fruit Axis.3  0.08761323 1.797989e-01 8.020252e-01
+##     Significance
+## 3              *
+## 24             *
+## 27             *
+## 47              
+## 50              
+## 70              
+## 75              
+## 117             
+## 124             
+## 144</code></pre>
+<pre class="r"><code># Select Axis 4 rows and sort by qval.  
+dat_4 &lt;- subset(dat, Axis==&quot;Axis.4&quot;)
+head(dat_4[order(dat_4$qval), ], 10)</code></pre>
+<pre><code>##                                Food   Axis correlation         pval
+## 10                    Coffee brewed Axis.4  0.44532739 6.751299e-13
+## 11                  Soft drink cola Axis.4 -0.39086753 4.907704e-10
+## 13        Water bottled unsweetened Axis.4  0.35949933 1.311234e-08
+## 25                        Water tap Axis.4  0.27632163 1.658287e-05
+## 36                       Beer light Axis.4 -0.24342502 1.589345e-04
+## 65                   Muffin English Axis.4  0.19229201 3.016107e-03
+## 71                       Milk whole Axis.4 -0.09027923 1.668623e-01
+## 94       Kefir NS as to fat content Axis.4  0.08378314 1.996592e-01
+## 119 Yogurt Greek low fat milk plain Axis.4 -0.07708049 2.381587e-01
+## 129       Yogurt low fat milk fruit Axis.4  0.08509615 1.926789e-01
+##             qval Significance
+## 10  1.132868e-09            *
+## 11  7.486480e-07            *
+## 13  1.692501e-05            *
+## 25  1.113042e-02            *
+## 36  7.408112e-02             
+## 65  7.757670e-01             
+## 71  8.020252e-01             
+## 94  8.020252e-01             
+## 119 8.020252e-01             
+## 129 8.020252e-01</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="unweighted-unifrac-distance-ordination-results" class="section level1">
+<h1>Unweighted unifrac distance ordination results</h1>
+<p>xxx_AmountSums.txt will be generated again, but its content will be the same regardless of which distance method (weighted or unweighted unifrac or else) was used, as long as the food.ifc_sorted is the same.</p>
+<pre class="r"><code>CorrAxesFood(food_ifc_soted = &quot;../Foodtree/Food_D12_FC_QC_demo_QCed_males60to79_3Lv.food.ifc_sorted.txt&quot;,
+             AmountSums_out_fn = &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_AmountSums.txt&quot;,
+             qval_threshold = 0.05,
+             meta_users =            &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_UNweighted_meta_users.txt&quot;,
+             corr_axes_foods_outfn = &quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_UNweighted_corr_axes_foods_thr0.05.txt&quot;)</code></pre>
+<p><br></p>
+<hr />
+<div id="load-and-analyze-the-output-1" class="section level2">
+<h2>Load and analyze the output</h2>
+<p>UNweighted can be viewed in the same way.</p>
+<pre class="r"><code>dat &lt;- read.delim(&quot;Food_D12_FC_QC_demo_QCed_males60to79_3Lv_ord_UNweighted_corr_axes_foods_thr0.05.txt&quot;)</code></pre>
+<p>Check the number of food items with significant q-values.</p>
+<pre class="r"><code>nrow(subset(dat, Significance==&quot;*&quot;))</code></pre>
+<pre><code>## [1] 78</code></pre>
+<p>There are as many as 78 food items at alpha=0.05, so it will be probably better to look at most significant food items or a particular Principal Coordinate Axis of your interest.</p>
+<p>Show the first 10 food items that are significantly correlated with one of the axes.</p>
+<pre class="r"><code>head(subset(dat, Significance==&quot;*&quot;), 10)</code></pre>
+<pre><code>##                                              Food    Axis correlation
+## 1                       Water bottled unsweetened  Axis.3   0.7070852
+## 2                                    Tomatoes raw  Axis.4  -0.6803295
+## 3  Ice cream regular flavors other than chocolate  Axis.9   0.5728066
+## 4                                     Lettuce raw  Axis.4  -0.5633409
+## 5                  Sugar white granulated or lump  Axis.2   0.5475776
+## 6                             Milk reduced fat 2   Axis.1  -0.5377079
+## 7                                 Cheese American  Axis.2   0.5362031
+## 8                                   Coffee brewed  Axis.3  -0.5349615
+## 9                                      Milk whole  Axis.1  -0.5293084
+## 10          Ham prepackaged or deli luncheon meat Axis.10  -0.5131655
+##            pval         qval Significance
+## 1  4.448087e-37 7.463889e-33            *
+## 2  2.010864e-33 1.687115e-29            *
+## 3  5.613733e-22 3.139948e-18            *
+## 4  3.657487e-21 1.534316e-17            *
+## 5  7.281465e-20 2.443660e-16            *
+## 6  4.379006e-19 1.224662e-15            *
+## 7  5.727158e-19 1.372882e-15            *
+## 8  7.139692e-19 1.497550e-15            *
+## 9  1.925940e-18 3.590808e-15            *
+## 10 2.964411e-17 4.974282e-14            *</code></pre>
+<p><br></p>
+<hr />
+<p>Come back to the main directory.</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+---
+title: "Visualize ordination"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+
+<br>
+
+# Introduction
+
+In the ordination section, biplots were generated with the users color-coded by their Diet. However, they can also be color-coded individually. In addition, specific users can be highlighted with a thicker outline if desired. All of these can be done by loading the saved ordination results - Axis values and metadata combined, and the proportion of variance explained.
+
+
+<br>
+
+# Load functions and packages
+
+Name the path to DietDiveR directory where input files are pulled.
+```{r}
+main_wd <- "~/GitHub/DietDiveR"
+```
+
+Load the necessary packages.
+```{r}
+library(ggplot2)
+```
+
+Load the necessary functions.
+```{r}
+source("lib/specify_data_dir.R")
+source("lib/ggplot2themes.R")
+```
+
+Call color palette.
+```{r}
+distinct100colors <- readRDS("lib/distinct100colors.rda")
+```
+
+You can come back to the main directory by:
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<br>
+
+# Load ordination results - whether weighted or unweighted Unifrac distance results
+
+Specify the directory where the data is.
+```{r, eval = FALSE}
+SpecifyDataDirectory(directory.name= "eg_data/VVKAJ/Ordination/")
+```
+
+<!-- This is the R-markdown code to change directories. -->
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_knit$set(root.dir = 'eg_data/VVKAJ/Ordination/')
+```
+
+Read in the metadata and users' Axis values. 
+```{r}
+meta_usersdf <- read.table("VVKAJ_Items_f_id_s_m_QCed_4Lv_ord_WEIGHTED_meta_users.txt", header=T)
+```
+
+Read in the eigenvalues for axis labels of biplots.
+```{r}
+eigen_loaded <- read.table("VVKAJ_Items_f_id_s_m_QCed_4Lv_ord_WEIGHTED_eigen_percent.txt", header=T)
+```
+
+Make a vector that contains the variance explained.
+```{r}
+eigen_loaded_vec <- eigen_loaded[, 2]
+```
+
+<br>
+
+# Plot Axis 1 and Axis 2
+
+## Show the separation of individuals colored by UserName
+
+Create a folder called "Viz_Ordination" to save the plots to be produced here.
+  
+Color-code by UserName.
+```{r}
+by_user <- ggplot(meta_usersdf, aes(x=Axis.1, y=Axis.2, fill=UserName)) +
+            geom_point(shape=21, aes(color= UserName), size=3, color="black") + 
+            scale_fill_manual(values = distinct100colors) + # OR use viridis theme.
+            # scale_color_viridis_d() +
+            xlab( paste("Axis.1 (", paste(round(eigen_loaded_vec[1]*100, 1)), "%)", sep="") ) +
+            ylab( paste("Axis.2 (", paste(round(eigen_loaded_vec[2]*100, 1)), "%)", sep="") ) +
+            no_grid + space_axes + theme(aspect.ratio = 1)
+```
+
+```{r,out.width="70%"}
+by_user
+```
+
+Save by_user plot as a pdf.
+```{r}
+ggsave("Viz_Ordination/VVKAJ_Items_f_id_s_m_QCed_4Lv_ord_WEIGHTED_users_Axis12.pdf", by_user,
+       device="pdf", height=5, width=7, unit="in", dpi=300)
+```
+
+<br>
+
+Add lines to connect samples in the order in which they appear in the data using geom_path. 
+**[NOTE]** A similar-sounding function, geom_line, connects in the order of the variable (small to large) on the x axis, so it could be misleading. We want to use geom_path here.
+```{r}
+by_user_pathconnected <- by_user +  geom_path(aes(color = UserName)) +
+                                    scale_color_manual(values=distinct100colors)
+```
+
+```{r,out.width="70%"}
+by_user_pathconnected
+```
+
+Save by_user_pathconnected as a pdf.
+```{r}
+ggsave("Viz_Ordination/VVKAJ_Items_f_id_s_m_QCed_4Lv_ord_WEIGHTED_users_Axis12_pathconnected.pdf", 
+       by_user_pathconnected, device="pdf", height=5, width=7, unit="in", dpi=300)
+```
+
+<br>
+
+---
+
+## Change the appearance of datapoints of specific user(s)
+
+Subset datapoint(s) that you would like to highlight.Let us highlight those on keto diet: VVKAJ103, VVKAJ108, and VVKAJ113. The vertical var "|" means "or" in the subset condition.
+```{r}
+select_point_keto <- subset(meta_usersdf, UserName=="VVKAJ103" | UserName=="VVKAJ108" | UserName=="VVKAJ113") 
+```
+
+Add selected user(s) above with a thicker outline.
+```{r}
+highlighted <- 
+  by_user + 
+    geom_point(select_point_keto, shape=21, size=3, alpha=1, stroke=2,
+               mapping=aes(x=Axis.1, y=Axis.2, fill=UserName), show.legend=F) +
+    # Specify that the 3rd, 8th, and 13th datapoints will have a thicker outline (stroke=2),
+    # and all others will have stroke=0. 
+    guides(fill=guide_legend(override.aes=list(stroke=c(0,0,2,0,0, 0,0,2,0,0, 0,0,2,0,0)))) 
+```
+
+```{r,out.width="70%"}
+highlighted
+```
+
+Save highlighted as a pdf.
+```{r}
+ggsave("Viz_Ordination/VVKAJ_Items_f_id_s_m_QCed_4Lv_ord_WEIGHTED_users_Axis12_highlighted.pdf", 
+       highlighted, device="pdf", height=5, width=7, unit="in", dpi=300)
+```
+
+<br>  
+
+---
+
+Come back to the main directory before you start running another script.
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

@@ -1,0 +1,192 @@
+---
+title: "Prepare for clustering"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+
+<br>
+
+# Introduction
+
+Here, we will prepare the subsetted NHANES totals with males 60-79 years old for PCA and clustering analyses.  Unlike ASA24, where we had a choice of using averages across days or treating each day separately, we will have 2-day averages of totals data with NHANES because the NHANES data was collected for only two days.
+
+In this script, we will prepare the totals data by removing variables that have zero variance and collapsing variables by correlation (i.e. removing redundancy of variables that are highly correlated).
+
+<br>
+
+# Load functions and packages  
+
+Name the path to DietDiveR directory where input files are pulled.
+```{r}
+main_wd <- "~/GitHub/DietDiveR"
+```
+
+Load the necessary functions.
+```{r}
+source("lib/specify_data_dir.R")
+source("lib/prep_data_for_clustering.R")
+```
+
+You can come back to the main directory by:
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<br>
+
+# Load the data and omit some variables if desired
+
+Specify the directory where the data is.
+```{r, eval=FALSE}
+SpecifyDataDirectory(directory.name = "eg_data/NHANES/Laboratory_data/")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_knit$set(root.dir = 'eg_data/NHANES/Laboratory_data/')
+```
+
+<br>  
+
+Load the totals data that have males 60-79 years old.
+```{r}
+totals_males60to79 <- read.table("QCtotal_d_ga_body_meta_glu_comp_2_males60to79.txt", 
+                                 sep="\t", header=T)
+```
+
+It should have 236 individuals (rows) and 266 variables (columns).
+```{r}
+dim(totals_males60to79)
+```
+
+There may be some variables that you would like to omit before performing PCA.
+
+Define which columns to drop.
+```{r}
+drops <- c("KCAL","GRMS", "MOIS", "NoOfItems")
+```
+
+Take only the columns whose names are NOT in the drops vector.
+```{r}
+totals_males60to79_2 <- totals_males60to79[ , !(names(totals_males60to79) %in% drops)]
+```
+
+<br>
+
+# NUT: Nutrients and body weight
+
+Prepare input dataset for clustering with nutrients data and BMI of the participants.
+
+We are interested in BMI because the GLU_index groups had different BMI. Add any other variables of interest that you would like to include in the PCA.
+
+For NHANES, the last nutrient variables is P226, not B12_ADDED as in ASA24.
+
+Obtain the column numbers for start.col="PROT" through end.col="P226" plus "BMXBMI" and "SEQN".
+```{r}
+SEQN_col  <- match("SEQN"  , names(totals_males60to79_2)) 
+BMI_col   <- match("BMXBMI" , names(totals_males60to79_2)) 
+start_col <- match("PROT"   , names(totals_males60to79_2))  
+end_col   <- match("P226"   , names(totals_males60to79_2)) 
+```
+
+Select the BMI, body weight, and the nutrient variables.
+```{r}
+user_BMI_nut <- totals_males60to79_2[ , c(SEQN_col, BMI_col, start_col:end_col)]
+```
+
+Process this input, user_BMI_nut, for clustering analysis as follows: 
+
+1. Take complete cases in your variables of interest, 
+2. Save the original totals of the complete cases individuals as a .txt, 
+3. Keep non-zero columns, 
+4. Remove the userID,
+5. Identify correlated variables and optionally remove them,
+6. Save with uncorrelated variables as a .txt,
+7. Save correlation matrix as a .txt.
+
+```{r}
+PrepForClustering(input_df = user_BMI_nut,
+                userID = "SEQN",
+                original_totals_df= totals_males60to79, 
+                complete_cases_fn=   "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut.txt",
+                clustering_input_fn= "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_rv.txt",
+                corr_matrix_fn=      "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_corr_mat.txt",
+                rm_corr_var = TRUE)
+```
+
+<br>
+
+# CAT: Food category and body weight
+
+Do the same preparation for the food category data.
+
+Obtain the column numbers for start.col="F_CITMLB" through end.col="A_DRINKS" plus "BMXBMI" and "SEQN".
+```{r}
+SEQN_col  <- match("SEQN"     , names(totals_males60to79_2)) 
+BMI_col   <- match("BMXBMI"   , names(totals_males60to79_2)) 
+start_col <- match("F_CITMLB" , names(totals_males60to79_2))  
+end_col   <- match("A_DRINKS" , names(totals_males60to79_2)) 
+```
+
+Select the BMI, body weight, and the nutrient variables.
+```{r}
+user_BMI_cat <- totals_males60to79_2[ , c(SEQN_col, BMI_col, start_col:end_col)]
+```
+
+Prep.
+```{r}
+PrepForClustering(input_df = user_BMI_cat,
+                  userID = "SEQN",
+                  original_totals_df= totals_males60to79, 
+                  complete_cases_fn=   "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat.txt",
+                  clustering_input_fn= "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat_rv.txt",
+                  corr_matrix_fn=      "QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Cat_corr_mat.txt",
+                  rm_corr_var = TRUE)
+```
+
+<br>
+
+---
+
+Come back to the main directory.
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

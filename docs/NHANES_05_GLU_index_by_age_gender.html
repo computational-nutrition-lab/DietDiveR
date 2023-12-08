@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>GLU-index by age and gender</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li>
+      <a href="ASA24_10_viz_food_tree.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="ASA24_11_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_12_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_13_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    NHANES
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="NHANES_01_load_and_clean_1.html">Load and clean NHANES data - 1</a>
+    </li>
+    <li>
+      <a href="NHANES_02_load_and_clean_2.html">Load and clean NHANES data - 2</a>
+    </li>
+    <li>
+      <a href="NHANES_03_add_meta_GLU_index.html">Add metadata and GLU-index</a>
+    </li>
+    <li>
+      <a href="NHANES_04_overview_GLU_index.html">Data overview</a>
+    </li>
+    <li>
+      <a href="NHANES_05_GLU_index_by_age_gender.html">GLU-index by age and gender</a>
+    </li>
+    <li>
+      <a href="NHANES_06_subset_males60to79.html">Subset males 60-79 years old</a>
+    </li>
+    <li>
+      <a href="NHANES_07_males60to79_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_08_males60to79_prep_for_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="NHANES_09_males60to79_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="NHANES_10_males60to79_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_11_males60to79_generate_foodtrees.html">Generate foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_12_males60to79_viz_foodtrees.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_13_males60to79_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_14_males60to79_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_15_males60to79_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_16_Div.html">Assign DivGroups by dietary diversity</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">GLU-index by age and gender</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Here, we will look at the percentages of normal, prediabetic, and diabetic participants in our dataset by age and gender groups.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load necessary packages.</p>
+<pre class="r"><code>library(ggplot2)
+library(reshape2)</code></pre>
+<p>Load the necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/ggplot2themes.R&quot;) 
+source(&quot;lib/add_gender_and_age.R&quot;)   
+source(&quot;lib/stacked_perc_two_var.R&quot;)   </code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/NHANES/Laboratory_data&quot;)</code></pre>
+<p><br></p>
+</div>
+<div id="load-the-mean-totals-and-add-gender-agegroup-and-age_gender" class="section level1">
+<h1>Load the mean totals and add “Gender”, “AgeGroup”, and “Age_Gender”</h1>
+<p>Load the data of those to be used in the diabetes status analysis.</p>
+<pre class="r"><code>glu_2 &lt;- read.table( file=&quot;QCtotal_d_ga_body_meta_glu_comp_2.txt&quot;, sep= &quot;\t&quot;, header=T)</code></pre>
+<p>Make GLU_index as a factor for plotting.</p>
+<pre class="r"><code>glu_2$GLU_index &lt;- factor(glu_2$GLU_index, levels = c(&quot;Normal&quot;, &quot;Prediabetic&quot;, &quot;Diabetic&quot;))</code></pre>
+<p>Add gender and age_groups to glu_2. The output is named “totals_out”.</p>
+<pre class="r"><code>AddGenderAgeGroups(input= glu_2, age.col=&quot;RIDAGEYR&quot;, gender.col=&quot;RIAGENDR&quot;)</code></pre>
+<p>Rename the output.</p>
+<pre class="r"><code>glu_2 &lt;- totals_out</code></pre>
+<p>Ensure that glu_2 now has Gender, AgeGroup, and Gender_Age columns.</p>
+<pre class="r"><code>head(glu_2[, c(&quot;Gender&quot;, &quot;AgeGroup&quot;, &quot;Gender_Age&quot;)])</code></pre>
+<pre><code>##   Gender AgeGroup Gender_Age
+## 1      M      50s      M_50s
+## 2      F      40s      F_40s
+## 3      F      70s      F_70s
+## 4      M      20s      M_20s
+## 5      F      60s      F_60s
+## 6      M      60s      M_60s</code></pre>
+<p><br></p>
+</div>
+<div id="build-a-stacked-bar-chart-of-diabetics-by-age-and-gender-female" class="section level1">
+<h1>Build a stacked bar chart of diabetics by age and gender – FEMALE</h1>
+<p>Select females.</p>
+<pre class="r"><code>glu_2_females &lt;- subset(glu_2, Gender == &quot;F&quot;) </code></pre>
+<p>Check the dimension of the selected data - 845 rows.</p>
+<pre class="r"><code>nrow(glu_2_females)</code></pre>
+<pre><code>## [1] 845</code></pre>
+<p>Calculate percentages of each level of GLU_index for each AgeGroup in order to generate a stacked barchart. The percentages of each level of var.y are saved in the dataframe <code>longtable_pr</code>.</p>
+<pre class="r"><code>StackedPercTwoVar(input.df=glu_2_females, var.x=&quot;AgeGroup&quot;, var.y=&quot;GLU_index&quot;, by=&quot;SEQN&quot;)</code></pre>
+<pre><code>## Using By as value column: use value.var to override.</code></pre>
+<pre><code>## [1] &quot;There are 3 levels in var.y.&quot;</code></pre>
+<pre><code>## Using AgeGroup as id variables</code></pre>
+<pre><code>## [1] &quot;The percentages of each level of var.y are saved in the dataframe &#39;longtable_pr&#39;.&quot;</code></pre>
+<p>Generate a stacked barchart for females: GLU_index_pr_F.</p>
+<pre class="r"><code>GLU_index_pr_F &lt;- ggplot(longtable_pr, aes(x= AgeGroup, y= value, fill= variable)) +
+  geom_bar(position = &quot;fill&quot;, stat = &quot;identity&quot;,color=&#39;black&#39;,width=0.9) + 
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c(&quot;steelblue2&quot;, &quot;lightgoldenrod1&quot;, &quot;lightpink1&quot;) ) +
+  geom_text(aes(label = paste0( round(value*100, 0),&quot;%&quot;)), 
+            position = position_stack(vjust = 0.5), size = 5) +
+  rotate_X_labels + space_axes + no_grid +
+  labs(x=&quot;Age&quot;, y=&quot;&quot;)</code></pre>
+<pre class="r"><code>GLU_index_pr_F</code></pre>
+<p><img src="NHANES_05_GLU_index_by_age_gender_files/figure-html/unnamed-chunk-15-1.png" width="70%" /></p>
+<p>Save the plot.</p>
+<pre class="r"><code>ggsave(&quot;QCtotal_d_ga_body_meta_glu_comp_2_AgeGroup_GLU_index_female.pdf&quot;, 
+       GLU_index_pr_F, device=&quot;pdf&quot;, width=7, height=4.5, unit=&quot;in&quot;, dpi=300)</code></pre>
+<p><br></p>
+</div>
+<div id="build-a-stacked-bar-chart-of-diabetics-by-age-and-gender---male" class="section level1">
+<h1>Build a stacked bar chart of diabetics by age and gender - MALE</h1>
+<p>Repeat the same operation and tables for females will be created.</p>
+<p>Select males</p>
+<pre class="r"><code>glu_2_males &lt;- subset(glu_2, Gender == &quot;M&quot;) </code></pre>
+<p>Check the number of rows of the selected data - 765 rows.</p>
+<pre class="r"><code>nrow(glu_2_males)</code></pre>
+<pre><code>## [1] 765</code></pre>
+<p>Calculate percentages of each level of GLU_index for each AgeGroup in order to generate a stacked barchart. The percentages of each level of var.y are saved in the dataframe <code>longtable_pr</code>.</p>
+<pre class="r"><code>StackedPercTwoVar(input.df = glu_2_males, var.x = &quot;AgeGroup&quot;, var.y=&quot;GLU_index&quot;, by=&quot;SEQN&quot;)</code></pre>
+<pre><code>## Using By as value column: use value.var to override.</code></pre>
+<pre><code>## [1] &quot;There are 3 levels in var.y.&quot;</code></pre>
+<pre><code>## Using AgeGroup as id variables</code></pre>
+<pre><code>## [1] &quot;The percentages of each level of var.y are saved in the dataframe &#39;longtable_pr&#39;.&quot;</code></pre>
+<p>Plot it with percentage labels.</p>
+<pre class="r"><code>GLU_index_pr_M &lt;- ggplot(longtable_pr, aes(x= AgeGroup, y= value, fill= variable)) +
+  geom_bar(position = &quot;fill&quot;, stat = &quot;identity&quot;,color=&#39;black&#39;,width=0.9) + 
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c(&quot;steelblue2&quot;, &quot;lightgoldenrod1&quot;, &quot;lightpink1&quot;) ) +
+  geom_text(aes(label = paste0( round(value*100, 0),&quot;%&quot;)), 
+            position = position_stack(vjust = 0.5), size = 5) +
+  rotate_X_labels + space_axes + no_grid +
+  labs(x=&quot;Age Group&quot;, y=&quot;&quot;)</code></pre>
+<pre class="r"><code>GLU_index_pr_M</code></pre>
+<p><img src="NHANES_05_GLU_index_by_age_gender_files/figure-html/unnamed-chunk-21-1.png" width="70%" /></p>
+<p>Save the plot.</p>
+<pre class="r"><code>ggsave(&quot;QCtotal_d_ga_body_meta_glu_comp_2_AgeGroup_GLU_index_male.pdf&quot;, 
+       GLU_index_pr_M, device=&quot;pdf&quot;, width=7, height=4.5, unit=&quot;in&quot;, dpi=300)</code></pre>
+<p>By looking at the distributions, we see that males in their 60s and older have the highest percentages of diabetic individuals. We will use this gender-age group to explore their diets further.</p>
+<p><br></p>
+<hr />
+<p>Come back to the main directory.</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -442,7 +442,7 @@ QCOutliers(input.data = QCtotals, target.colname = "KCAL", min = 650, max = 5700
 
 This function will print out rows that fall outside the specified min-max range, and a dialogue box will appear outside the R Studio (shown below), asking whether to remove them. You should make sure to review these records carefully to double-check if the removal is warranted. It is possible to have a valid record that could meet the threshold for removal. Only you will know if you can trust the record when working with real data.
 
-![](Screenshots_for_Tutorial/ASA24_load_clean/QC totals Dialogue box.png)
+![](Screenshots_for_Tutorial/ASA24 01 load_clean/QC totals Dialogue box.png)
 
 If you find potential outlier(s) here, click "No", and view those total(s) with their other nutrient intake information by running the following;
 ```{r}

@@ -1,0 +1,259 @@
+---
+title: "Percent kcal of CARB, PROT, TFAT"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+
+<br>
+
+# Introduction
+
+We will calculate the percentage of calories from each of the three macronutrients in the sum of calories from the three macronutrients. Thus, the percentage of calories from CARB, PROT, and TFAT will add up to 100.
+
+<br>
+
+# Load functions and packages  
+
+Name the path to DietDiveR directory where input files are pulled.
+```{r}
+main_wd <- "~/GitHub/DietDiveR"
+```
+
+Load necessary packages.
+```{r}
+library(ggplot2)
+```
+
+Load the necessary functions.
+```{r}
+source("lib/specify_data_dir.R")
+source("lib/ggplot2themes.R")
+source("lib/percent_kcal.R")
+```
+
+Load the distinct 100 colors for use.
+```{r}
+distinct100colors <- readRDS("lib/distinct100colors.rda")
+```
+
+You can come back to the main directory by:
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<br>  
+
+# Import data from your data directory
+
+Specify the directory where the data is.
+```{r, eval=FALSE}
+SpecifyDataDirectory(directory.name = "eg_data/NHANES/Laboratory_data/")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_knit$set(root.dir = 'eg_data/NHANES/Laboratory_data/')
+```
+
+Load subsetted totals data with males 60-79 years old.
+```{r}
+totals <- read.table("QCtotal_d_ga_body_meta_glu_comp_2_males60to79.txt",  sep="\t", header=T)
+```
+
+<br>  
+
+# Calculate the %kcal of CARB, PROT, and TFAT for each user and take means by Gender_Age
+
+```{r}
+CPTpctKcalPerUser(inputfn=totals, group='GLU_index', across='SEQN', 
+                  outfn="QCtotal_d_ga_body_meta_glu_comp_2_M60to79_CPT_kcal_by_GLU.txt")
+```
+
+Load the output.
+```{r}
+CPT_kcal <- read.table("QCtotal_d_ga_body_meta_glu_comp_2_M60to79_CPT_kcal_by_GLU.txt", sep="\t", header=T)
+```
+
+CPT_kcal has Group, macronutrient, n, mean, and sd of each group.
+```{r}
+CPT_kcal
+```
+
+<br>  
+
+# Generate a stacked barchart without SD
+
+Order Gender_Age by a certain macronutrient by the "order.by" argument. You can also specify the stacking order of all the macronutrients by the "macronu.order" argument. **[Note]** The last item will be on the bottom of the barchart.
+```{r}
+PlotStackedwoSD(data=CPT_kcal, 
+                order.by = "Carbohydrate", 
+                macronut.order=c("Protein", "Total Fat", "Carbohydrate"))
+```
+
+The chart is saved as `stacked_wo_SD`.
+```{r,out.width="60%"}
+stacked_wo_SD
+```
+
+Save as a .pdf.
+```{r}
+ggsave("QCtotal_d_ga_body_meta_glu_comp_2_M60to79_CPT_kcal_wo_SD.pdf", stacked_wo_SD,
+       device="pdf", width=6.2, height=4.3, units="in", dpi=300)
+```
+
+<br>
+
+---
+
+When order.by="NULL", the diabetic status will be in the alphabetical order by default.
+
+If you want to specify the group order, add the group.order argument.
+```{r}
+PlotStackedwoSD(data=CPT_kcal, 
+                order.by = "NULL", 
+                macronut.order=c("Protein", "Total Fat", "Carbohydrate"),
+                group.order = c("Normal", "Prediabetic", "Diabetic"))
+```
+
+```{r,out.width="60%"}
+stacked_wo_SD
+```
+
+<br>
+
+# Generate the "dodge"-type of barchart (3 bars per group, NOT STACKED).
+
+Order Diets by a certain macronutrient by the "order.by" argument. You can also specify the plotting order of all the macronutrients by the "macronut.order" argument. Note that the first item will be the leftmost bar.
+```{r}
+PlotDodged(data= CPT_kcal, 
+           order.by = "Carbohydrate", 
+           macronut.order=c("Protein", "Total Fat", "Carbohydrate"))
+```
+
+The chart is saved as `dodged_w_SD`.
+```{r,out.width="60%"}
+dodged_w_SD
+```
+
+Save it as a .pdf.
+```{r}
+ggsave("QCtotal_d_ga_body_meta_glu_comp_2_M60to79_CPT_kcal_dodged_w_SD_NotOrdered.pdf", dodged_w_SD,
+       device="pdf", width=6.2, height=4, units="in", dpi=300)
+```
+
+<br>
+
+---
+
+When order.by="NULL", the diabetic status will be in the alphabetical order by default. If you want to specify the group order, add the group.order argument.
+```{r}
+PlotDodged(data= CPT_kcal, 
+           order.by = "NULL", 
+           macronut.order=c("Protein", "Total Fat", "Carbohydrate"),
+           group.order = c("Normal", "Prediabetic", "Diabetic"))
+```
+
+```{r,out.width="60%"}
+dodged_w_SD
+```
+
+<br>
+
+# Generate a stacked barchart with SD as error bars
+
+Create a vector that contains all the group levels (Gender_Age, in this case). This "groups" vector will be used in the CalcStackedSD function within the PlotStackedWithSD function. Use the order function to sort the levels in the alphanumeric order.
+```{r}
+groups <- unique(CPT_kcal$Group)[order(unique(CPT_kcal$Group))]
+```
+
+Order Diet by a certain macronutrient by the "order.by" argument. You can also specify the stacking order of all the macronutrients by the "macronu.order" argument. Note that the last item will be on the bottom of the barchart.
+```{r}
+PlotStackedWithSD(data= CPT_kcal, 
+                  order.by = "Carbohydrate", 
+                  macronut.order= c("Protein", "Total Fat", "Carbohydrate"))
+```
+
+The chart is saved as `stacked_with_SD`.
+```{r,out.width="60%"}
+stacked_with_SD
+```
+
+Save as a .pdf.
+```{r}
+ggsave("QCtotal_d_ga_body_meta_glu_comp_2_M60to79_CPT_kcal_with_SD.pdf", stacked_with_SD,
+       device="pdf", width=6.2, height=4.3, units="in", dpi=300)
+```
+
+<br>
+
+---
+
+When order.by="NULL", the diabetic status will be in the alphabetical order by default. If you want to specify the group order, add the group.order argument.
+```{r}
+PlotStackedWithSD(data= CPT_kcal, 
+                  order.by = "NULL", 
+                  macronut.order= c("Protein", "Total Fat", "Carbohydrate"),
+                  group.order = c("Normal", "Prediabetic", "Diabetic"))
+```
+
+```{r,out.width="60%"}
+stacked_with_SD
+```
+
+<br>
+
+---
+
+Change the Y axis scale if necessary. Note that if the error bars of Carbohydrates disappear after changing the limits of Y axis, it may be because the error bars are higher than the max Y. Ensure you have enough max Y value to accommodate the error bars.
+
+You can also change the breakpoints of the Y axis.
+```{r,out.width="60%"}
+stacked_with_SD + scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100))
+```
+
+<br>  
+
+---
+
+Come back to the main directory.
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

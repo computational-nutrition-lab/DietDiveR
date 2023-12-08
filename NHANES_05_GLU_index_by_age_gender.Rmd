@@ -1,0 +1,213 @@
+---
+title: "GLU-index by age and gender"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: false
+    toc_depth: 3
+# code_folding: hide
+---
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+
+<br>
+
+# Introduction
+
+Here, we will look at the percentages of normal, prediabetic, and diabetic participants in our dataset by age and gender groups.
+
+<br>
+
+# Load functions and packages  
+
+Name the path to DietDiveR directory where input files are pulled.
+```{r}
+main_wd <- "~/GitHub/DietDiveR"
+```
+
+Load necessary packages.
+```{r}
+library(ggplot2)
+library(reshape2)
+```
+
+Load the necessary functions.
+```{r}
+source("lib/specify_data_dir.R")
+source("lib/ggplot2themes.R") 
+source("lib/add_gender_and_age.R")   
+source("lib/stacked_perc_two_var.R")   
+```
+
+You can come back to the main directory by:
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+Specify the directory where the data is.
+```{r, eval=FALSE}
+SpecifyDataDirectory(directory.name = "eg_data/NHANES/Laboratory_data")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_knit$set(root.dir = 'eg_data/NHANES/Laboratory_data')
+```
+
+<br>
+
+# Load the mean totals and add "Gender", "AgeGroup", and "Age_Gender"
+
+Load the data of those to be used in the diabetes status analysis. 
+```{r}
+glu_2 <- read.table( file="QCtotal_d_ga_body_meta_glu_comp_2.txt", sep= "\t", header=T)
+```
+
+Make GLU_index as a factor for plotting.
+```{r}
+glu_2$GLU_index <- factor(glu_2$GLU_index, levels = c("Normal", "Prediabetic", "Diabetic"))
+```
+
+Add gender and age_groups to glu_2. The output is named "totals_out".
+```{r}
+AddGenderAgeGroups(input= glu_2, age.col="RIDAGEYR", gender.col="RIAGENDR")
+```
+
+Rename the output.
+```{r}
+glu_2 <- totals_out
+```
+
+Ensure that glu_2 now has Gender, AgeGroup, and Gender_Age columns.
+```{r}
+head(glu_2[, c("Gender", "AgeGroup", "Gender_Age")])
+```
+
+<br>
+
+# Build a stacked bar chart of diabetics by age and gender -- FEMALE
+
+Select females.
+```{r}
+glu_2_females <- subset(glu_2, Gender == "F") 
+```
+
+Check the dimension of the selected data - 845 rows.
+```{r}
+nrow(glu_2_females)
+```
+
+Calculate percentages of each level of GLU_index for each AgeGroup in order to generate a stacked barchart.
+The percentages of each level of var.y are saved in the dataframe `longtable_pr`.
+```{r}
+StackedPercTwoVar(input.df=glu_2_females, var.x="AgeGroup", var.y="GLU_index", by="SEQN")
+```
+
+Generate a stacked barchart for females: GLU_index_pr_F.
+```{r}
+GLU_index_pr_F <- ggplot(longtable_pr, aes(x= AgeGroup, y= value, fill= variable)) +
+  geom_bar(position = "fill", stat = "identity",color='black',width=0.9) + 
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("steelblue2", "lightgoldenrod1", "lightpink1") ) +
+  geom_text(aes(label = paste0( round(value*100, 0),"%")), 
+            position = position_stack(vjust = 0.5), size = 5) +
+  rotate_X_labels + space_axes + no_grid +
+  labs(x="Age", y="")
+```
+
+```{r,out.width="70%"}
+GLU_index_pr_F
+```
+
+Save the plot.
+```{r}
+ggsave("QCtotal_d_ga_body_meta_glu_comp_2_AgeGroup_GLU_index_female.pdf", 
+       GLU_index_pr_F, device="pdf", width=7, height=4.5, unit="in", dpi=300)
+```
+
+<br>
+
+# Build a stacked bar chart of diabetics by age and gender - MALE
+
+Repeat the same operation and tables for females will be created.
+
+Select males
+```{r}
+glu_2_males <- subset(glu_2, Gender == "M") 
+```
+
+Check the number of rows of the selected data - 765 rows.
+```{r}
+nrow(glu_2_males)
+```
+
+Calculate percentages of each level of GLU_index for each AgeGroup in order to generate a stacked barchart.
+The percentages of each level of var.y are saved in the dataframe `longtable_pr`.
+```{r}
+StackedPercTwoVar(input.df = glu_2_males, var.x = "AgeGroup", var.y="GLU_index", by="SEQN")
+```
+
+Plot it with percentage labels.
+```{r}
+GLU_index_pr_M <- ggplot(longtable_pr, aes(x= AgeGroup, y= value, fill= variable)) +
+  geom_bar(position = "fill", stat = "identity",color='black',width=0.9) + 
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("steelblue2", "lightgoldenrod1", "lightpink1") ) +
+  geom_text(aes(label = paste0( round(value*100, 0),"%")), 
+            position = position_stack(vjust = 0.5), size = 5) +
+  rotate_X_labels + space_axes + no_grid +
+  labs(x="Age Group", y="")
+```
+
+```{r,out.width="70%"}
+GLU_index_pr_M
+```
+
+Save the plot.
+```{r}
+ggsave("QCtotal_d_ga_body_meta_glu_comp_2_AgeGroup_GLU_index_male.pdf", 
+       GLU_index_pr_M, device="pdf", width=7, height=4.5, unit="in", dpi=300)
+```
+
+By looking at the distributions, we see that males in their 60s and older have the highest percentages of diabetic individuals. We will use this gender-age group to explore their diets further.
+
+<br>  
+
+---
+
+Come back to the main directory.
+```{r, eval=FALSE}
+setwd(main_wd)
+```
+
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

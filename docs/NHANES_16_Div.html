@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Assign DivGroups by dietary diversity</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DietDiveR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    ASA24
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ASA24_01_load_and_clean.html">Load and clean ASA24 data</a>
+    </li>
+    <li>
+      <a href="ASA24_02_calc_totals_by_occasion.html">Calculate totals by occasion</a>
+    </li>
+    <li>
+      <a href="ASA24_03_data_overview.html">Data overview</a>
+    </li>
+    <li>
+      <a href="ASA24_04_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_05_prep_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="ASA24_06_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="ASA24_07_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="ASA24_08_create_foodtree_allfooditems.html">Foodtrees with all food items</a>
+    </li>
+    <li>
+      <a href="ASA24_09_create_foodtree_ownitems.html">Foodtrees with your own data</a>
+    </li>
+    <li>
+      <a href="ASA24_10_viz_food_tree.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="ASA24_11_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_12_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="ASA24_13_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    NHANES
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="NHANES_01_load_and_clean_1.html">Load and clean NHANES data - 1</a>
+    </li>
+    <li>
+      <a href="NHANES_02_load_and_clean_2.html">Load and clean NHANES data - 2</a>
+    </li>
+    <li>
+      <a href="NHANES_03_add_meta_GLU_index.html">Add metadata and GLU-index</a>
+    </li>
+    <li>
+      <a href="NHANES_04_overview_GLU_index.html">Data overview</a>
+    </li>
+    <li>
+      <a href="NHANES_05_GLU_index_by_age_gender.html">GLU-index by age and gender</a>
+    </li>
+    <li>
+      <a href="NHANES_06_subset_males60to79.html">Subset males 60-79 years old</a>
+    </li>
+    <li>
+      <a href="NHANES_07_males60to79_percent_kcal.html">Percent kcal of CARB, PROT, TFAT</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_08_males60to79_prep_for_clustering.html">Prepare for clustering</a>
+    </li>
+    <li>
+      <a href="NHANES_09_males60to79_PCA.html">PCA</a>
+    </li>
+    <li>
+      <a href="NHANES_10_males60to79_k-means.html">k-means</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_11_males60to79_generate_foodtrees.html">Generate foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_12_males60to79_viz_foodtrees.html">Visualize foodtrees</a>
+    </li>
+    <li>
+      <a href="NHANES_13_males60to79_ordination.html">Ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_14_males60to79_viz_ordination.html">Visualize ordination</a>
+    </li>
+    <li>
+      <a href="NHANES_15_males60to79_corr_axes_foods.html">Correlation between axes and foods</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="NHANES_16_Div.html">Assign DivGroups by dietary diversity</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Assign DivGroups by dietary diversity</h1>
+
+</div>
+
+
+<style type="text/css">
+h1.title {
+  font-size: 38px;
+  font-family: "Tahoma", sans-serif;
+  color: #1F3600; /* darkgreen from DietDiveR logo */
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #1F3600;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: #1F3600;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  color: #1F3600;
+}
+body{ /* Normal  */
+  background-color: rgb(251, 251, 251);
+  }
+blockquote{ 
+  font-size: 14px;
+}
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #1F3600;
+}
+</style>
+<p><br></p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Dietary diversity may have an important role in predicting health outcomes, and nuts/seeds/legumes food groups are likely to have health-promoting effects. To investigate the dietary diversity in specific food groups, we will select food items in a particular group, evaluate their diversity, and group participants based on their consumption patterns of the food group of interest.</p>
+<p><br></p>
+</div>
+<div id="load-functions-and-packages" class="section level1">
+<h1>Load functions and packages</h1>
+<p>Name the path to DietDiveR directory where input files are pulled.</p>
+<pre class="r"><code>main_wd &lt;- &quot;~/GitHub/DietDiveR&quot;</code></pre>
+<p>Load necessary packages.</p>
+<pre class="r"><code>library(vegan)
+library(reshape2)
+library(data.tree)</code></pre>
+<p>Load necessary functions.</p>
+<pre class="r"><code>source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/diversity_nth_tile.R&quot;)
+
+# Load source scripts to build foodtrees and IFC tables.
+source(&quot;lib/specify_data_dir.R&quot;)
+source(&quot;lib/Food_tree_scripts/newick.tree.r&quot;)
+source(&quot;lib/Food_tree_scripts/make.food.tree.r&quot;)
+source(&quot;lib/Food_tree_scripts/make.food.ifc.r&quot;)
+source(&quot;lib/Food_tree_scripts/make.fiber.ifc.r&quot;)
+source(&quot;lib/Food_tree_scripts/make.dhydrt.ifc.r&quot;)</code></pre>
+<p>You can come back to the main directory by:</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<p>Specify the directory where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(directory.name = &quot;eg_data/NHANES/&quot;)</code></pre>
+<p><br></p>
+</div>
+<div id="select-only-food-items-with-foodcode-starting-with-4" class="section level1">
+<h1>Select only food items with FoodCode starting with 4</h1>
+<p>Load averaged totals data, nutrition &amp; food categories with demographic, gender-age, body measurements, and metadata. From NHANES_03_add_meta_GLU_index.R..</p>
+<pre class="r"><code>totals &lt;- read.delim(&quot;Total_D12_FC_QC_mean_QC_demo_ga_body_meta.txt&quot;)</code></pre>
+<p>This should have 4,164 people.</p>
+<pre class="r"><code>nrow(totals)</code></pre>
+<pre><code>## [1] 4164</code></pre>
+<p><br></p>
+<hr />
+<p>Shannon’s diversity is one of the measures to evaluate ecological diversity. We will use it to evaluate diet diversity of each individual in the NHANES data.</p>
+<p>vegan::diversity calculates Shannon’s diversity index one by one.</p>
+<p>As an input, we need to have a table with SEQN as rows and food items as columns. So, we will create an IFC table first.</p>
+<p>Load the food items data where QC-ed individuals were removed based on their totals data.</p>
+<pre class="r"><code>food &lt;- read.delim(&quot;Food_D12_FC_QC_demo_QCed.txt&quot;, sep= &quot;\t&quot;, header=T)</code></pre>
+<p>Count the number of unique SEQNs. There should be 4164 people.</p>
+<pre class="r"><code>length(unique(food$SEQN))</code></pre>
+<pre><code>## [1] 4164</code></pre>
+<p>Here, we are interested in food items with their foodcode tarting from 4; nuts/seeds/legumes. Select only the rows that contain those food items.</p>
+<pre class="r"><code>food4s &lt;- subset(food, Food_code &gt; 39999999 &amp; Food_code &lt; 50000000)</code></pre>
+<p>Check that the subsetted data only contains 4xxxxxxxs.</p>
+<pre class="r"><code>summary(food4s$Food_code)</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## 41101000 41205070 42101110 41821482 42202000 43108010</code></pre>
+<p>Check the summary of the subset data.</p>
+<pre class="r"><code>paste(length(unique(food4s$SEQN)), &quot;people consumed&quot;,
+      nrow(food4s), &quot;food items with duplicates.&quot;,
+      &quot;There are&quot;, length(unique(food4s$Food_code)), &quot;unique food items.&quot;)</code></pre>
+<pre><code>## [1] &quot;2090 people consumed 3931 food items with duplicates. There are 243 unique food items.&quot;</code></pre>
+<p>Save as a txt file.</p>
+<pre class="r"><code>write.table(food4s, &quot;Div/Food_D12_FC_QC_demo_QCed_4s.txt&quot;, sep= &quot;\t&quot;, row.names=F,quote=F)</code></pre>
+<p><br></p>
+</div>
+<div id="generate-an-ifc-table" class="section level1">
+<h1>Generate an IFC table</h1>
+<p>To calculate diversity of 4xxxxxxxs for each SEQN, we need to create an IFC table.</p>
+<p>Specify where the data is.</p>
+<pre class="r"><code>SpecifyDataDirectory(&quot;eg_data/NHANES/Div&quot;)</code></pre>
+<pre class="r"><code>MakeFoodTree(nodes_fn=&quot;../../Food_tree_eg/NodeLabelsMCT.txt&quot;,
+             addl_foods_fn = NULL,
+             num_levels = 3,
+             food_database_fn =            &quot;Food_D12_FC_QC_demo_QCed_4s.txt&quot;,
+             output_tree_fn =     &quot;Foodtree/Food_D12_FC_QC_demo_QCed_4s_3Lv.nwk&quot;,
+             output_taxonomy_fn = &quot;Foodtree/Food_D12_FC_QC_demo_QCed_4s_3Lv.tax.txt&quot;
+)</code></pre>
+<p><br></p>
+<hr />
+<p>Generate IFC tables for downstream analyses; IT MAY TAKE SOME TIME.</p>
+<p>It is OK to see the following warning message: In write.table(fiber.ifc, output_fn, sep = “, quote = F, append = TRUE) : appending column names to file.</p>
+<pre class="r"><code>MakeFoodIfc(food_records_fn=  &quot;Food_D12_FC_QC_demo_QCed_4s.txt&quot;,
+            food_record_id =  &quot;SEQN&quot;,                              # The ID of your participants
+            food_taxonomy_fn= &quot;Foodtree/Food_D12_FC_QC_demo_QCed_4s_3Lv.tax.txt&quot;,       # Your taxonomy file produced by MakeFoodTree.
+            output_fn =       &quot;Foodtree/Food_D12_FC_QC_demo_QCed_4s_3Lv.food.ifc.txt&quot;)  # Output ifc file to be saved.</code></pre>
+<pre><code>## Warning in write.table(food.ifc, output_fn, sep = &quot;\t&quot;, quote = F, append =
+## TRUE): appending column names to file</code></pre>
+<p>Load the generated IFC table.</p>
+<pre class="r"><code>ifc &lt;- read.delim(&quot;Foodtree/Food_D12_FC_QC_demo_QCed_4s_3Lv.food.ifc.txt&quot;)</code></pre>
+<p>It should have the dimension of number of unique foods x (1 food column + number of people + 1 taxonomy column). 243 x 2092, in this case.</p>
+<pre class="r"><code>dim(ifc)</code></pre>
+<pre><code>## [1]  243 2092</code></pre>
+<p>The column names have “X.” at the beginning. We will take care of it later.</p>
+<pre class="r"><code>ifc[1:4, 1:4]</code></pre>
+<pre><code>##                                                        X.FOODID X84804 X86670
+## 1 Beans dry cooked NS as to type and as to fat added in cooking   67.5     90
+## 2           Beans dry cooked NS as to type fat added in cooking    0.0      0
+## 3       Beans dry cooked NS as to type fat not added in cooking    0.0      0
+## 4       Beans canned drained NS as to type fat added in cooking    0.0      0
+##   X88668
+## 1    7.5
+## 2    0.0
+## 3    0.0
+## 4    0.0</code></pre>
+<p><br></p>
+</div>
+<div id="calculate-diversity-of-4xxxxxxxs-for-each-seqn" class="section level1">
+<h1>Calculate diversity of 4xxxxxxxs for each SEQN</h1>
+<p>Take out the foodID (description) and taxonomy from ifc.</p>
+<pre class="r"><code>ifc2 &lt;- ifc[, 2: (ncol(ifc)-1) ]</code></pre>
+<p>transpose so that the SEQN will come to rows.</p>
+<pre class="r"><code>ifc2t &lt;- as.data.frame(t(ifc2))</code></pre>
+<p>Add taxonomy as the column names of ifc2t.</p>
+<pre class="r"><code>colnames(ifc2t) &lt;- ifc$X.FOODID</code></pre>
+<p>Each row of ifc2t is SEQN. So, diversity needs to be calculated per each row.</p>
+<p>Make a table to save results.</p>
+<pre class="r"><code>SEQNdiv &lt;- as.data.frame(matrix(nrow = nrow(ifc2t) , ncol = 4))
+colnames(SEQNdiv) &lt;- c(&quot;SEQN&quot;, &quot;Shannon&quot;, &quot;Simpson&quot;, &quot;Invsimpson&quot;)</code></pre>
+<p>Do a loop to calculate Shannon’s, Simpson, and inverse-Simpson diversity for all SEQNs (in rows). This may take a few minutes.</p>
+<pre class="r"><code>for( i in 1: nrow(ifc2t) ){
+  SEQNdiv[i, 1] &lt;- rownames(ifc2t)[i]
+  SEQNdiv[i, 2] &lt;- diversity(ifc2t[i, ], &#39;shannon&#39;)
+  SEQNdiv[i, 3] &lt;- diversity(ifc2t[i, ], &#39;simpson&#39;)
+  SEQNdiv[i, 4] &lt;- diversity(ifc2t[i, ], &#39;invsimpson&#39;)
+}
+
+head(SEQNdiv)</code></pre>
+<pre><code>##     SEQN   Shannon   Simpson Invsimpson
+## 1 X84804 0.4885588 0.3097996   1.448854
+## 2 X86670 0.9144513 0.5555141   2.249790
+## 3 X88668 0.3179368 0.1748179   1.211854
+## 4 X90694 0.6534051 0.4607873   1.854556
+## 5 X92090 0.5459573 0.3601875   1.562958
+## 6 X92397 0.5929170 0.4031662   1.675508</code></pre>
+<p>There should be no NA values.</p>
+<pre class="r"><code>table(is.na(SEQNdiv), useNA=&quot;always&quot;)</code></pre>
+<pre><code>## 
+## FALSE  &lt;NA&gt; 
+##  8360     0</code></pre>
+<p>Plot histograms of each of the diversity measures.</p>
+<pre class="r"><code>par(mfrow = c(2, 2))
+hist(SEQNdiv$Shannon, main=&quot;Shannon diversity&quot;, xlab=&quot;&quot;, breaks=10)
+hist(SEQNdiv$Simpson, main=&quot;Simpson diversity&quot;, xlab=&quot;&quot;, breaks=10)
+hist(SEQNdiv$Invsimpson, main=&quot;Invsimpson diversity&quot;, xlab=&quot;&quot;, breaks=10)
+par(mfrow = c(1, 1))</code></pre>
+<p><img src="NHANES_16_Div_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p>Some have 0 diversity → If a row has only one non-zero values, then diversity will be zero. e.g. c(20,0,0,0,0,0,0). i.e., those only consumed one nuts/seeds/legumes food have diversity of zero. None of them are normally distributed because of a lot of zero diversity values. For demonstration purposes, we will use Shannon’s diversity.</p>
+<p><br></p>
+</div>
+<div id="divide-nhanes-participants-into-four-groups-based-on-their-diversity-in-nutsseedslegumes-consumption" class="section level1">
+<h1>Divide NHANES participants into four groups based on their diversity in nuts/seeds/legumes consumption</h1>
+<p>Our goal is to mark samples as:</p>
+<table>
+<thead>
+<tr class="header">
+<th>DivGroup</th>
+<th>Description</th>
+<th>Shannon’s diversity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DivNA</td>
+<td>Did not report any foods with Food ID of 4xxxxxxxx.</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>Div0</td>
+<td>Reported 1 food with Food ID of 4xxxxxxx.</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Div1</td>
+<td>Reported &gt;1 foods with Food ID of 4xxxxxxx. lower.</td>
+<td>&gt; 0</td>
+</tr>
+<tr class="even">
+<td>Div2</td>
+<td>Reported &gt;1 foods with Food ID of 4xxxxxxx. upper.</td>
+<td>&gt; 0</td>
+</tr>
+</tbody>
+</table>
+<p>Remove the “X” in the SEQNdiv$SEQN for merging.</p>
+<pre class="r"><code>SEQNdiv$SEQN &lt;- gsub(SEQNdiv$SEQN, pattern = &quot;X&quot;, replacement = &quot;&quot;) </code></pre>
+<p>First, need to add the diversity values to totals. Only take the rows present in both datasets.</p>
+<pre class="r"><code>totals_div &lt;- merge(totals, SEQNdiv, by=&#39;SEQN&#39;)</code></pre>
+<hr />
+<p><br></p>
+<p>Select individuals whose diversity score is &gt; 0, and group them into groups lower and upper (2-tiles) based on their Shannon’s diversity measure.</p>
+<pre class="r"><code>DivNthTile(input= totals_div, div.var=&quot;Shannon&quot;, nth.tile=2)</code></pre>
+<pre><code>## [1] &quot;39% of the 2090 individuals have &gt; 0 in Shannon&quot;
+##         0%        50%       100% 
+## 0.02738965 0.65897998 1.95075530 
+## [1] &quot;Div has been grouped into 2 groups based on Shannon. Output is named as &#39;out&#39;.&quot;
+## [1] &quot;Table of out$Div:&quot;
+## 
+##    1    2 &lt;NA&gt; 
+##  403  403    0 
+## [1] &quot;Summary of each level of the Div groups is as follows:&quot;
+## [1] 1
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.02739 0.32426 0.46815 0.44089 0.58795 0.65896 
+## [1] 2
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.6590  0.6890  0.8022  0.8768  1.0117  1.9508</code></pre>
+<p><br></p>
+<p>Define <strong>Div1</strong> and <strong>Div2</strong>.</p>
+<pre class="r"><code>out$DivGroup &lt;- 
+  ifelse(
+    out$Div == 1,
+    out$DivGroup &lt;- &#39;Div1&#39;,
+    out$DivGroup &lt;- &#39;Div2&#39;
+  )</code></pre>
+<p>Select only the SEQN and DivGroup.</p>
+<pre class="r"><code>SEQN_Div12 &lt;- out[, c(&quot;SEQN&quot;, &quot;DivGroup&quot;)]</code></pre>
+<p><br></p>
+<p>Define <strong>Div0</strong>.</p>
+<pre class="r"><code># Subset those that have Shannon index = 0.
+totals_div_zero &lt;- subset(totals_div, Shannon == 0)</code></pre>
+<p>Add DivGroup variable, and insert “Div0”.</p>
+<pre class="r"><code>totals_div_zero$DivGroup &lt;- &#39;Div0&#39;</code></pre>
+<p>Select only the SEQN and DivGroup.</p>
+<pre class="r"><code>SEQN_Div0 &lt;- totals_div_zero[, c(&quot;SEQN&quot;, &quot;DivGroup&quot;)]</code></pre>
+<p><br></p>
+<p>Define <strong>DivNA</strong>.</p>
+<p>Define “Not in” function. By default it’s not existent.</p>
+<pre class="r"><code>`%!in%` &lt;- Negate(`%in%`)</code></pre>
+<p>Subset those that are not in SEQNdiv.<br />
+Those are the ones that did not consume nuts/seeds/legumes.</p>
+<pre class="r"><code>totals_not_in_SEQNdiv &lt;- totals[totals$SEQN %!in% SEQNdiv$SEQN, ]  </code></pre>
+<p>Add DivGroup variable, and insert “DivNA”.</p>
+<pre class="r"><code>totals_not_in_SEQNdiv$DivGroup &lt;- &#39;DivNA&#39;</code></pre>
+<p>Take only the SEQN and DivGroup.</p>
+<pre class="r"><code>SEQN_DivNA &lt;- totals_not_in_SEQNdiv[, c(&quot;SEQN&quot;, &quot;DivGroup&quot;)]</code></pre>
+<hr />
+<p><br></p>
+<p>Combine SEQN_DivNA, SEQN_Div0, and SEQN_Div12 for merging.</p>
+<pre class="r"><code>SEQN_Div_NA_012 &lt;- rbind(SEQN_DivNA, SEQN_Div0, SEQN_Div12)</code></pre>
+<p>Now, all the SEQNs have DivGroups.</p>
+<p>Check that this should have the same number of rows as totals does.</p>
+<pre class="r"><code>identical(length(unique(SEQN_Div_NA_012$SEQN)), nrow(totals))</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Merge DivGroups with the totals.</p>
+<pre class="r"><code>totals_divgroup &lt;- merge(totals, SEQN_Div_NA_012, all.x=T, by=&quot;SEQN&quot;)</code></pre>
+<p>Change DivGroup into a factor and specify the factor levels.</p>
+<pre class="r"><code>totals_divgroup$DivGroup &lt;- factor(totals_divgroup$DivGroup, 
+                                   levels = c(&#39;DivNA&#39;, &#39;Div0&#39;, &#39;Div1&#39;, &#39;Div2&#39;) )</code></pre>
+<p>The individuals in totals were grouped into 4 groups depending on their consumption of 4xxxxxxx foods (or the lack thereof). The totals_divgroup has DivGroup column.</p>
+<pre class="r"><code>table(totals_divgroup$DivGroup, useNA = &quot;ifany&quot;)</code></pre>
+<pre><code>## 
+## DivNA  Div0  Div1  Div2 
+##  2074  1284   403   403</code></pre>
+<p>Save the totals with DivGroup.</p>
+<pre class="r"><code>write.table(totals_divgroup, &quot;Total_D12_FC_QC_mean_QC_demo_ga_body_meta_DivGroup.txt&quot;,
+            sep=&quot;\t&quot;, row.names=F, quote=F)</code></pre>
+<p>Health outcomes and demographic data could be explored by DivGroup.</p>
+<p><br></p>
+<hr />
+<p>Come back to the main directory.</p>
+<pre class="r"><code>setwd(main_wd)</code></pre>
+<!-- This is to remove big white space at the end of the rendered html, which is produced due to toc_floating.  Source: https://stackoverflow.com/questions/52933437/how-to-remove-white-space-at-the-end-of-an-rmarkdown-html-output -->
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
+
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
