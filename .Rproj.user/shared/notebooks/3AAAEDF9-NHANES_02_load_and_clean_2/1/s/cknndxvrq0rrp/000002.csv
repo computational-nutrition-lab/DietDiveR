@@ -1,0 +1,3 @@
+"0","keepnames2_mult <- keepnames2[keepnames2 %in% freqtable2_m$SEQN] # 6,869"
+"2","Error: object 'keepnames2' not found
+"

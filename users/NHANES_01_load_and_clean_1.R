@@ -24,7 +24,7 @@
 # demonstrate how to analyze NHANES data as is, not to make population-wise inferences.  For more detailed information,
 # please refer to the sample weight tutorial by NHANES (https://wwwn.cdc.gov/nchs/nhanes/tutorials/Weighting.aspx). 
 
-# Data from NHANES are in .XPT format, and you will need a specific R package, SASxport, to import it into R. 
+# Data from NHANES are in .XPT format, and you will need a specific R package, foreign, to import it into R. 
 # We will download the example data files from the NHANES 2015-2016 page 
 # (https://wwwn.cdc.gov/nchs/nhanes/continuousnhanes/default.aspx?BeginYear=2015) 
 # and save them in the "Raw_data" folder in the "NHANES" folder.

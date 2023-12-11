@@ -1,0 +1,2 @@
+"0","totals_males60to79 <- read.table(""QCtotal_d_ga_body_meta_glu_comp_2_males60to79.txt"", "
+"0","                                 sep=""\t"", header=T)"

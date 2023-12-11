@@ -1,0 +1,1 @@
+"0","QCtotal_d <- read.table(""Total_D12_FC_QC_mean_QC_demo.txt"", sep=""\t"", header=T)"

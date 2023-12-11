@@ -1,0 +1,5 @@
+"0","metadata_only <- metadata_raw[, c(1,"
+"0","                                  sta_col_num_a:end_col_num_a,"
+"0","                                  sta_col_num_b:end_col_num_b,"
+"0","                                  sta_col_num_c:end_col_num_c"
+"0","                                  )]"

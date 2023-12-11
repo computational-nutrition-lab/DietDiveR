@@ -1,0 +1,4 @@
+"0","BMIfreq <- ggplot(data=glu_2, aes(x=BMXBMI, group=GLU_index, fill=GLU_index)) +"
+"0","  geom_density(adjust=1.5, alpha=.4) + space_axes + no_grid +"
+"0","  scale_fill_manual(values= c(""steelblue3"", ""yellow"", ""hotpink"") ) +"
+"0","  labs(x=""BMI"", y=""Density"")"

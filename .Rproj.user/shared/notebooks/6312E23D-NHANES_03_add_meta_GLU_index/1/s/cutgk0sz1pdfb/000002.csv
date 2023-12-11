@@ -1,0 +1,2 @@
+"0","write.table(QCtotal_d_ga_body_meta, ""Total_D12_FC_QC_mean_QC_demo_ga_body_meta.txt"","
+"0","            sep=""\t"", row.names=F, quote=F)"

@@ -1,0 +1,4 @@
+"0","items_raw <- read.csv(""VVKAJ_Items.csv"", sep = "","", header=T)"
+"2","Error in read.table(file = file, header = header, sep = sep, quote = quote,  : 
+  no lines available in input
+"

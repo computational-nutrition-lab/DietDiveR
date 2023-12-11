@@ -1,0 +1,1 @@
+"0","glu_2$GLU_index <- factor(glu_2$GLU_index, levels = c(""Normal"", ""Prediabetic"", ""Diabetic""))"

@@ -1,0 +1,6 @@
+"0","sta_col_num_a <- match(""DBQ095Z""  , names(metadata_raw))  # Salt-related questions"
+"0","end_col_num_a <- match(""DRQSPREP"" , names(metadata_raw))"
+"0","sta_col_num_b <- match(""DRQSDIET"" , names(metadata_raw))  # Diet-related questions"
+"0","end_col_num_b <- match(""DRQSDT91"" , names(metadata_raw))"
+"0","sta_col_num_c <- match(""DRD340""   , names(metadata_raw))  # Fish-related questions"
+"0","end_col_num_c <- match(""DRD370V""  , names(metadata_raw))"

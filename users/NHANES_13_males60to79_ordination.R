@@ -30,6 +30,7 @@
   
 # ---------------------------------------------------------------------------------------------------------------
 # load the necessary packages and the source code.
+  library(foreign)
   library(vegan)
   library(phyloseq)
   library(ggplot2)

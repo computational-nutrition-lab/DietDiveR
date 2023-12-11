@@ -1,0 +1,9 @@
+"0","PrepForClustering(input_df = user_BMI_nut,"
+"0","                userID = ""SEQN"","
+"0","                original_totals_df= totals_males60to79, "
+"0","                complete_cases_fn=   ""QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut.txt"","
+"0","                clustering_input_fn= ""QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_rv.txt"","
+"0","                corr_matrix_fn=      ""QCtotal_d_ga_body_meta_glu_comp_2_males60to79_c_Nut_corr_mat.txt"","
+"0","                rm_corr_var = TRUE)"
+"2","Error in nrow(input_df) : object 'user_BMI_nut' not found
+"
