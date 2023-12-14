@@ -4,7 +4,7 @@
 # Created on 05/18/2022 by Rie Sadohara and Suzie Hoops
 # ===============================================================================================================
 
-# In this tutorial, we aim to demonstrate the utility of the DietDiveR package by applying it to the dietary data 
+# In this tutorial, we aim to demonstrate the utility of the DietDiveR by applying it to the dietary data 
 # available from the National Health and Nutrition Examination Survey (NHANES). 
 
 # NHANES is a national survey conducted with some thousands of participants across the US over two days. NHANES 

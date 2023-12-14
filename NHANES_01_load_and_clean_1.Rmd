@@ -43,7 +43,7 @@ blockquote{
 
 # Introduction
 
-In this tutorial, we aim to demonstrate the utility of the DietDiveR package by applying it to the dietary data available from the National Health and Nutrition Examination Survey (NHANES).
+In this tutorial, we aim to demonstrate the utility of the DietDiveR by applying it to the dietary data available from the National Health and Nutrition Examination Survey (NHANES).
 
 NHANES is a national survey conducted with some thousands of participants across the US over two days. NHANES data is published every other year and consists of various kinds of data including dietary intake, body measurements, laboratory-taken data. There are numerous questions that can be asked with these data to connect dietary intake with various biomarkers. Here, as an example, we will explore the dietary intake (food items) of participants and look at the relationship between dietary patterns and diabetic status in NHANES 2015-2016.
 
