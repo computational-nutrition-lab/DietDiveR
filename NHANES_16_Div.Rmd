@@ -271,7 +271,7 @@ Our goal is to mark samples as:
 
 DivGroup | Description | Shannon's diversity
 ---------- | -----------------| ------------------  
-DivNA | Did not report any foods with Food ID of 4xxxxxxxx. | NA
+DivNo | Did not report any foods with Food ID of 4xxxxxxxx. | NA
 Div0 | Reported 1 food with Food ID of 4xxxxxxx. | 0 
 Div1 | Reported >1 foods with Food ID of 4xxxxxxx. lower. | > 0 
 Div2 | Reported >1 foods with Food ID of 4xxxxxxx. upper. | > 0 
@@ -332,7 +332,7 @@ SEQN_Div0 <- totals_div_zero[, c("SEQN", "DivGroup")]
 
 <br>
 
-Define **DivNA**. 
+Define **DivNo**. 
 
 Define "Not in" function.  By default it's not existent.
 ```{r}
@@ -345,23 +345,23 @@ Those are the ones that did not consume nuts/seeds/legumes.
 totals_not_in_SEQNdiv <- totals[totals$SEQN %!in% SEQNdiv$SEQN, ]  
 ```
 
-Add DivGroup variable, and insert "DivNA".
+Add DivGroup variable, and insert "DivNo".
 ```{r}
-totals_not_in_SEQNdiv$DivGroup <- 'DivNA'
+totals_not_in_SEQNdiv$DivGroup <- 'DivNo'
 ```
 
 Take only the SEQN and DivGroup.
 ```{r}
-SEQN_DivNA <- totals_not_in_SEQNdiv[, c("SEQN", "DivGroup")]
+SEQN_DivNo <- totals_not_in_SEQNdiv[, c("SEQN", "DivGroup")]
 ```
 
 ---
 
 <br>
 
-Combine SEQN_DivNA, SEQN_Div0, and SEQN_Div12 for merging.
+Combine SEQN_DivNo, SEQN_Div0, and SEQN_Div12 for merging.
 ```{r}
-SEQN_Div_NA_012 <- rbind(SEQN_DivNA, SEQN_Div0, SEQN_Div12)
+SEQN_Div_NA_012 <- rbind(SEQN_DivNo, SEQN_Div0, SEQN_Div12)
 ```
 
 Now, all the SEQNs have DivGroups.
@@ -379,7 +379,7 @@ totals_divgroup <- merge(totals, SEQN_Div_NA_012, all.x=T, by="SEQN")
 Change DivGroup into a factor and specify the factor levels.
 ```{r}
 totals_divgroup$DivGroup <- factor(totals_divgroup$DivGroup, 
-                                   levels = c('DivNA', 'Div0', 'Div1', 'Div2') )
+                                   levels = c('DivNo', 'Div0', 'Div1', 'Div2') )
 ```
 
 The individuals in totals were grouped into 4 groups depending on their consumption of 4xxxxxxx foods (or the lack thereof). The totals_divgroup has DivGroup column.

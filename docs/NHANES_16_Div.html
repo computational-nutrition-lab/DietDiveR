@@ -643,7 +643,7 @@ par(mfrow = c(1, 1))</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>DivNA</td>
+<td>DivNo</td>
 <td>Did not report any foods with Food ID of 4xxxxxxxx.</td>
 <td>NA</td>
 </tr>
@@ -706,20 +706,20 @@ totals_div_zero &lt;- subset(totals_div, Shannon == 0)</code></pre>
 <p>Select only the SEQN and DivGroup.</p>
 <pre class="r"><code>SEQN_Div0 &lt;- totals_div_zero[, c(&quot;SEQN&quot;, &quot;DivGroup&quot;)]</code></pre>
 <p><br></p>
-<p>Define <strong>DivNA</strong>.</p>
+<p>Define <strong>DivNo</strong>.</p>
 <p>Define “Not in” function. By default it’s not existent.</p>
 <pre class="r"><code>`%!in%` &lt;- Negate(`%in%`)</code></pre>
 <p>Subset those that are not in SEQNdiv.<br />
 Those are the ones that did not consume nuts/seeds/legumes.</p>
 <pre class="r"><code>totals_not_in_SEQNdiv &lt;- totals[totals$SEQN %!in% SEQNdiv$SEQN, ]  </code></pre>
-<p>Add DivGroup variable, and insert “DivNA”.</p>
-<pre class="r"><code>totals_not_in_SEQNdiv$DivGroup &lt;- &#39;DivNA&#39;</code></pre>
+<p>Add DivGroup variable, and insert “DivNo”.</p>
+<pre class="r"><code>totals_not_in_SEQNdiv$DivGroup &lt;- &#39;DivNo&#39;</code></pre>
 <p>Take only the SEQN and DivGroup.</p>
-<pre class="r"><code>SEQN_DivNA &lt;- totals_not_in_SEQNdiv[, c(&quot;SEQN&quot;, &quot;DivGroup&quot;)]</code></pre>
+<pre class="r"><code>SEQN_DivNo &lt;- totals_not_in_SEQNdiv[, c(&quot;SEQN&quot;, &quot;DivGroup&quot;)]</code></pre>
 <hr />
 <p><br></p>
-<p>Combine SEQN_DivNA, SEQN_Div0, and SEQN_Div12 for merging.</p>
-<pre class="r"><code>SEQN_Div_NA_012 &lt;- rbind(SEQN_DivNA, SEQN_Div0, SEQN_Div12)</code></pre>
+<p>Combine SEQN_DivNo, SEQN_Div0, and SEQN_Div12 for merging.</p>
+<pre class="r"><code>SEQN_Div_NA_012 &lt;- rbind(SEQN_DivNo, SEQN_Div0, SEQN_Div12)</code></pre>
 <p>Now, all the SEQNs have DivGroups.</p>
 <p>Check that this should have the same number of rows as totals does.</p>
 <pre class="r"><code>identical(length(unique(SEQN_Div_NA_012$SEQN)), nrow(totals))</code></pre>
@@ -728,11 +728,11 @@ Those are the ones that did not consume nuts/seeds/legumes.</p>
 <pre class="r"><code>totals_divgroup &lt;- merge(totals, SEQN_Div_NA_012, all.x=T, by=&quot;SEQN&quot;)</code></pre>
 <p>Change DivGroup into a factor and specify the factor levels.</p>
 <pre class="r"><code>totals_divgroup$DivGroup &lt;- factor(totals_divgroup$DivGroup, 
-                                   levels = c(&#39;DivNA&#39;, &#39;Div0&#39;, &#39;Div1&#39;, &#39;Div2&#39;) )</code></pre>
+                                   levels = c(&#39;DivNo&#39;, &#39;Div0&#39;, &#39;Div1&#39;, &#39;Div2&#39;) )</code></pre>
 <p>The individuals in totals were grouped into 4 groups depending on their consumption of 4xxxxxxx foods (or the lack thereof). The totals_divgroup has DivGroup column.</p>
 <pre class="r"><code>table(totals_divgroup$DivGroup, useNA = &quot;ifany&quot;)</code></pre>
 <pre><code>## 
-## DivNA  Div0  Div1  Div2 
+## DivNo  Div0  Div1  Div2 
 ##  2074  1284   403   403</code></pre>
 <p>Save the totals with DivGroup.</p>
 <pre class="r"><code>write.table(totals_divgroup, &quot;Total_D12_FC_QC_mean_QC_demo_ga_body_meta_DivGroup.txt&quot;,

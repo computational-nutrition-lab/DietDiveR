@@ -1,6 +1,6 @@
 # Structure of this website: 
 # https://computational-nutrition-lab.github.io/DietDiveR/index.html
-name: "DietDiveR Package name"
+name: "DietDiveR toolkit name"
 navbar:
   title: "DietDiveR"
   href: index.html
