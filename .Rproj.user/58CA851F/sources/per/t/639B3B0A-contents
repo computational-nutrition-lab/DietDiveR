@@ -1,0 +1,79 @@
+# Structure of this website: 
+# https://computational-nutrition-lab.github.io/DietDiveR/index.html
+name: "DietDiveR toolkit name"
+navbar:
+  title: "DietDiveR"
+  href: index.html
+  left:
+  - text: ASA24
+    menu:
+    - text: "Load and clean ASA24 data"
+      href: ASA24_01_load_and_clean.html
+    - text: "Calculate totals by occasion"
+      href: ASA24_02_calc_totals_by_occasion.html
+    - text: "Data overview"
+      href: ASA24_03_data_overview.html
+    - text: "Percent kcal of CARB, PROT, TFAT"
+      href: ASA24_04_percent_kcal.html
+    - text: "---------"
+    - text: "Prepare for clustering"
+      href: ASA24_05_prep_clustering.html
+    - text: "PCA"
+      href: ASA24_06_PCA.html
+    - text: "k-means"
+      href: ASA24_07_k-means.html
+    - text: "---------"
+    - text: "Foodtrees with all food items"
+      href: ASA24_08_create_foodtree_allfooditems.html
+    - text: "Foodtrees with your own data"
+      href: ASA24_09_create_foodtree_ownitems.html
+    - text: "Visualize foodtrees"
+      href: ASA24_10_viz_food_tree.html
+    - text: "Ordination"
+      href: ASA24_11_ordination.html
+    - text: "Visualize ordination"
+      href: ASA24_12_viz_ordination.html
+    - text: "Correlation between axes and foods"
+      href: ASA24_13_corr_axes_foods.html
+  - text: NHANES
+    menu:
+    - text: "Load and clean NHANES data - 1"
+      href: NHANES_01_load_and_clean_1.html
+    - text: "Load and clean NHANES data - 2"
+      href: NHANES_02_load_and_clean_2.html
+    - text: "Add metadata and GLU-index"
+      href: NHANES_03_add_meta_GLU_index.html
+    - text: "Data overview"
+      href: NHANES_04_overview_GLU_index.html
+    - text: "GLU-index by age and gender"
+      href: NHANES_05_GLU_index_by_age_gender.html
+    - text: "Subset males 60-79 years old"
+      href: NHANES_06_subset_males60to79.html
+    - text: "Percent kcal of CARB, PROT, TFAT"
+      href: NHANES_07_males60to79_percent_kcal.html
+    - text: "---------"
+    - text: "Prepare for clustering"
+      href: NHANES_08_males60to79_prep_for_clustering.html
+    - text: "PCA"
+      href: NHANES_09_males60to79_PCA.html
+    - text: "k-means"
+      href: NHANES_10_males60to79_k-means.html
+    - text: "---------"
+    - text: "Generate foodtrees"
+      href: NHANES_11_males60to79_generate_foodtrees.html
+    - text: "Visualize foodtrees"
+      href: NHANES_12_males60to79_viz_foodtrees.html
+    - text: "Ordination"
+      href: NHANES_13_males60to79_ordination.html
+    - text: "Visualize ordination"
+      href: NHANES_14_males60to79_viz_ordination.html
+    - text: "Correlation between axes and foods"
+      href: NHANES_15_males60to79_corr_axes_foods.html
+    - text: "---------"
+    - text: "Assign DivGroups by dietary diversity"
+      href: NHANES_16_Div.html
+  - text: Links
+    href: Links.html
+plugins:
+  - search
+output_dir: "docs"

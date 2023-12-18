@@ -3,6 +3,7 @@
 # Version 1
 # Created on 04/12/2023 by Rie Sadohara
 # 06/26/2023 replaced "OTU" with "IFC".
+# 12/18/2023 replaced "DivNA" with "DivNo".
 # ===============================================================================================================
 
 # Dietary diversity may have an important role in predicting health outcomes, and nuts/seeds/legumes food 
@@ -169,7 +170,7 @@
 # ===============================================================================================================
   
 # Our goal is to mark samples as:
-  # DivNA ... Did not report any foods with Food ID of 4xxxxxxxx. Shannon's diversity = NA.
+  # DivNo ... Did not report any foods with Food ID of 4xxxxxxxx. Shannon's diversity = NA.
   # Div0  ... Reported 1 food with Food ID of 4xxxxxxx.           Shannon's diversity = 0. 
   # Div1  ... Reported >1 foods with Food ID of 4xxxxxxx. lower.  Shannon's diversity > 0. 
   # Div2  ... Reported >1 foods with Food ID of 4xxxxxxx. upper.  Shannon's diversity > 0. 
@@ -206,7 +207,7 @@
 # Select only the SEQN and DivGroup.
   SEQN_Div0 <- totals_div_zero[, c("SEQN", "DivGroup")]
   
-# Define DivNA. ----------------------------------------
+# Define DivNo. ----------------------------------------
   # Define "Not in" function.  By default it's not existent.
   `%!in%` <- Negate(`%in%`)
   
@@ -214,15 +215,15 @@
 # those are the ones that did not consume nuts/seeds/legumes.
   totals_not_in_SEQNdiv <- totals[totals$SEQN %!in% SEQNdiv$SEQN, ]  
 
-# Add DivGroup variable, and insert "DivNA".
-  totals_not_in_SEQNdiv$DivGroup <- 'DivNA'
+# Add DivGroup variable, and insert "DivNo".
+  totals_not_in_SEQNdiv$DivGroup <- 'DivNo'
   
 # Take only the SEQN and DivGroup.
-  SEQN_DivNA <- totals_not_in_SEQNdiv[, c("SEQN", "DivGroup")]
+  SEQN_DivNo <- totals_not_in_SEQNdiv[, c("SEQN", "DivGroup")]
   
 # ---------------------------------------------------------------------------------------------------------------
-# Combine SEQN_DivNA, SEQN_Div0, and SEQN_Div12 for merging.
-  SEQN_Div_NA_012 <- rbind(SEQN_DivNA, SEQN_Div0, SEQN_Div12)
+# Combine SEQN_DivNo, SEQN_Div0, and SEQN_Div12 for merging.
+  SEQN_Div_NA_012 <- rbind(SEQN_DivNo, SEQN_Div0, SEQN_Div12)
 
 # Now, all the SEQNs have DivGroups. 
   
@@ -234,12 +235,12 @@
 
 # Change DivGroup into a factor and specify the factor levels.
   totals_divgroup$DivGroup <- factor(totals_divgroup$DivGroup, 
-                                     levels = c('DivNA', 'Div0', 'Div1', 'Div2') )
+                                     levels = c('DivNo', 'Div0', 'Div1', 'Div2') )
   
 # The individuals in totals were grouped into 4 groups depending on their consumption of 
 # 4xxxxxxx foods (or the lack thereof). The totals_divgroup has DivGroup column. 
   table(totals_divgroup$DivGroup, useNA = "ifany")
-  # DivNA  Div0  Div1  Div2 
+  # DivNo  Div0  Div1  Div2 
   # 2074  1284   403   403 
   
 # Save the totals with DivGroup.
