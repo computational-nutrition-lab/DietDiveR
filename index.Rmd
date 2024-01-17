@@ -42,7 +42,9 @@ This tutorial shows how to analyze ASA24 and NHANES data.
 
 2. The easiest way to follow along this tutorial is to create "documents/Github" folder in your home directory and bring unzipped DietDiveR repository there, so that you can run tutorial code without modifying paths.
 
-3. See the [links page](https://computational-nutrition-lab.github.io/DietDiveR/Links.html) for additional resources for using R.
+3. Click on "ASA24" or "NHANES" with an inverted triangle on the header on this page to select tutorial materials that you would like to view. The analysis progresses from top to bottom, so we recommend starting from the top item "load and clean ASA24 data" and "load and clean NHANES - 1".
+
+4. See the [links page](https://computational-nutrition-lab.github.io/DietDiveR/Links.html) for additional resources for using R.
 
 </div>
 <div class="col-sm-6">
