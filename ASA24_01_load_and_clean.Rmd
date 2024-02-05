@@ -48,23 +48,26 @@ blockquote{
 
 # Introduction
 
-In this tutorial, we will use mock data from the VVKAJ dataset that was created with [ASA24](https://epi.grants.cancer.gov/asa24/). VVKAJ stands for Vegetarian, Vegan, Keto, American, Japanese and was designed because these different eating patterns reflect differences that are often seen in real data. This mock dataset contains dietary for 15 mock participants who report dietary data while following the 5 different dietary patterns (VVKAJ) for three days. There are a total of XX dietary records in this dataset.
+This tutorial is intended to walk through the steps to analyze dietary data in a variety of ways. It is not intended to be fully comprehensive of all ways to analyze dietary data. To begin with, we will start with some basic pre-processing. Often data exported from a dietary software needs to be cleaned in some way. Exactly how you will need to pre-process your data will depend on what you used to generate it and when it was generated. 
+
+In this tutorial, we will use demonstration data from the VVKAJ dataset that was created with [ASA24](https://epi.grants.cancer.gov/asa24/). VVKAJ stands for Vegetarian, Vegan, Keto, American, Japanese and this data was created because these different eating patterns reflect differences that are often seen in real data. This demonstration data contains dietary for 15 imaginary participants who report dietary data while following the 5 different dietary patterns (VVKAJ) for three days. There are a total of 45 dietary records in this dataset.
 
 ASA24 data includes the following files: _Items.csv, _INS.csv, _Responses.csv, _TNS.csv, Totals.csv, and TS.csv. Refer to the ASA24 Reserchers’ website for specific explanations for each file, but for the purpose of this tutorial, we focus on using the Items.csv, which has all the food items reported by the participants.
 
 In this script, you will:\
 
 1. Use Metadata 1 to filter out individuals;
-2. Remove users that has only a small number of totals (days of record) - if you know which one to remove; and
-3. Look for outliers in your totals by nutrient consumed on each day.
+2. Remove a user that has only a small number of totals (days of diet recorded) - if you know which one to remove; and
+3. Look for outliers data using nutrient totals.
 
 <br>
 
 # Load functions and packages  
 
-Name the path to DietDiveR directory where input files are pulled.
+Name the path to DietDiveR directory where input files are pulled and then set that as your directory.
 ```{r}
 main_wd <- "~/GitHub/DietDiveR"
+setwd(main_wd)
 ```
 
 Load the necessary functions.
@@ -104,7 +107,7 @@ The csv file will be loaded as a dataframe in R and be named as items_raw.
 items_raw <- read.csv("Raw_data/VVKAJ_Items.csv", sep = ",", header=T)
 ```
 
-`items_raw` has a column called "Food_Description", but this needs to be changed to "Main.food.description". Change the column name.
+`items_raw` has a column called "Food_Description", but this needs to be changed to "Main.food.description". This is a stylistic choice that we made because our legacy code used the naming convention. Thus, to use downstream code you will need to change the column name.
 ```{r}
 names(items_raw)[names(items_raw) == "Food_Description"] <- "Main.food.description"
 ```
